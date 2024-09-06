@@ -497,7 +497,7 @@ loop_med_simplified1a=function(Treatment, Mediator, Outcome,tv_all,Group,name,si
 
 #Testing hypothesis one:
 the_essentials=function(Treatment, Mediator, Outcome,tv, Group,name,simss,t.val,test,sick,sick_group,fn,lkm,date,joo,ip) {
-  hoi1=paste("C:/Users/patati/Desktop/TurkuOW/RWork/basica/",fn,sep='')
+  hoi1=paste("C:/Users/patati/Desktop/TurkuOW/RWork/basic causal mediation with the counterfactuals/",fn,sep='')
   setwd(hoi1) #https://topepo.github.io/caret/parallel-processing.html # https://ds-pl-r-book.netlify.app/optimization-in-r.html
 
   name=paste(simss,'basic_divisions'); #sick='yes'
@@ -513,6 +513,7 @@ ccova=tv[,c("Steatosis.Grade.0.To.3" , "Fibrosis.Stage.0.to.4" ,"Necroinflammati
 sick_group=rowSums(ccova)>4
 file_names=c("Steatosis" , "Fibrosis" ,"Necroinflammation" ,  "HOMAIR", 'Menopause')
 lkm=30; joo='ei';ip=1; sick='yes'
+t.val='no'; name='generic';  Group='All'
 
 # Steatosis
 # ccovae=tv[,c("Steatosis.Grade.0.To.3")]; sick_group=ccovae>0 #toth# # hist(ccovae,breaks=100) # hist(ccova[,'HOMA-IR'],breaks=100)
@@ -541,11 +542,7 @@ joo='joo';sick='no'
 ccova=tv[,c("Steatosis.Grade.0.To.3", "Fibrosis.Stage.0.to.4" ,"Necroinflammation","HOMA-IR")] 
 fn='All'; sick_group=rowSums(ccova)>4 #toth#
 the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick, sick_group,fn,lkm,date,joo,ip)
-setwd("C:/Users/patati/Desktop/TurkuOW/basic causal mediation with the counterfactuals/") #check this if needed...
-
-
-
-
+# setwd("C:/Users/patati/Desktop/TurkuOW/RWork/basic causal mediation with the counterfactuals/") #check this if needed...
 ```
 
 
