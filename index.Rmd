@@ -22,7 +22,7 @@ loadfonts(device = "win") #this is important too
 setwd("C:/Users/patati/Desktop/TurkuOW/RWork") 
 date='tikka5924' #change this...
 
-# #Trying to especially reproduced foresplots as in # https://www.nature.com/articles/s41467-022-30875-7#citeas (fig. 5) for Steroid data:
+
 # Steroid data, simple figures:# NAFLD=read.csv("NAFLD_SteroidStudy_v3.csv", header = TRUE, sep=";")
 NAFLD=read_excel("NAFLD_SteroidStudy.xlsx",sheet = "LFAT_steroidsDATA") #l ei tästä
 oknames=colnames(NAFLD); NAFLD=data.frame(NAFLD)
@@ -30,6 +30,7 @@ groups=read.csv("groups_17823.csv", header = TRUE, sep=";")
 groups=groups[,c('Group','Abbreviation')]
 groups=groups[groups[,'Abbreviation']!='F',]
 groups=groups[order(groups[,'Group']),]
+# something about forst plots here... https://www.nature.com/articles/s41467-022-30875-7#citeas 
 
 #P4 was found from elswhere to be:
 NAFLD[,'P4'] = as.numeric(NAFLD[,'P4'])
@@ -144,7 +145,7 @@ colnames(tv_all)=nm; #tv_all[1:5,1:30]; #NAFLD[1:2,1:28];
 colnames(tv_all)[colnames(tv_all)=='MASLD[, \"PFAS\"]']='PFAS';
 # head(tv_all) #non nans # which(is.na(tv_all)) # colnames(tv_all)
 
-#jälkeenpäin lienee jeesh
+# jälkeenpäin lienee jeesh
 x5=x5[x5!='PFAS'];x5=x5[x5!='Perfluorodecyl.ethanoic.acid']; x6=x6[x6!='Total_TG'] # x1;x2;x3;x4;x5;
 tv_all=tv_all[,!colnames(tv_all) %in% c('Total_TG','PFAS',"Perfluorodecyl.ethanoic.acid")]
 
