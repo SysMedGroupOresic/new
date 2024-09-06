@@ -503,34 +503,31 @@ the_essentials=function(Treatment, Mediator, Outcome,tv, Group,name,simss,t.val,
   name=paste(simss,'basic_divisions'); #sick='yes'
   Group='All'; uh7ma=loop_med_simplified1a(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group);try({uh7ma},{uh7ma=data.frame(0)});  save(uh7ma,file=paste(fn,'all.RData'));#try({uh7ma},{uh7ma=data.frame(0)})
   Group='female'; uh7f=loop_med_simplified1a(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group);  try({uh7f},{uh7f=data.frame(0)});save(uh7f, file=paste(fn,'female.RData'));
-  Group='male';   uh7m=loop_med_simplified1a(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group);try({res},{res=data.frame(0)});save(res, file=paste(fn,'male.RData'));
+  Group='male';   uh7m=loop_med_simplified1a(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group);try({uh7m},{uh7m=data.frame(0)});save(uh7m, file=paste(fn,'male.RData'));
 }
 
 
 
-simss=10;name='Jaot_OK_basica'; joo='ei';ip=1
+simss=100;name='Jaot_OK_basica'; joo='ei';ip=1
 ccova=tv[,c("Steatosis.Grade.0.To.3" , "Fibrosis.Stage.0.to.4" ,"Necroinflammation" ,  "HOMA-IR")]
 sick_group=rowSums(ccova)>4
 file_names=c("Steatosis" , "Fibrosis" ,"Necroinflammation" ,  "HOMAIR", 'Menopause')
 lkm=30; joo='ei';ip=1; sick='yes'
-t.val='no'; name='generic';  Group='All'
+t.val='no';   Group='All' #name='generic';
 
 # Steatosis
 # ccovae=tv[,c("Steatosis.Grade.0.To.3")]; sick_group=ccovae>0 #toth# # hist(ccovae,breaks=100) # hist(ccova[,'HOMA-IR'],breaks=100)
 # fn=file_names[1]; 
 # the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group,fn,lkm,date,joo,ip)
-
 # #Fibrosis
 # ccovae=tv[,c("Fibrosis.Stage.0.to.4")]; 
 # sick_group=ccovae>0 #toth#
 # fn=file_names[2]; 
 # the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group,fn,lkm,date,joo,ip)
-# 
 # #Necroinfl.
 # ccovae=tv[,c("Necroinflammation")]; sick_group=ccovae>0 #toth#
 # fn=file_names[3];
 # the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group,fn,lkm,date,joo,ip)
-
 # Homa # remember to always test the funciton with minimun number setting or as light parameters as possible to get it through... before big runs
 # joo='ei';sick='yes'
 # ccovae=tv[,c("HOMA-IR")]; sick_group=ccovae>1.5 #toth#
@@ -541,7 +538,8 @@ t.val='no'; name='generic';  Group='All'
 joo='joo';sick='no'
 ccova=tv[,c("Steatosis.Grade.0.To.3", "Fibrosis.Stage.0.to.4" ,"Necroinflammation","HOMA-IR")] 
 fn='All'; sick_group=rowSums(ccova)>4 #toth#
-the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick, sick_group,fn,lkm,date,joo,ip)
+#Driving the analysis takes more than 20mins (with a basic laptop 2023) so drive the below only if needed:
+#the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick, sick_group,fn,lkm,date,joo,ip)
 # setwd("C:/Users/patati/Desktop/TurkuOW/RWork/basic causal mediation with the counterfactuals/") #check this if needed...
 ```
 
