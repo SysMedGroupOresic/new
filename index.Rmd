@@ -35,31 +35,33 @@ library(extrafont)
 
 date='tikka6924' #change this...
 #install.packages("ppcor") just in case the 'install' function here...
-font_import() #this is important if you have not loaded them before
-loadfonts(device = "win") #this is important too
+# font_import() #this is important if you have not loaded them before
+loadfonts(device = "win") #this is important 
 ```
 
 # Import your steroid data and metadata
 ```{r, warning=FALSE,message=FALSE}
 
-#This is the primary data
+#First set your data folder:
 setwd("C:/Users/patati/Desktop/TurkuOW/RWork")
+
+#And then load the primary data
 NAFLD=read_excel("NAFLD_SteroidStudy.xlsx",sheet = "LFAT_steroidsDATA") #l ei tästä
 oknames=colnames(NAFLD); NAFLD=data.frame(NAFLD)
-#The names of the stroid groups need to be imported early on:
+
+#The names of the steroid groups need to be imported early on:
 groups=read.csv("groups_17823.csv", header = TRUE, sep=";")
 groups=groups[,c('Group','Abbreviation')]
 groups=groups[groups[,'Abbreviation']!='F',]
 groups=groups[order(groups[,'Group']),]
 
 
-#P4 was found from elsewhere to be:
+#P4 was found from elsewhere to have the following characteristics:
 NAFLD[,'P4'] = as.numeric(NAFLD[,'P4'])
 NAFLD[,'P4'][is.na(NAFLD[,'P4'])] = 22557.3330346846#median(NAFLD[,'P4'], na.rm=TRUE) 
 NAFLD[,5:7][NAFLD[,5:7]==0.01]=0; colnames(NAFLD)=oknames
 MASLD=read_excel("Combined.Matrix.For.Pauli.2023.10.17.Excel.Formatv2.xlsx") #vaan tästä!
-oknames=colnames(MASLD); MASLD=data.frame(MASLD)
-colnames(MASLD)=oknames
+oknames=colnames(MASLD); MASLD=data.frame(MASLD); colnames(MASLD)=oknames #Tätä kikkojen määrää...
 rownames(MASLD)=MASLD[,1]
 MASLD[,'P4'] = as.numeric(MASLD[,'P4']) #The same comment as above
 MASLD[,'P4'][is.na(MASLD[,'P4'])] = 22557.3330346846 
@@ -110,8 +112,8 @@ Pfase=Pfase[,colnames(Pfase)!='Benzylparaben.1']
 Pfase[Pfase[,'Benzylparaben']>10,'Benzylparaben']=NA #m
 
 Jeihou=data.frame(read_excel("Copy of BA_liverfat_RawData.xls",.name_repair = "minimal")); row.names(Jeihou)=Jeihou[,1];Jeihou=Jeihou[as.character(MASLD$PatientNumber),]
-u=Jeihou[Jeihou[,'GHDGA']=='<LLOQ',1]; a=u[!is.na(u)]; b=rownames(Bali[Bali[,'GHDGA']==1,]); #length(b) length(a);
-intersect(a,b); uu=Jeihou[Jeihou[,'GHDGA']=='No Result',1]; aa=uu[!is.na(uu)]; #intersect(aa,b); c(aa,a)[!c(aa,a) %in% b] #24140250313 24112081112  #2/25
+u=Jeihou[Jeihou[,'GHDGA']=='<LLOQ',1]; a=u[!is.na(u)]; b=rownames(Bali[Bali[,'GHDGA']==1,]); #length(b) length(a);intersect(a,b); 
+uu=Jeihou[Jeihou[,'GHDGA']=='No Result',1]; aa=uu[!is.na(uu)]; #intersect(aa,b); c(aa,a)[!c(aa,a) %in% b] #24140250313 24112081112  #2/25
 Bali[as.character(a),'GHDGA']=min(Bali[,'GHDGA'],na.rm=TRUE)/2
 heps=Bali[Bali[,'GHDGA']==1,1] #2476250110  2487010610 24111141210
 Bali[as.character(heps),'GHDGA']=NA
@@ -124,7 +126,7 @@ hou=c('TbMCA','ToMCA','TDCA','TDHCA','TLCA')
 for (i in 1:5) {Bali[Bali[,hou[i]]==1,hou[i]]=hip[i]}
 for (i in 1:5) {Bali[Bali[,hou[i]]==2,hou[i]]=hip[i]}
 # hepsa=Bali[Bali[,c('TbMCA','ToMCA','TDCA','TDHCA','TLCA')]==1,1] #2476250110  2487010610 24111141210
-#An imputation for missing values:
+#An imputation for the missing values:
 C4[is.na(C4[,2]),2]=median(C4[!is.na(C4[,2]),2]) #assuming that these were not below quantitation and replacing with median
 #https://www.geeksforgeeks.org/performing-logarithmic-computations-in-r-programming-log-log10-log1p-and-log2-functions/# https://stackoverflow.com/questions/50476717/i-want-to-align-match-two-unequal-columns
 #Matching two unequal columns..# #match the names of one original column (dat2) to ones that are missing (dat1 with to other) # #Not sure if this should be this difficult...
