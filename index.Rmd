@@ -56,7 +56,7 @@ te=ME[which(ME[,1] %in% ME2),'E']
 MASLD[as.character(to),'E']=te
 #These (11-KA4) will change in the lab (sometime after 24.10.23):
 M11=read.csv('11KA4_tikka231023.csv',header=TRUE, sep=";")
-M11[,1][c(1:5,9)];MASLD[as.character(M11[,1][c(1:5,9)]),'11-KA4'] #these wer denoted with 'big interference'
+M11[,1][c(1:5,9)];MASLD[as.character(M11[,1][c(1:5,9)]),'11-KA4'] #these were denoted with 'big interference'
 MASLD[as.character(M11[,1][c(1:5,9)]),'11-KA4'] = NA#median(MASLD[!rownames(MASLD) %in% as.character(M11[,1][c(1:5,9)]),'11-KA4'])
 a=MASLD[order(MASLD[,'BMI']),'BMI']
 b=NAFLD[order(NAFLD[,'BMI']),'BMI']
@@ -81,7 +81,7 @@ C4=C4[as.character(MASLD$PatientNumber),];C4[1:3,]
 Pfase=Pfase[as.character(MASLD$PatientNumber),];Pfase[1:3,]
 #Menopause markers:
 menopause=read_excel("Putative_metabolic_markers_menopause.xlsx",sheet='menopause markers',.name_repair = "minimal"); #rownames(Clini)=as.vector(unlist(Clini[,1]));
-menopause=menopause[8:dim(menopause)[1],]; menopause=menopause[,-15]; menopause[2,2:14]=menopause[1,2:14]; menopause=data.frame(menopause); menopause[2,13:14]=c('v1','v2'); dim(menopause)
+menopause=menopause[8:dim(menopause)[1],]; menopause=menopause[,-15]; menopause[2,2:14]=menopause[1,2:14]; menopause=data.frame(menopause); menopause[2,13:14]=c('v1','v2'); #dim(menopause)
 colnames(menopause)=c('row_names',menopause[2,2:dim(menopause)[2]]); menopause=menopause[3:dim(menopause)[1],];rownames(menopause)=as.vector(unlist(menopause[,1]));
 menopause=menopause[as.character(MASLD$PatientNumber),]
 colnames(Pfase)[colnames(Pfase)=='PFHxA.1']='PFHxA_Branched'
@@ -90,7 +90,7 @@ Pfase[Pfase[,'Benzylparaben']>10,'Benzylparaben']=NA #m
 
 Jeihou=data.frame(read_excel("Copy of BA_liverfat_RawData.xls",.name_repair = "minimal")); row.names(Jeihou)=Jeihou[,1];Jeihou=Jeihou[as.character(MASLD$PatientNumber),]
 u=Jeihou[Jeihou[,'GHDGA']=='<LLOQ',1]; a=u[!is.na(u)]; b=rownames(Bali[Bali[,'GHDGA']==1,]); #length(b) length(a);
-intersect(a,b); uu=Jeihou[Jeihou[,'GHDGA']=='No Result',1]; aa=uu[!is.na(uu)]; intersect(aa,b); c(aa,a)[!c(aa,a) %in% b] #24140250313 24112081112  #2/25
+intersect(a,b); uu=Jeihou[Jeihou[,'GHDGA']=='No Result',1]; aa=uu[!is.na(uu)]; #intersect(aa,b); c(aa,a)[!c(aa,a) %in% b] #24140250313 24112081112  #2/25
 Bali[as.character(a),'GHDGA']=min(Bali[,'GHDGA'],na.rm=TRUE)/2
 heps=Bali[Bali[,'GHDGA']==1,1] #2476250110  2487010610 24111141210
 Bali[as.character(heps),'GHDGA']=NA
@@ -106,7 +106,7 @@ for (i in 1:5) {Bali[Bali[,hou[i]]==2,hou[i]]=hip[i]}
 #An imputation for missing values:
 C4[is.na(C4[,2]),2]=median(C4[!is.na(C4[,2]),2]) #assuming that these were not below quantitation and replacing with median
 #https://www.geeksforgeeks.org/performing-logarithmic-computations-in-r-programming-log-log10-log1p-and-log2-functions/# https://stackoverflow.com/questions/50476717/i-want-to-align-match-two-unequal-columns
-#Matching two unequal columns..# #match the names of one original column (dat2) to ones that are missing (dat1 with to other) # #not sure if this should be this difficult...
+#Matching two unequal columns..# #match the names of one original column (dat2) to ones that are missing (dat1 with to other) # #Not sure if this should be this difficult...
 tv=cbind(MASLD[,1],NAFLD[,2:7],Clini[,'HOMA.IR'],MASLD[,colnames(NAFLD[,8:27])],Bali[,2:dim(Bali)[2]], C4[,2:dim(C4)[2]],Base[,2:dim(Base)[2]],Pfase[,(2:(dim(Pfase)[2]))], MASLD[,'PFAS']);#colnames(tv)#,C4[,2:dim(C4)[2]]). Clini[,'HOMA-IR'] # head(tv) #non nans # which(is.na(tv)) # MASLD[1:30,1:12] # NAFLD[1:30,7:20]
 colnames(tv)[colnames(tv)=='C4[, 2:dim(C4)[2]]']='C4';colnames(tv)[colnames(tv)=='Clini[, \"HOMA.IR\"]']='HOMA-IR'
 colnames(tv)[colnames(tv)=='MASLD[, \"PFAS\"]']='PFAS';
@@ -126,7 +126,7 @@ tv_half_log2 <- log2(tv_half);
 tv_auto <- prep.autoscale(tv_half_log2, center = TRUE, scale = TRUE); 
 # head(tv_auto) #non nans  # which(is.na(tv_auto))
 
-#usually this should be the log2 value 'tv_half_log2' & #https://svkucheryavski.gitbooks.io/mdatools/content/preprocessing/text.html
+# Usually this should be the log2 value 'tv_half_log2' & #https://svkucheryavski.gitbooks.io/mdatools/content/preprocessing/text.html
 # Necroinflammation  HOMA-IR Steatosis.Grade.0.To.3 Fibrosis.Stage.0.to.4
 tv_all=cbind(tv[,1],tv_auto); #tv_all[1:5,1:11]; note, here the covariates have not been normalized or scaled/elaborated in any way;  maybe I need to do so (1/324 or 28524...); check 27524 the 
 
@@ -312,7 +312,7 @@ lgd_points = Legend(at = namesh, type = "points", legend_gp = gpar(col = cola), 
 lgd_lines = Legend(at = c("Positive", "Negative"), type = "points", legend_gp = gpar(col = c('red','blue')), title_position = "topleft", title = "Correlation")
 lgd_edges= Legend(at = c(round(min(df$V3),1), round(max(df$V3),1)), col_fun = col_fun,  title_position = "topleft", title = "Edges")
 lgd_list_vertical = packLegend(lgd_group,lgd_points,  lgd_lines,lgd_edges) #lgd_lines,
-length(unique(colnames(resulta)));length(unique(df[,1]));length(unique(df[,2]));dim(df); #unique(df[,1]);unique(df[,2]);sum(colnames(resulta)=='CA')
+# length(unique(colnames(resulta)));length(unique(df[,1]));length(unique(df[,2]));dim(df); #unique(df[,1]);unique(df[,2]);sum(colnames(resulta)=='CA')
 chordDiagram(df, annotationTrack = c("grid"),  grid.col=grid.col, directional = FALSE,order = rownames(tes_t), preAllocateTracks = 1, col = col_fun,transparency = 0.5)
 
 circos.trackPlotRegion(track.index = 1, panel.fun = function(x, y) {
@@ -327,30 +327,15 @@ draw(lgd_list_vertical, x = unit(5, "mm"), y = unit(5, "mm"), just = c("left", "
 # dev.copy(jpeg,fig_name,width=9.2, height=12.5, units="in", res=1000);dev.off()
 
 reduced2=function(u3,Group,name,lkm) {
-  # u3=all_all1
   c1=c()
+  ACMEMedian=c();ACMEpval=c();ACMEVar=c()
+  ADEMedian=c();ADEpval=c();ADEVar=c()
+  c1= u3 #[u3[,'ADE'] < ADEMedian  & DV<ADEVar,] #& u3[,'z0.p']<ADEpval
+  ACMEMedian=0#median(c1[,'ACME'][c1[,'ACME']>0])
+  c1=c1[c1[,'ACME']>ACMEMedian & ((c1[,'ACME']-c1[,'ADE']) > 0), ] 
+  c1=c1[rev(order(c1[,'ACME'])),];       
+  c1=tryCatch({c1[1:lkm,]}, error = function(msg){return(c1)})
   
-  DV=-u3[,'z0.ci_l']/(abs(u3[,'z0.ci_u']-u3[,'z0.ci_l']))
-  AV=-u3[,'d0.ci_l']/(abs(u3[,'d0.ci_u']-u3[,'d0.ci_l']))
-  OK=DV-AV
-  
-  pmeda=(u3[,'ACME']+abs(min(u3[,'ACME'])))/(u3[,'ACME']+abs(min(u3[,'ACME']))+u3[,'ADE']+abs(min(u3[,'ADE'])))
-  c1= u3 
-  c1=c1[c1[,'ACME']>quantile(c1[,'ACME'],0.75) & c1[,'d0.p']<quantile(c1[,'d0.p'],0.25) & 
-          (c1[,'ACME']-c1[,'ADE']) > quantile(c1[,'ACME']-c1[,'ADE'],0.2) & 
-          OK>quantile(OK,0.20) & pmeda > quantile(pmeda,0.20), ] #& 
-  c1=c1[rev(order(c1[,'ACME'])),];
-
-  rt2=c1 #[,1:17]# rtot=rtot[,1:17]# rtot=data.frame(rtot) # name=paste(simss,'basic hypothesis',take)# https://stat.ethz.ch/R-manual/R-devel/library/stats/html/p.adjust.html# https://www.middleprofessor.com/files/applied-biostatistics_bookdown/_book/adding-covariates-to-a-linear-model# https://github.com/MarioniLab/miloR# https://www.nature.com/articles/s41467-023-40458-9/figures/4
-  name=paste('Contaminants_Steroids_BAs_or_Lipids_sims',date) # rtot=rtot_2000_mrct # rtot=uh5
-  
-  hoi=c(); 
-  hoi=scan(text=rownames(rt2), what=" ")#rownames(rt2)#
-  hoi=as.data.frame(matrix(hoi, ncol = 3,  byrow = TRUE), stringsAsFactors = FALSE) #check ncol
-  ug=names(table(hoi$V3)) #check
-  
-
-  c1=tryCatch({c1[1:lkm,]}, error = function(msg){return(c1)}) 
   write.xlsx(c1, file = paste(name,Group,date,'.xlsx'), append = FALSE, row.names = TRUE)
   
   return(c1)}
