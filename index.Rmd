@@ -10,7 +10,7 @@ output:
 
 
 
-# Loading all essential R packages
+# Loading All Essential R Packages
 ```{r, warning=FALSE,message=FALSE}
 
 library(scales);library("plotrix");library(Maaslin2);  library(ggtext);library(lavaan);library(psych);library("xlsx");library(lsr);library(quantreg);library("readxl")
@@ -30,7 +30,7 @@ library(rmdformats);library(prettydoc);library(hrbrthemes);library(tint);library
 library(extrafont)
 ```
 
-# Setting some preliminary setups
+# Setting Global Variables
 ```{r, warning=FALSE,message=FALSE}
 
 date='tikka6924' #change this...
@@ -39,13 +39,13 @@ date='tikka6924' #change this...
 loadfonts(device = "win") #this is important 
 ```
 
-# Import your steroid data and metadata
+# Import Your Data and Metadata
 ```{r, warning=FALSE,message=FALSE}
 
 #First set your data folder:
 setwd("C:/Users/patati/Desktop/TurkuOW/RWork")
 
-#And then load the primary data
+#And then load the primary steroid data
 NAFLD=read_excel("NAFLD_SteroidStudy.xlsx",sheet = "LFAT_steroidsDATA") #l ei tästä
 oknames=colnames(NAFLD); NAFLD=data.frame(NAFLD)
 
@@ -226,7 +226,7 @@ tv_c=tv_covscl#cbind(tv[,1:8], tv_half_log2) #check also not logged and then the
 # https://rdrr.io/bioc/qpgraph/man/qpNrr.html
 ```
 
-# Making the chordplot
+# Making Chordplot
 ```{r, warning=FALSE,message=FALSE}
 #
 tv_c=data.frame(tv_c)
@@ -355,7 +355,7 @@ draw(lgd_list_vertical, x = unit(5, "mm"), y = unit(5, "mm"), just = c("left", "
 #https://stackoverflow.com/questions/31943102/rotate-labels-in-a-chorddiagram-r-circlize
 ```
 
-# Making the sankey diagram
+# Making Sankey Diagram
 ```{r, warning=FALSE,message=FALSE}
 reduced2=function(u3,Group,name,lkm) {
   c1=c()
@@ -439,7 +439,7 @@ plottings_sf(almam,date,sick,Group)
 
 ```
 
-# Making the causal mediation analysis
+# Making Causal Mediation Analysis
 ```{r, warning=FALSE,message=FALSE}
 #The basic hypothesis. All are variables (y~x+m;m~x)
 loop_med_simplified1a=function(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group) { # if (Group=='Female') {cond=tv_all[,'Gender']==1} else if (Group=='Male') # {cond=tv_all[,'Gender']==2} else if (Group=='All') {cond=rep(TRUE,dim(tv_all)[1])}
@@ -543,8 +543,7 @@ fn='All'; sick_group=rowSums(ccova)>4 #toth#
 # setwd("C:/Users/patati/Desktop/TurkuOW/RWork/basic causal mediation with the counterfactuals/") #check this if needed...
 ```
 
-#Making the variance explained plots
-
+# Making Variance Explained Plot
 ```{r, warning=FALSE,message=FALSE}
 #this is it! https://bioconductor.org/packages/release/bioc/vignettes/scater/inst/doc/overview.html
 # SG0i;resultam
@@ -566,7 +565,7 @@ plotExplanatoryVariables(vars) #this is it! https://bioconductor.org/packages/re
 ```
 
 
-#Making the boxplots
+# Making Boxplots
 ```{r, warning=FALSE,message=FALSE}
 #https://r-graph-gallery.com/265-grouped-boxplot-with-ggplot2.html
 
@@ -577,6 +576,7 @@ if (Group=='Male') {tvt=tvt[tvt[,'Gender']==1,]} else if (Group=='Female')
 Steroid=rep(colnames(tvt[,9:28]), each=dim(tvt)[1])
 data2=rep('Control',dim(tvt)[1])
 num=min(tvt[,Outcome])
+if (Outcome=='HOMA-IR') {num=1.5}
 data2[tvt[,Outcome]>num]='Case' #'Steatosis.Grade.0.To.3' #
 Treatment=data2
 note=unlist(tvt[,9:28])
@@ -608,11 +608,11 @@ data=data[!is.na(data$Concentration),]
   #showSignificance( c(1,1), 13.5, 0, "**")+
   facet_grid(~Group, scales = "free_x", space = "free")+lep+
   theme(text=element_text(size=12.5,family="Calibri"), #change font size of all text
-          axis.text=element_text(size=25), #change font size of axis text
-          axis.title=element_text(size=25), #change font size of axis titles
-          plot.title=element_text(size=25), #change font size of plot title
-          legend.text=element_text(size=25), #change font size of legend text
-          legend.title=element_text(size=25))+theme(axis.text=element_text(color="black"))#+annotate(geom="text",family="Broadway",size=20) # add_pval(plot, pairs = list(c(1, 2)), test='wilcox.test');plot
+          axis.text=element_text(size=20), #change font size of axis text
+          axis.title=element_text(size=20), #change font size of axis titles
+          plot.title=element_text(size=20), #change font size of plot title
+          legend.text=element_text(size=20), #change font size of legend text
+          legend.title=element_text(size=20))+theme(axis.text=element_text(color="black"))#+annotate(geom="text",family="Broadway",size=20) # add_pval(plot, pairs = list(c(1, 2)), test='wilcox.test');plot
   #https://datavizpyr.com/horizontal-boxplots-with-ggplot2-in-r/
 
 }
@@ -627,7 +627,7 @@ Outcome='Fibrosis Stage';Out='Fibrosis'; oute='Fibrosis Stage';num=0;Group='All'
 Outcome='Necroinflammation';Out='Necroinflammation'; oute='Level';num=0;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
 Outcome='HOMA-IR';Out='HOMA-IR'; oute='Level';num=1.5 ;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
 #check the imputed 'ie' dataframe from the beginning... as well as num #you may want to use logs...
-Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
+# Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
 
 # install.packages('ggpval')
 # library(superb)
