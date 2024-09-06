@@ -389,15 +389,14 @@ plottings_sf=function(uh7ma,date,sick,Group) {
   hoi[,'Steroids' ]  <- gsub("\\.", "-",  hoi[,'Steroids' ] ) #:)
   hoi[,'Steroids' ][ hoi[,'Steroids' ]=='T-Epi-T']='T/Epi-T'
   
-  df2 <- hoi %>%make_long('Contaminants','Steroids','Bile Acids or Lipids') #('Gender','Contaminants','Steroids','Bile Acids or Lipids')
-  meda='Sankey plot of '
-  # pdf(paste(meda,name,sick,Group,".pdf"), width = 20, height = 20,  pointsize = 18);
+  df2 <- hoi %>%make_long('Contaminants','Steroids','Bile Acids or Lipids') 
+  #('Gender','Contaminants','Steroids','Bile Acids or Lipids')
+  meda='Sankey plot of ' # pdf(paste(meda,name,sick,Group,".pdf"), width = 20, height = 20,  pointsize = 18);
   # print(ggplot(df2, aes(x = x,  next_x = next_x, node = node,  next_node = next_node,fill = factor(node),label = node)) +geom_sankey(flow.alpha = 0.5, node.color = 1) +        geom_sankey_label(size = 5.5, color = 1, fill = "white") +scale_fill_viridis_d() + theme_sankey(base_size = 30) + theme(legend.position = "none")+theme(axis.title.x = element_blank()));dev.off()
   
 windowsFonts(A = windowsFont("Calibri (Body)")) 
 
 ggplot(df2, aes(x = x,  next_x = next_x, node = node,  next_node = next_node,fill = factor(node),label = node)) +
-          
           geom_sankey(flow.alpha = 1, node.color = 1) + 
           geom_sankey_label(size = 3.0, color = 1, fill = "white") +
           # scale_fill_viridis_d(option = "D", alpha = 0.95) + 
@@ -405,8 +404,7 @@ ggplot(df2, aes(x = x,  next_x = next_x, node = node,  next_node = next_node,fil
           scale_fill_grey(start = 0.5, end = 0.5)+
           theme(axis.text.x = element_text(hjust = 0.5, vjust=7,colour = 'black'))+ #https://stackoverflow.com/questions/38862303/customize-ggplot2-axis-labels-with-different-colors
           theme(legend.position = "none") +
-          theme(axis.title.x = element_blank());
-
+          theme(axis.title.x = element_blank())
 }
 
 
@@ -438,6 +436,115 @@ almam = na.omit(almam) #https://www.tutorialspoint.com/how-to-remove-rows-from-d
 plottings_sf(almam,date,sick,Group)
 
 # something about forest plots etc. here... https://www.nature.com/articles/s41467-022-30875-7#citeas 
+
+```
+
+# Making the causal mediation analysis
+```{r}
+#The basic hypothesis. All are variables (y~x+m;m~x)
+loop_med_simplified1a=function(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group) { # if (Group=='Female') {cond=tv_all[,'Gender']==1} else if (Group=='Male') # {cond=tv_all[,'Gender']==2} else if (Group=='All') {cond=rep(TRUE,dim(tv_all)[1])}
+  if (Group=='female') {cond=tv_all[,'Gender']==min(tv_all[,'Gender'])} else if (Group=='male') {cond=tv_all[,'Gender']==max(tv_all[,'Gender'])} else if (Group=='All') {cond=rep(TRUE,dim(tv_all)[1])}
+  tv_red=c(); 
+  if (sick=='yes') {tv_red=tv_all[cond & as.vector(sick_group),]} else   {tv_red=tv_all[cond,]} 
+  X <- tv_red[,Treatment] #Standard values did not five erros # hep=colnames(X)[!colnames(X) %in% c( "Benzylparaben" ,"Methylparaben")] # X=X[,hep]
+  M <- tv_red[,Mediator]  #
+  Y <- tv_red[,Outcome]   #"Steatosis.Grade.0.To.3"       "Fibrosis.Stage.0.to.4"       "Necroinflammation"            "HOMA-IR"   
+  # cova <- tv_red[,c('AGE','BMI','Gender')] 
+  Data <- cbind(X,M,Y);   ## colnames(Data)[which(names(Data) == "X")] <- "PFOA_L"
+  colnames(Data) <- gsub(" ", "_", colnames(Data)) # colnames(Data[,1:2])[1]=Treatment
+  Data=data.frame(Data)
+  # https://rdrr.io/cran/mlma/man/data.org.html # https://cran.r-project.org/web/packages/mma/mma.pdf
+  # this time the b and c are in the loop, and b is the model 'M', i.e. M~X (e.g. Allocholic acid ~ PFOA_L)
+  # the c is the model 'Y', i.e. Y~M+X, e.g. CAR ~PFOA + Allocholic acid (note, just one mediator at the time... )
+  control.value=colMins(as.matrix(X)) #test also with colMedians colMins -abs(colMins(as.matrix(X))*2
+  treat.value=colMaxs(as.matrix(X))
+  #M~X
+  x=c();m=c(); y=c();ye=c()
+  for (i in 1:length(colnames(X))) {x=append(x,paste("Data[, ",i , "]", sep=""))}
+  for (j in (dim(X)[2]+1):(length(colnames(M))+dim(X)[2])) {m=append(m,paste("Data[, ",j , "]", sep="")) }
+  #Y~X+M
+  for (z in (dim(M)[2]+dim(X)[2]+1):(dim(Data)[2])) {y=append(y,paste("Data[, ",z , "]", sep="")) } #this dimension was essential for the loop names
+  med_out=c();res=c(); tmp=c();rn=c();med_oute=c();med_sense=c();resa=c()  
+  j=1;i=1;z=1
+  # simss=2; length(y)*length(m)*length(x)
+  for (i in 1:length(y)) {
+    for (j in 1:length(m)) { #control.value=mina[i]
+      for (z in 1:length(x)) {
+        fmla1 <- as.formula(paste(paste(m[j], collapse= "+")," ~ ", paste(x[z], collapse= "+"))) 
+        b = lm(fmla1, Data)
+        xm=paste(paste(c(x[z],m[j]), collapse= "+"))
+        fmla2 <- as.formula(paste(y[i]," ~ ", xm)) #https://www.statology.org/glm-vs-lm-in-r/
+        c = lm(fmla2, Data) 
+        if (t.val=='no'){med_oute=mediate(b, c, treat =  x[z], mediator = m[j],sims = simss)} else if (t.val=='yes') # control.value=control.value[z],treat.value=treat.value[z]  
+        {med_oute=mediate(b, c, treat =  x[z], mediator = m[j],sims = simss,control.value=control.value[z],treat.value=X[test,z] )} else if (t.val=='minmax') 
+        {med_oute=mediate(b, c, treat =  x[z], mediator = m[j],sims = simss,control.value=control.value[z],treat.value=treat.value[z] )} 
+        
+        med_out = summary(med_oute) #you need sims=100 min for the paper, maybe more like 1000... 10 was too little, but can get you results fast..
+        tmp=c(med_out$d0, med_out$d0.p, med_out$d0.ci[1],med_out$d0.ci[2],med_out$z0, med_out$z0.p, med_out$z0.ci[1],med_out$z0.ci[2],med_out$n1, med_out$n1.p,med_out$n1.ci[1],med_out$n1.ci[2],med_out$tau.coef,med_out$tau.p,med_out$tau.ci[1],med_out$tau.ci[2]) 
+        res <- rbind(res,tmp);
+        rn=append(rn,paste(colnames(X)[z],colnames(M)[j],colnames(Y)[i], sep=" ")) #attaching two rownames...
+        remove(tmp) }}} #https://intro2r.com/loops.html https://www.benjaminbell.co.uk/2022/12/loops-in-r-nested-loops.html 
+  
+  rownames(res)=rn #write.csv(rn,'iii.csv')
+  colnames(res)=c('ACME', 'd0.p', 'd0.ci_l','d0.ci_u','ADE', 'z0.p', 'z0.ci_l','z0.ci_u','Proportion Mediated', 'n1.p','n.ci_l','n1.ci_u','Total Effect','tau.p','tau.ci_l','tau.ci_u') #d0 and d1 are the same as.. 'd1', 'd1.p',
+  res=res[order(res[,2]),] #res=res[rev(order(res[,1])),]
+  rownames(res) <- gsub("X11", "11", rownames(res))
+  rownames(res) <- gsub("X17", "17", rownames(res))
+  write.xlsx(res, file = paste(name,Group,date,'.xlsx'), append = FALSE, row.names = TRUE) 
+  #https://stackoverflow.com/questions/21847830/handling-java-lang-outofmemoryerror-when-writing-to-excel-from-r
+  return(res)}
+
+
+#Testing hypothesis one:
+the_essentials=function(Treatment, Mediator, Outcome,tv, Group,name,simss,t.val,test,sick,sick_group,fn,lkm,date,joo,ip) {
+  hoi1=paste("C:/Users/patati/Desktop/TurkuOW/RWork/basica/",fn,sep='')
+  setwd(hoi1) #https://topepo.github.io/caret/parallel-processing.html # https://ds-pl-r-book.netlify.app/optimization-in-r.html
+
+  name=paste(simss,'basic_divisions'); #sick='yes'
+  Group='All'; uh7ma=loop_med_simplified1a(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group);try({uh7ma},{uh7ma=data.frame(0)});  save(uh7ma,file=paste(fn,'all.RData'));#try({uh7ma},{uh7ma=data.frame(0)})
+  Group='female'; uh7f=loop_med_simplified1a(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group);  try({uh7f},{uh7f=data.frame(0)});save(uh7f, file=paste(fn,'female.RData'));
+  Group='male';   uh7m=loop_med_simplified1a(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group);try({res},{res=data.frame(0)});save(res, file=paste(fn,'male.RData'));
+}
+
+
+
+simss=10;name='Jaot_OK_basica'; joo='ei';ip=1
+ccova=tv[,c("Steatosis.Grade.0.To.3" , "Fibrosis.Stage.0.to.4" ,"Necroinflammation" ,  "HOMA-IR")]
+sick_group=rowSums(ccova)>4
+file_names=c("Steatosis" , "Fibrosis" ,"Necroinflammation" ,  "HOMAIR", 'Menopause')
+lkm=30; joo='ei';ip=1; sick='yes'
+
+# Steatosis
+# ccovae=tv[,c("Steatosis.Grade.0.To.3")]; sick_group=ccovae>0 #toth# # hist(ccovae,breaks=100) # hist(ccova[,'HOMA-IR'],breaks=100)
+# fn=file_names[1]; 
+# the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group,fn,lkm,date,joo,ip)
+
+# #Fibrosis
+# ccovae=tv[,c("Fibrosis.Stage.0.to.4")]; 
+# sick_group=ccovae>0 #toth#
+# fn=file_names[2]; 
+# the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group,fn,lkm,date,joo,ip)
+# 
+# #Necroinfl.
+# ccovae=tv[,c("Necroinflammation")]; sick_group=ccovae>0 #toth#
+# fn=file_names[3];
+# the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group,fn,lkm,date,joo,ip)
+
+# Homa # remember to always test the funciton with minimun number setting or as light parameters as possible to get it through... before big runs
+# joo='ei';sick='yes'
+# ccovae=tv[,c("HOMA-IR")]; sick_group=ccovae>1.5 #toth#
+# fn=file_names[4]; 
+# the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group,fn,lkm,date,joo,ip)
+
+#All;
+joo='joo';sick='no'
+ccova=tv[,c("Steatosis.Grade.0.To.3", "Fibrosis.Stage.0.to.4" ,"Necroinflammation","HOMA-IR")] 
+fn='All'; sick_group=rowSums(ccova)>4 #toth#
+the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick, sick_group,fn,lkm,date,joo,ip)
+setwd("C:/Users/patati/Desktop/TurkuOW/basic causal mediation with the counterfactuals/") #check this if needed...
+
+
+
 
 ```
 
