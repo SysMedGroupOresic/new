@@ -355,7 +355,7 @@ draw(lgd_list_vertical, x = unit(5, "mm"), y = unit(5, "mm"), just = c("left", "
 #https://stackoverflow.com/questions/31943102/rotate-labels-in-a-chorddiagram-r-circlize
 ```
 
-# Making Sankey Diagram
+# Making Sankey Diagrams
 ```{r, warning=FALSE,message=FALSE}
 reduced2=function(u3,Group,name,lkm) {
   c1=c()
