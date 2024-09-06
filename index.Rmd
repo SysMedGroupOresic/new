@@ -33,15 +33,20 @@ library(extrafont)
 # Setting some preliminary setups
 ```{r, warning=FALSE,message=FALSE}
 
-setwd("C:/Users/patati/Desktop/TurkuOW/RWork") 
 date='tikka6924' #change this...
-#install.packages("ppcor") just in case the 'ppcor' here...
+#install.packages("ppcor") just in case the 'install' function here...
 font_import() #this is important if you have not loaded them before
 loadfonts(device = "win") #this is important too
+```
 
-# Import your steroid and other data:
+# Import your steroid data and metadata
+```{r, warning=FALSE,message=FALSE}
+
+#This is the primary data
+setwd("C:/Users/patati/Desktop/TurkuOW/RWork")
 NAFLD=read_excel("NAFLD_SteroidStudy.xlsx",sheet = "LFAT_steroidsDATA") #l ei tästä
 oknames=colnames(NAFLD); NAFLD=data.frame(NAFLD)
+#The names of the stroid groups need to be imported early on:
 groups=read.csv("groups_17823.csv", header = TRUE, sep=";")
 groups=groups[,c('Group','Abbreviation')]
 groups=groups[groups[,'Abbreviation']!='F',]
@@ -56,8 +61,7 @@ MASLD=read_excel("Combined.Matrix.For.Pauli.2023.10.17.Excel.Formatv2.xlsx") #va
 oknames=colnames(MASLD); MASLD=data.frame(MASLD)
 colnames(MASLD)=oknames
 rownames(MASLD)=MASLD[,1]
-#P4 was found from elswhere to be:
-MASLD[,'P4'] = as.numeric(MASLD[,'P4'])
+MASLD[,'P4'] = as.numeric(MASLD[,'P4']) #The same comment as above
 MASLD[,'P4'][is.na(MASLD[,'P4'])] = 22557.3330346846 
 eva=c('Grade(0-3)', 'Stage(0-4)','Necroinflammation')
 MASLD[,eva][MASLD[,eva]==0.01]=0; #MASLD[,eva]
@@ -133,8 +137,8 @@ hep=colnames(tv)[!colnames(tv) %in% c( "Benzylparaben" ,"Methylparaben")]
 #not sure when it is the best time to take not needed variables away, perhaps at the very end?
 tv=tv[,hep]
 tv=cbind(tv,MASLD[,(dim(MASLD)[2]-13):dim(MASLD)[2]]) 
-#here I add the lipids. In the future, I need to divide all the groups in their own components e.g. dataframe called 'lipids' so
-#that adding them will be more straighfoward
+# here I add the lipids. In the future, I need to divide all the groups in their own components e.g. dataframe called 'lipids' so
+# that adding them will be more straighfoward
 # head(tv) #non nans , ok colnames # which(is.na(tv))
 
 tve=tv[,2:dim(tv)[2]]; tve[tve == 0] <- NA; 
