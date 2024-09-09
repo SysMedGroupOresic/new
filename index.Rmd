@@ -694,8 +694,8 @@ title = paste(Out,"'s Effect to Concentrations of Steroids", ' in ',Group,sep=""
 if (Group=='Male') {lep=theme(legend.position = "none")} else if (Group=='Female') 
 {lep=theme(legend.position = "none")} else if (Group=='All') {lep=theme_classic2()+theme(axis.text.x=element_text(angle=90,hjust=0.95,vjust=0.2,size = 25))}
 # lep=theme(legend.position = "none")
-e1=paste('Case (>',0,')',sep="")
-e2=paste('Control (=',0,')',sep="") #≤ 
+if (num==1.5) {e1=paste('Case (>',num,')',sep="");e2=paste('Control (=',num,')',sep="")} else {e1=paste('Case (>',0,')',sep="");e2=paste('Control (=',0,')',sep="")}
+
 data=data[!is.na(data$Concentration),]
 # grouped boxplot: https://stackoverflow.com/questions/32539222/group-boxplot-data-while-keeping-their-individual-x-axis-labels-in-ggplot2-in-r
   ggplot(data, aes(x=Steroid, y=Concentration, fill=Treatment))+
@@ -719,7 +719,6 @@ data=data[!is.na(data$Concentration),]
   #https://datavizpyr.com/horizontal-boxplots-with-ggplot2-in-r/
 
 }
-
 
 tv_half_log22[,'11-KA4'][tv_half_log22[,'11-KA4']==min(tv_half_log22[,'11-KA4'])]=median(tv_half_log22[,'11-KA4'])
 other='23824e';ie=tv_half_log22## 'Steatosis Grade','Fibrosis Stage','Necroinflammation','HOMA-IR'
