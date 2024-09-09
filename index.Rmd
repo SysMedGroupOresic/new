@@ -1016,40 +1016,21 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
     
     width=2500; height=4400
     order="original"; range='orig';corre='no_renorm'; type='full'; method='color';#ga='All';gf='Female';gm='Male' #color square
-    cl.offset=1.0;cl.length=5;cl.cex = 0.9;pch.cex=0.9;pch=10;cl.pos = 'n';#cl.pos = 'b' ;#pch.cex=0.95,1.3; height=6300; pos 'b' cl.pos = 'b' 
+    cl.offset=1.0;cl.length=5;cl.cex = 0.6;pch.cex=0.6;pch=10;cl.pos = 'n';#cl.pos = 'b' ;#pch.cex=0.95,1.3; height=6300; pos 'b' cl.pos = 'b' 
     ho=Group;hip1='BAs_lipids_as_y vs. steroids_as_x'
-    
-    # jpeg(paste("Linear Model Estimate Plot of",hip1,Group,".jpg"), width = width, height = height, quality = 100,pointsize = 16, res=300);
-source("https://raw.githubusercontent.com/dorianps/corrplot2/master/corrplot2.R")
-    corrplot2(rs1, type = type, order = order,method=method, p.mat=rs2, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,pch.col='black',pch=pch,
-         sig.level = c(.001, .01, .05),cl.pos = cl.pos, insig = "blank",cl.offset=cl.offset,cl.length=cl.length, tl.cex=0.5,
-         #.001, .01, .05, .01, .05, .1 .001, .01, .05, check males, .1, .05, .2
-         tl.srt = 90, diag = TRUE,col = rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]),is.corr = FALSE) #,is.corr = FALSE
-    # dev.off() #...
-    # plot
-    
+
     # https://www.rdocumentation.org/packages/corrplot/versions/0.94/topics/corrplot
     
-        # corrplot(rs1, type = type, order = order,method=method, p.mat=rs2, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,pch.col='black',pch=pch,
-        #  sig.level = c(.001, .01, .05),cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length, 
-        #  #.001, .01, .05, .01, .05, .1 .001, .01, .05, check males, .1, .05, .2
-        #  tl.srt = 90, diag = TRUE,col = rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]),is.corr = FALSE) #,is.corr = FALSE
+        corrplot(rs1, type = type, order = order,method=method, p.mat=rs2, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,pch.col='black',pch=pch,
+         sig.level = c(.001, .01, .05),cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length,tl.cex=0.5,       
+         # to get the font size.... https://www.rdocumentation.org/packages/corrplot/versions/0.94/topics/corrplot
+         #.001, .01, .05, .01, .05, .1 .001, .01, .05, check males, .1, .05, .2
+         tl.srt = 90, diag = TRUE,col = rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]),is.corr = FALSE) #,is.corr = FALSE
     
     #https://stackoverflow.com/questions/26574054/how-to-change-font-size-of-the-correlation-coefficient-in-corrplot
     #https://stackoverflow.com/questions/9543343/plot-a-jpg-image-using-base-graphics-in-r
-    
+    # gw=getwd()# myjpg <- paste0(gw,'/',paste("Linear Model Estimate Plot of",hip1,Group,".jpg"))# library(imager)# image <- load.image(myjpg)# plot(image)
 
-
-    # gw=getwd()
-    # myjpg <- paste0(gw,'/',paste("Linear Model Estimate Plot of",hip1,Group,".jpg"))
-    # 
-    # library(imager)
-    # image <- load.image(myjpg)
-    # plot(image)
-    
-    # knitr::include_graphics(myjpg)
-
-    
     
   } else {
     
@@ -1103,7 +1084,7 @@ source("https://raw.githubusercontent.com/dorianps/corrplot2/master/corrplot2.R"
     width=5500; height=2300
     
     order="original"; range='orig';corre='no_renorm'; type='full'; method='color'; #ga='All';gf='Female';gm='Male' #color square
-    cl.offset=1.0;cl.length=5;cl.cex = 1.4;pch.cex=1.5;pch=20;cl.pos = 'r';#cl.pos = 'b' ;#pch.cex=0.95,1.3; height=6300; pos 'b' cl.pos = 'b'
+    cl.offset=1.0;cl.length=5;cl.cex = 1.05;pch.cex=1.05;pch=20;cl.pos = 'r';#cl.pos = 'b' ;#pch.cex=0.95,1.3; height=6300; pos 'b' cl.pos = 'b'
     ho=Group; hip1='Steroids_y vs. PFAS_as_x'
     rs1 <- mutate_all(rs1, function(x) as.numeric(as.character(x)))
     rs2 <- mutate_all(rs2, function(x) as.numeric(as.character(x)))
@@ -1115,22 +1096,14 @@ source("https://raw.githubusercontent.com/dorianps/corrplot2/master/corrplot2.R"
     rs2=as.matrix(rs2)
     
   # jpeg(paste("Linear Model Estimate Plot of",hip1,Group,".jpg"), width = width, height = height, quality = 100,pointsize = 20, res=300);
-  source("https://raw.githubusercontent.com/dorianps/corrplot2/master/corrplot2.R")
-  corrplot2(rs1, type = type, order = order,method=method, p.mat=rs2, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,pch.col='black',pch=pch,
-           sig.level = sig.level,cl.pos = cl.pos, insig = "blank",cl.offset=cl.offset,cl.length=cl.length,tl.cex=0.8,
-           #non fdr produces no hits with these levels to males so that is why not: .001, .05, .2, but .001, .01, .05
-           tl.srt = 90, diag = TRUE,col = rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]),is.corr = FALSE) #,is.corr = FALSE
+  # source("https://raw.githubusercontent.com/dorianps/corrplot2/master/corrplot2.R")
   # dev.off() #...
   
-      # corrplot(rs1, type = type, order = order,method=method, p.mat=rs2, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,pch.col='black',pch=pch,
-      #    sig.level = c(.001, .01, .05),cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length, 
-      #    #.001, .01, .05, .01, .05, .1 .001, .01, .05, check males, .1, .05, .2
-      #    tl.srt = 90, diag = TRUE,col = rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]),is.corr = FALSE) #,is.corr = FALSE
+  corrplot(rs1, type = type, order = order,method=method, p.mat=rs2, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,pch.col='black',pch=pch,
+     sig.level = c(.001, .01, .05),cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length, tl.cex=0.8,
+     tl.srt = 90, diag = TRUE,col = rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]),is.corr = FALSE) #,is.corr = FALSE
   
-      # gw=getwd()
-    # myjpg <- paste0(gw,'/',paste("Linear Model Estimate Plot of",hip1,Group,".jpg"))
-
-    # knitr::include_graphics(myjpg) #https://www.jumpingrivers.com/blog/knitr-rmarkdown-image-size/
+    #https://www.jumpingrivers.com/blog/knitr-rmarkdown-image-size/
 
     
   } 
