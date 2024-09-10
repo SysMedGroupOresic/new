@@ -352,6 +352,17 @@ draw(lgd_list_vertical, x = unit(5, "mm"), y = unit(5, "mm"), just = c("left", "
 # dev.copy(jpeg,fig_name,width=9.2, height=12.5, units="in", res=1000);dev.off()
 # https://stackoverflow.com/questions/31943102/rotate-labels-in-a-chorddiagram-r-circlize
 
+dev.copy(jpeg,'cat.jpeg',width=6, height=, units="in", res=300);dev.off()
+
+    
+library(jpeg)
+
+img <- readJPEG('cat.jpeg')
+
+plot(1:2, type='n')
+graphics::rasterImage(img,1,1,2,2)
+
+
 #And then using a function for making the female and male chord diagrams... (checking later if this can be also for all.. all had one element more, i.e. 'gender' )
 #This function takes elements from: https://jokergoo.github.io/circlize_book/book/advanced-layout.html#combine-circular-plots
 group_chords=function(vars,n_level,fig_name, big,rem,modi,colt,gend,colors) {

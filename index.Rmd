@@ -6,18 +6,21 @@ output:
   prettydoc::html_pretty:
     theme: cayman
     toc: yes
-    
+    # fig.align: "center"
+    # fig.width: 7, 
+    # fig.height: 6
 
+# ```{r setup , warning=FALSE,message=FALSE,include=FALSE}
+# knitr::opts_chunk$set(echo = TRUE, 
+#                       fig.align = "center",
+#                       fig.width = 7, 
+#                       fig.height = 6, 
+#                       dev = "png",
+#                       cache = TRUE)
+# ```
+    
 ---
 
-```{r setup , warning=FALSE,message=FALSE,include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, 
-                      fig.align = "center",
-                      fig.width = 4, 
-                      fig.height = 4, 
-                      dev = "png",
-                      cache = TRUE)
-```
 
 
 
@@ -33,7 +36,7 @@ library(mdatools);library(circlize);library(igraph);library('bigsnpr');library(r
 #ok
 library("grid"); library("ggplotify");library(ggpubr);library(rstatix);library(datarium);library(RColorBrewer); library(ggh4x); library(effsize)
 library(chorddiag);library(corrplot);library(scater);library(mdatools);options(scipen = 999); library(car);library(FSA);library(pathviewr);library(glmnet)
-library("lmtest");library(PerformanceAnalytics);library(psych);library("readxl");library(ggforce);library(ComplexHeatmap) 
+library("lmtest");library(PerformanceAnalytics);library(psych);library("readxl");library(ggforce);library(ComplexHeatmap);library(ragg) 
 #These are ok to drive in start:
 library('Hmisc');library(correlation);library(ggcorrplot);library(pheatmap);library(mgcv);library('ppcor')
 library(rmdformats);library(prettydoc);library(hrbrthemes);library(tint);library(tufte)
@@ -289,10 +292,11 @@ theme(text=element_text(size=10.5,family="Calibri"), #change font size of all te
         legend.title=element_text(size=14))+theme(axis.text=element_text(color="black"))
   #+annotate(geom="text",family="Broadway",size=20) # add_pval(plot, pairs = list(c(1, 2)), test='wilcox.test');plot
   #https://datavizpyr.com/horizontal-boxplots-with-ggplot2-in-r/
-
+library(ragg)
 path="C:/Users/patati/Documents/GitHub/new/" #oh, classical: https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
 pngfile <- fs::path(path,paste0(Group,Out,'boxee',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
-agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300,scaling = 2)
+ragg::agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300,scaling = 2)
+#https://stackoverflow.com/questions/66429500/how-to-make-raggagg-png-device-work-with-ggsave
 plot(p)
 invisible(dev.off())
 knitr::include_graphics(pngfile)
@@ -431,16 +435,21 @@ lgd_points = Legend(at = namesh, type = "points", legend_gp = gpar(col = cola), 
 lgd_lines = Legend(at = c("Positive", "Negative"), type = "points", legend_gp = gpar(col = c('red','blue')), title_position = "topleft", title = "Correlation")
 lgd_edges= Legend(at = c(round(min(df$V3),1), round(max(df$V3),1)), col_fun = col_fun,  title_position = "topleft", title = "Edges")
 lgd_list_vertical = packLegend(lgd_group,lgd_points,  lgd_lines,lgd_edges) #lgd_lines,
-# length(unique(colnames(resulta)));length(unique(df[,1]));length(unique(df[,2]));dim(df); #unique(df[,1]);unique(df[,2]);sum(colnames(resulta)=='CA')
-chordDiagram(df, annotationTrack = c("grid"),  grid.col=grid.col, directional = FALSE,order = rownames(tes_t), preAllocateTracks = 1, col = col_fun,transparency = 0.5)
 
-circos.trackPlotRegion(track.index = 1, panel.fun = function(x, y) {
-xlim = get.cell.meta.data("xlim"); ylim = get.cell.meta.data("ylim")
-sector.name = get.cell.meta.data("sector.index")
-circos.text(mean(xlim), ylim[1] + .1, sector.name, facing = "clockwise", niceFacing = TRUE, adj = c(0, 0.5))
-circos.axis(h = "top", labels.cex = 0.000001, major.tick.length = 0.2, sector.index = sector.name, track.index = 2)}, bg.border = NA) 
-windowsFonts(A = windowsFont("Calibri (Body)")) 
-draw(lgd_list_vertical, x = unit(5, "mm"), y = unit(5, "mm"), just = c("left", "bottom"))
+# chordDiagram(df, annotationTrack = c("grid"),  grid.col=grid.col, directional = FALSE,order = rownames(tes_t), preAllocateTracks = 1, col = col_fun,transparency = 0.5)
+# 
+# circos.trackPlotRegion(track.index = 1, panel.fun = function(x, y) {
+# xlim = get.cell.meta.data("xlim"); ylim = get.cell.meta.data("ylim")
+# sector.name = get.cell.meta.data("sector.index")
+# circos.text(mean(xlim), ylim[1] + .1, sector.name, facing = "clockwise", niceFacing = TRUE, adj = c(0, 0.5))
+# circos.axis(h = "top", labels.cex = 0.000001, major.tick.length = 0.2, sector.index = sector.name, track.index = 2)}, bg.border = NA) 
+# windowsFonts(A = windowsFont("Calibri (Body)")) 
+# draw(lgd_list_vertical, x = unit(5, "mm"), y = unit(5, "mm"), just = c("left", "bottom"))
+# The above is already done
+
+# dev.copy(jpeg,'hii.jpeg',width=9, height=12, units="in", res=1000);dev.off() # This is already done
+
+knitr::include_graphics("hii.jpeg")
 
 # https://stackoverflow.com/questions/31943102/rotate-labels-in-a-chorddiagram-r-circlize
 
@@ -503,19 +512,25 @@ group_chords=function(vars,n_level,fig_name, big,rem,modi,colt,gend,colors) {
     lgd_lines = Legend(at = c("Positive", "Negative"), type = "points", legend_gp = gpar(col = c('red','blue')), title_position = "topleft", title = "Correlation")#round(min(df$V3)), round(max(df$V3)) #round(min(df$V3)), round(max(df$V3)), -1,1
     lgd_edges= Legend(at = c(round(min(df$V3),1), round(max(df$V3),1)), col_fun = col_fun,  title_position = "topleft", title = "Edges")
     lgd_list_vertical = packLegend(lgd_group,lgd_points,  lgd_lines,lgd_edges) #lgd_lines,
-    length(unique(colnames(resulta)));length(unique(df[,1]));length(unique(df[,2]));dim(df); #unique(df[,1]);unique(df[,2]);sum(colnames(resulta)=='CA')
-    chordDiagram(df, annotationTrack = c("grid"),  grid.col=grid.col, directional = FALSE, 
-                 order = rownames(tes_t), preAllocateTracks = 1, col = col_fun,transparency = 0.5)
-    
-    circos.trackPlotRegion(track.index = 1, panel.fun = function(x, y) {
-      xlim = get.cell.meta.data("xlim"); ylim = get.cell.meta.data("ylim")
-      sector.name = get.cell.meta.data("sector.index")
-      circos.text(mean(xlim), ylim[1] + .1, sector.name, facing = "clockwise", niceFacing = TRUE, adj = c(0, 0.5))
-      circos.axis(h = "top", labels.cex = 0.000001, major.tick.length = 0.2, sector.index = sector.name, track.index = 2)}, bg.border = NA) #https://stackoverflow.com/questions/31943102/rotate-labels-in-a-chorddiagram-r-circlize
-    
-    windowsFonts(A = windowsFont("Calibri (Body)")) 
-    draw(lgd_list_vertical, x = unit(5, "mm"), y = unit(5, "mm"), just = c("left", "bottom"))#} 
+    length(unique(colnames(resulta)));length(unique(df[,1]));length(unique(df[,2]));dim(df); 
+    # chordDiagram(df, annotationTrack = c("grid"),  grid.col=grid.col, directional = FALSE, 
+    #              order = rownames(tes_t), preAllocateTracks = 1, col = col_fun,transparency = 0.5)
+    # 
+    # circos.trackPlotRegion(track.index = 1, panel.fun = function(x, y) {
+    #   xlim = get.cell.meta.data("xlim"); ylim = get.cell.meta.data("ylim")
+    #   sector.name = get.cell.meta.data("sector.index")
+    #   circos.text(mean(xlim), ylim[1] + .1, sector.name, facing = "clockwise", niceFacing = TRUE, adj = c(0, 0.5))
+    #   circos.axis(h = "top", labels.cex = 0.000001, major.tick.length = 0.2, sector.index = sector.name, track.index = 2)}, bg.border = NA) #https://stackoverflow.com/questions/31943102/rotate-labels-in-a-chorddiagram-r-circlize
+    # 
+    # windowsFonts(A = windowsFont("Calibri (Body)")) 
+    # draw(lgd_list_vertical, x = unit(5, "mm"), y = unit(5, "mm"), just = c("left", "bottom"))#} 
+    #These ten above lines have been already done, and now just show separately
 
+# dev.copy(jpeg,paste0(gend,'hii.jpeg'),width=9, height=12, units="in", res=1000);dev.off() dev.off() # This is already done
+
+knitr::include_graphics(paste0(gend,'hii.jpeg'))
+
+    
 
     }
 
@@ -863,35 +878,22 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
     
     width=2500; height=4400
     order="original"; range='orig';corre='no_renorm'; type='full'; method='color';#ga='All';gf='Female';gm='Male' #color square
-    cl.offset=1.0;cl.length=5;cl.cex = 0.6;pch.cex=0.6;pch=10;cl.pos = 'n';#cl.pos = 'b' ;#pch.cex=0.95,1.3; height=6300; pos 'b' cl.pos = 'b' 
+    cl.offset=1.0;cl.length=5;cl.cex = 0.6;pch.cex=0.6;pch=10;cl.pos = 'n';#cl.pos = 'b' ;#pch.cex=0.95,1.3; height=6300; pos 'b' cl.pos = 'b'
     ho=Group;hip1='BAs_lipids_as_y vs. steroids_as_x'
 
     # https://www.rdocumentation.org/packages/corrplot/versions/0.94/topics/corrplot
-    
-
- 
-# install.packages('useful')
-# library(useful)
-           
-# library(ragg)
 # Oh! https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/
 # https://r4ds.had.co.nz/graphics-for-communication.html#figure-sizing
 
-# path="C:/Users/patati/Documents/GitHub/new/" #oh, classical: https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
-# pngfile <- fs::path(path,paste0(Group,'ee',".png")) #fs::path(knitr::fig_path(),  "theming2.png")
-# agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300,scaling = 2)
-corrplot(rs1, type = type, order = order,method=method, p.mat=rs2, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,pch.col='black',pch=pch,
-sig.level = c(.001, .01, .05),cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length,tl.cex=0.5,       
- # to get the font size.... https://www.rdocumentation.org/packages/corrplot/versions/0.94/topics/corrplot
- #.001, .01, .05, .01, .05, .1 .001, .01, .05, check males, .1, .05, .2
-tl.srt = 90, diag = TRUE,col = rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]),is.corr = FALSE) #,is.corr = FALSE
-# invisible(dev.off())
-# knitr::include_graphics(pngfile)
-        
-        
+#I'll drive these separately for html: 
+    # corrplot(rs1, type = type, order = order,method=method, p.mat=rs2, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,pch.col='black',pch=pch,
+# sig.level = c(.001, .01, .05),cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length,tl.cex=0.5,
+#  # to get the font size.... https://www.rdocumentation.org/packages/corrplot/versions/0.94/topics/corrplot
+# tl.srt = 90, diag = TRUE,col = rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]),is.corr = FALSE) #,is.corr = FALSE
+
     #https://stackoverflow.com/questions/26574054/how-to-change-font-size-of-the-correlation-coefficient-in-corrplot
     #https://stackoverflow.com/questions/9543343/plot-a-jpg-image-using-base-graphics-in-r
-    # gw=getwd()# myjpg <- paste0(gw,'/',paste("Linear Model Estimate Plot of",hip1,Group,".jpg"))# library(imager)# image <- load.image(myjpg)# plot(image)
+   #oh, classical: https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
 
     
   } else {
@@ -957,14 +959,14 @@ tl.srt = 90, diag = TRUE,col = rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]),i
     rs1=as.matrix(rs1)
     rs2=as.matrix(rs2)
 
-  
-corrplot(rs1, type = type, order = order,method=method, p.mat=rs2, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,pch.col='black',pch=pch,
-     sig.level = c(.001, .01, .05),cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length, tl.cex=0.8,
-     tl.srt = 90, diag = TRUE,col = rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]),is.corr = FALSE) #,is.corr = FALSE
+  order="original"; range='orig';corre='no_renorm'; type='full'; method='color'; #ga='All';gf='Female';gm='Male' #color square
+  cl.offset=1.0;cl.length=5;cl.cex = 1.4;pch.cex=1.5;pch=20;cl.pos = 'r';#cl.pos = 'b' ;#pch.cex=0.95,1.3; height=6300; pos 'b' cl.pos = 'b'
+  ho=Group;hip1='Steroids_y vs. PFAS_as_x'
 
-# # Oh! https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/
-# # https://r4ds.had.co.nz/graphics-for-communication.html#figure-sizing
-    #https://www.jumpingrivers.com/blog/knitr-rmarkdown-image-size/
+#I'll drive these separately for html: 
+# corrplot(rs1, type = type, order = order,method=method, p.mat=rs2, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,pch.col='black',pch=pch,
+#      sig.level = c(.001, .01, .05),cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length, tl.cex=0.8,
+#      tl.srt = 90, diag = TRUE,col = rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]),is.corr = FALSE) #,is.corr = FALSE
 
     
   } 
@@ -977,22 +979,36 @@ rango = function(x,mi,ma) {(ma-mi)/(max(x)-min(x))*(x-min(x))+mi}
 
 #To apply to all groups at one go:
 huus=function(tv,adj,sig.level,sick,sick_group,joo) {
-  huus=c();heijaa=c('All','female','male'); ok=c('big','small')  
-  hyp=1;hrt=1
+  huus=c();huusa=c();heijaa=c('All','female','male'); ok=c('big','small')  ; jj=c()
+  hyp=1;hrt=1;oo="C:/Users/patati/Documents/GitHub/new/lme/"
   for (hyp in 1:2) {
     for (hrt in 1:3) {
       # the_funal=function(tv,Group,ok,aa,bb,fn,adj)
       huus=append(huus,the_funal(tv,heijaa[hrt],ok[hyp],fn,adj,sig.level,sick,sick_group,joo))}}
-  
+
   return(huus)}
 
 # Driving the function with the parameters as follows:
 adj='nook'; sig.level=c(.001,0.01, 0.05); sick='no'; joo='joo' #sickGroup..
 metanorm_S_non_fdr=huus(tv_all,adj,sig.level,sick,sick_group,joo)
 
-
-
 ```
+```{r, echo=FALSE, out.width="50%"}
+#fig.cap="Linear Model Estimates between Steroids and Variables"
+knitr::include_graphics("Linear Model Estimate Plot of BAs_lipids_as_y vs. steroids_as_x All .jpg")
+knitr::include_graphics("Linear Model Estimate Plot of BAs_lipids_as_y vs. steroids_as_x female .jpg")
+knitr::include_graphics("Linear Model Estimate Plot of BAs_lipids_as_y vs. steroids_as_x male .jpg")
+knitr::include_graphics("Linear Model Estimate Plot of Steroids_y vs. PFAS_as_x All .jpg")
+knitr::include_graphics("Linear Model Estimate Plot of Steroids_y vs. PFAS_as_x female .jpg")
+knitr::include_graphics("Linear Model Estimate Plot of Steroids_y vs. PFAS_as_x male .jpg" )
+# [1] "Linear Model Estimate Plot of BAs_lipids_as_y vs. steroids_as_x All .jpg"   
+# [2] "Linear Model Estimate Plot of BAs_lipids_as_y vs. steroids_as_x female .jpg"
+# [3] "Linear Model Estimate Plot of BAs_lipids_as_y vs. steroids_as_x male .jpg"  
+# [4] "Linear Model Estimate Plot of Steroids_y vs. PFAS_as_x All .jpg"            
+# [5] "Linear Model Estimate Plot of Steroids_y vs. PFAS_as_x female .jpg"         
+# [6] "Linear Model Estimate Plot of Steroids_y vs. PFAS_as_x male .jpg"  
+```
+
 
 # Making Causal Mediation Analysis
 ```{r, warning=FALSE,message=FALSE}
@@ -1153,7 +1169,7 @@ library(ragg)
 # https://r4ds.had.co.nz/graphics-for-communication.html#figure-sizing
 
 path="C:/Users/patati/Documents/GitHub/new/" #oh, classical: https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
-pngfile <- fs::path(path,paste0(Group,'ey',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
+pngfile <- fs::path(path,paste0(Group,'e',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
 agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300,scaling = 2)
 plot(p)
 invisible(dev.off())
@@ -1192,8 +1208,6 @@ date='tikka6924_mala';name='just all';Group='male';
 almam=reduced2(all_Male,Group,name,lkm);
 almam = na.omit(almam) #https://www.tutorialspoint.com/how-to-remove-rows-from-data-frame-in-r-that-contains-nan
 plottings_sf(almam,date,sick,Group)
-
-# something about forest plots etc. here... https://www.nature.com/articles/s41467-022-30875-7 
 
 ```
 
