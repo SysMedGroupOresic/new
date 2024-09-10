@@ -6,7 +6,18 @@ output:
   prettydoc::html_pretty:
     theme: cayman
     toc: yes
+    
+
 ---
+
+```{r setup , warning=FALSE,message=FALSE,include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      fig.align = "center",
+                      fig.width = 4, 
+                      fig.height = 4, 
+                      dev = "png",
+                      cache = TRUE)
+```
 
 
 
@@ -227,8 +238,80 @@ tv_c=tv_covscl #cbind(tv[,1:8], tv_half_log2) #check also not logged and then th
 
 ```
 
+# Making Boxplots
+```{r, warning=FALSE,message=FALSE,fig.width=8.0}
+#https://r-graph-gallery.com/265-grouped-boxplot-with-ggplot2.html
+#https://stackoverflow.com/questions/53724834/why-does-the-plot-size-differ-between-docx-and-html-in-rmarkdownrender
+
+boxplots=function(tvt,Group,Outcome,Out,oute,other) {
+  # tvt=ie
+if (Group=='Male') {tvt=tvt[tvt[,'Gender']==1,]} else if (Group=='Female') 
+{tvt=tvt[tvt[,'Gender']==0,]} else if (Group=='All') {tvt=tvt}
+Steroid=rep(colnames(tvt[,9:28]), each=dim(tvt)[1])
+data2=rep('Control',dim(tvt)[1])
+num=min(tvt[,Outcome])
+if (Outcome=='HOMA-IR') {num=1.5}
+data2[tvt[,Outcome]>num]='Case' #'Steatosis.Grade.0.To.3' #
+Treatment=data2
+note=unlist(tvt[,9:28])
+Concentration=as.vector(note)
+data=data.frame(Steroid, Treatment ,  Concentration)
+data[,'Group'] = 0
+# data$Steroid #check the Xs etc out..
+data$Steroid [data$Steroid  == '17aOH-P4']='17a-OHP4'
+# groups$Abbreviation[groups$Abbreviation == '17a-OHP4']='17aOH-P4'
+for (i in 1:21) {data[data$Steroid %in% groups$Abbreviation[i],'Group']=groups$Group[i]}
+title = paste(Out,"'s Effect to Concentrations of Steroids", ' in ',Group,sep="")
+if (Group=='Male') {lep=theme(legend.position = "none")} else if (Group=='Female') 
+{lep=theme(legend.position = "none")} else if (Group=='All') {lep=theme_classic2()+theme(axis.text.x=element_text(angle=90,hjust=0.95,vjust=0.2,size = 14))}
+# lep=theme(legend.position = "none")
+if (num==1.5) {e1=paste('Case (>',num,')',sep="");e2=paste('Control (=',num,')',sep="")} else {e1=paste('Case (>',0,')',sep="");e2=paste('Control (=',0,')',sep="")}
+
+data=data[!is.na(data$Concentration),]
+# grouped boxplot: https://stackoverflow.com/questions/32539222/group-boxplot-data-while-keeping-their-individual-x-axis-labels-in-ggplot2-in-r
+ggplot(data, aes(x=Steroid, y=Concentration, fill=Treatment))+
+geom_boxplot(notch=F, notchwidth=0.5,outlier.shape=1,outlier.size=2, coef=1.5)+
+# coord_cartesian(ylim = c(0, 60000))+
+theme(axis.text=element_text(color="black"))+
+theme_classic2()+#https://stackoverflow.com/questions/34522732/changing-fonts-in-ggplot2
+# scale_x_discrete(guide = guide_axis(angle = 90))+ https://stackoverflow.com/questions/37488075/align-axis-label-on-the-right-with-ggplot2
+theme(axis.text.x=element_text(angle=90,hjust=0.95,vjust=0.2,size = 14))+#annotate(geom="text",family="Broadway",size=20)+#annotate(geom="text",family="Calibri",size = 14)+
+theme(panel.grid.minor=element_blank())+ #http://www.sthda.com/english/wiki/ggplot2-rotate-a-graph-reverse-and-flip-the-plot
+labs(size= "Type",x = "Steroids",y = "Log2 of Picomolar Concentrations ", title=title,size = 14)+ #log2 Autoscaled
+scale_fill_manual(values=c("orange","blue"),name=oute,labels=c(e1,e2))+ #abels=c("Case (>5)", "Control (=<5)"))
+#showSignificance( c(1,1), 13.5, 0, "**")+
+facet_grid(~Group, scales = "free_x", space = "free")+lep+
+theme(text=element_text(size=10.5,family="Calibri"), #change font size of all text
+        axis.text=element_text(size=14), #change font size of axis text
+        axis.title=element_text(size=14), #change font size of axis titles
+        plot.title=element_text(size=14), #change font size of plot title
+        legend.text=element_text(size=14), #change font size of legend text
+        legend.title=element_text(size=14))+theme(axis.text=element_text(color="black"))
+  #+annotate(geom="text",family="Broadway",size=20) # add_pval(plot, pairs = list(c(1, 2)), test='wilcox.test');plot
+  #https://datavizpyr.com/horizontal-boxplots-with-ggplot2-in-r/
+
+}
+
+tv_half_log22[,'11-KA4'][tv_half_log22[,'11-KA4']==min(tv_half_log22[,'11-KA4'])]=median(tv_half_log22[,'11-KA4'])
+other='23824e';ie=tv_half_log22## 'Steatosis Grade','Fibrosis Stage','Necroinflammation','HOMA-IR'
+windowsFonts(A = windowsFont("Calibri (Body)"))
+
+Outcome='Steatosis Grade';Out='Steatosis'; oute='Steatosis';num=0;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
+Outcome='Fibrosis Stage';Out='Fibrosis'; oute='Fibrosis Stage';num=0;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other) 
+Outcome='Necroinflammation';Out='Necroinflammation'; oute='Level';num=0;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
+Outcome='HOMA-IR';Out='HOMA-IR'; oute='Level';num=1.5 ;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
+#check the imputed 'ie' dataframe from the beginning... as well as num #you may want to use logs...
+# Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
+
+# install.packages('ggpval')
+# library(superb)
+# library(ggpval)
+
+
+```
+
 # Making Chord Diagrams 
-```{r, warning=FALSE,message=FALSE}
+```{r, warning=FALSE,message=FALSE,fig.width=7.0}
 # First the correlations for the chord diagrams (both male and female as well as total subjects):
 tv_c=data.frame(tv_c)
 tv_c=tv_c[,!colnames(tv_c) %in% c('Total_TG','PFAS',"Perfluorodecyl.ethanoic.acid")]
@@ -434,203 +517,21 @@ gend=c('Male');colors=c('black');group_chords(vars[[2]],n_level,fig_name,big,rem
 
 ```
 
-# Making Causal Mediation Analysis
-```{r, warning=FALSE,message=FALSE}
-#The basic hypothesis. All are variables (y~x+m;m~x)
-loop_med_simplified1a=function(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group) { # if (Group=='Female') {cond=tv_all[,'Gender']==1} else if (Group=='Male') # {cond=tv_all[,'Gender']==2} else if (Group=='All') {cond=rep(TRUE,dim(tv_all)[1])}
-  if (Group=='female') {cond=tv_all[,'Gender']==min(tv_all[,'Gender'])} else if (Group=='male') {cond=tv_all[,'Gender']==max(tv_all[,'Gender'])} else if (Group=='All') {cond=rep(TRUE,dim(tv_all)[1])}
-  tv_red=c(); 
-  if (sick=='yes') {tv_red=tv_all[cond & as.vector(sick_group),]} else   {tv_red=tv_all[cond,]} 
-  X <- tv_red[,Treatment] #Standard values did not five erros # hep=colnames(X)[!colnames(X) %in% c( "Benzylparaben" ,"Methylparaben")] # X=X[,hep]
-  M <- tv_red[,Mediator]  #
-  Y <- tv_red[,Outcome]   #"Steatosis.Grade.0.To.3"       "Fibrosis.Stage.0.to.4"       "Necroinflammation"            "HOMA-IR"   
-  # cova <- tv_red[,c('AGE','BMI','Gender')] 
-  Data <- cbind(X,M,Y);   ## colnames(Data)[which(names(Data) == "X")] <- "PFOA_L"
-  colnames(Data) <- gsub(" ", "_", colnames(Data)) # colnames(Data[,1:2])[1]=Treatment
-  Data=data.frame(Data)
-  # https://rdrr.io/cran/mlma/man/data.org.html # https://cran.r-project.org/web/packages/mma/mma.pdf
-  # this time the b and c are in the loop, and b is the model 'M', i.e. M~X (e.g. Allocholic acid ~ PFOA_L)
-  # the c is the model 'Y', i.e. Y~M+X, e.g. CAR ~PFOA + Allocholic acid (note, just one mediator at the time... )
-  control.value=colMins(as.matrix(X)) #test also with colMedians colMins -abs(colMins(as.matrix(X))*2
-  treat.value=colMaxs(as.matrix(X))
-  #M~X
-  x=c();m=c(); y=c();ye=c()
-  for (i in 1:length(colnames(X))) {x=append(x,paste("Data[, ",i , "]", sep=""))}
-  for (j in (dim(X)[2]+1):(length(colnames(M))+dim(X)[2])) {m=append(m,paste("Data[, ",j , "]", sep="")) }
-  #Y~X+M
-  for (z in (dim(M)[2]+dim(X)[2]+1):(dim(Data)[2])) {y=append(y,paste("Data[, ",z , "]", sep="")) } #this dimension was essential for the loop names
-  med_out=c();res=c(); tmp=c();rn=c();med_oute=c();med_sense=c();resa=c()  
-  j=1;i=1;z=1
-  # simss=2; length(y)*length(m)*length(x)
-  for (i in 1:length(y)) {
-    for (j in 1:length(m)) { #control.value=mina[i]
-      for (z in 1:length(x)) {
-        fmla1 <- as.formula(paste(paste(m[j], collapse= "+")," ~ ", paste(x[z], collapse= "+"))) 
-        b = lm(fmla1, Data)
-        xm=paste(paste(c(x[z],m[j]), collapse= "+"))
-        fmla2 <- as.formula(paste(y[i]," ~ ", xm)) #https://www.statology.org/glm-vs-lm-in-r/
-        c = lm(fmla2, Data) 
-        if (t.val=='no'){med_oute=mediate(b, c, treat =  x[z], mediator = m[j],sims = simss)} else if (t.val=='yes') # control.value=control.value[z],treat.value=treat.value[z]  
-        {med_oute=mediate(b, c, treat =  x[z], mediator = m[j],sims = simss,control.value=control.value[z],treat.value=X[test,z] )} else if (t.val=='minmax') 
-        {med_oute=mediate(b, c, treat =  x[z], mediator = m[j],sims = simss,control.value=control.value[z],treat.value=treat.value[z] )} 
-        
-        med_out = summary(med_oute) #you need sims=100 min for the paper, maybe more like 1000... 10 was too little, but can get you results fast..
-        tmp=c(med_out$d0, med_out$d0.p, med_out$d0.ci[1],med_out$d0.ci[2],med_out$z0, med_out$z0.p, med_out$z0.ci[1],med_out$z0.ci[2],med_out$n1, med_out$n1.p,med_out$n1.ci[1],med_out$n1.ci[2],med_out$tau.coef,med_out$tau.p,med_out$tau.ci[1],med_out$tau.ci[2]) 
-        res <- rbind(res,tmp);
-        rn=append(rn,paste(colnames(X)[z],colnames(M)[j],colnames(Y)[i], sep=" ")) #attaching two rownames...
-        remove(tmp) }}} #https://intro2r.com/loops.html https://www.benjaminbell.co.uk/2022/12/loops-in-r-nested-loops.html 
-  
-  rownames(res)=rn #write.csv(rn,'iii.csv')
-  colnames(res)=c('ACME', 'd0.p', 'd0.ci_l','d0.ci_u','ADE', 'z0.p', 'z0.ci_l','z0.ci_u','Proportion Mediated', 'n1.p','n.ci_l','n1.ci_u','Total Effect','tau.p','tau.ci_l','tau.ci_u') #d0 and d1 are the same as.. 'd1', 'd1.p',
-  res=res[order(res[,2]),] #res=res[rev(order(res[,1])),]
-  rownames(res) <- gsub("X11", "11", rownames(res))
-  rownames(res) <- gsub("X17", "17", rownames(res))
-  write.xlsx(res, file = paste(name,Group,date,'.xlsx'), append = FALSE, row.names = TRUE) 
-  #https://stackoverflow.com/questions/21847830/handling-java-lang-outofmemoryerror-when-writing-to-excel-from-r
-  return(res)}
-
-
-#Testing hypothesis one:
-the_essentials=function(Treatment, Mediator, Outcome,tv, Group,name,simss,t.val,test,sick,sick_group,fn,lkm,date,joo,ip) {
-  hoi1=paste("C:/Users/patati/Desktop/TurkuOW/RWork/basic causal mediation with the counterfactuals/",fn,sep='')
-  setwd(hoi1) #https://topepo.github.io/caret/parallel-processing.html # https://ds-pl-r-book.netlify.app/optimization-in-r.html
-
-  name=paste(simss,'basic_divisions'); #sick='yes'
-  Group='All'; uh7ma=loop_med_simplified1a(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group);try({uh7ma},{uh7ma=data.frame(0)});  save(uh7ma,file=paste(fn,'all.RData'));#try({uh7ma},{uh7ma=data.frame(0)})
-  Group='female'; uh7f=loop_med_simplified1a(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group);  try({uh7f},{uh7f=data.frame(0)});save(uh7f, file=paste(fn,'female.RData'));
-  Group='male';   uh7m=loop_med_simplified1a(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group);try({uh7m},{uh7m=data.frame(0)});save(uh7m, file=paste(fn,'male.RData'));
-}
-
-simss=100;name='Jaot_OK_basica'; joo='ei';ip=1
-ccova=tv[,c("Steatosis.Grade.0.To.3" , "Fibrosis.Stage.0.to.4" ,"Necroinflammation" ,  "HOMA-IR")]
-sick_group=rowSums(ccova)>4
-file_names=c("Steatosis" , "Fibrosis" ,"Necroinflammation" ,  "HOMAIR", 'Menopause')
-lkm=30; joo='ei';ip=1; sick='yes'
-t.val='no'; Group='All' #name='generic';
-
-#All;
-joo='joo';sick='no'
-ccova=tv[,c("Steatosis.Grade.0.To.3", "Fibrosis.Stage.0.to.4" ,"Necroinflammation","HOMA-IR")] 
-fn='All'; sick_group=rowSums(ccova)>4 #toth#
-#Driving the analysis takes more than 1h (with a basic laptop 2023,100sims and all three groups) so drive the below only if needed:
-#the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick, sick_group,fn,lkm,date,joo,ip)
-# setwd("C:/Users/patati/Desktop/TurkuOW/RWork/basic causal mediation with the counterfactuals/") #check this if needed...
-
-#In case, the 'case' sample/subject analysis would be needed: 
-# Steatosis
-# ccovae=tv[,c("Steatosis.Grade.0.To.3")]; sick_group=ccovae>0 #toth# # hist(ccovae,breaks=100) # hist(ccova[,'HOMA-IR'],breaks=100)
-# fn=file_names[1]; 
-# the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group,fn,lkm,date,joo,ip)
-# #Fibrosis
-# ccovae=tv[,c("Fibrosis.Stage.0.to.4")]; 
-# sick_group=ccovae>0 #toth#
-# fn=file_names[2]; 
-# the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group,fn,lkm,date,joo,ip)
-# #Necroinfl.
-# ccovae=tv[,c("Necroinflammation")]; sick_group=ccovae>0 #toth#
-# fn=file_names[3];
-# the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group,fn,lkm,date,joo,ip)
-# Homa # remember to always test the funciton with minimun number setting or as light parameters as possible to get it through... before big runs
-# joo='ei';sick='yes'
-# ccovae=tv[,c("HOMA-IR")]; sick_group=ccovae>1.5 #toth#
-# fn=file_names[4]; 
-# the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group,fn,lkm,date,joo,ip)
-# Then there is also possibility for elab.
-
-```
-
-# Making Sankey Diagrams
-```{r, warning=FALSE,message=FALSE}
-
-#To do these diagrams, you need to have a reduced dataset as well as a function that acounts the group (male/female)
-reduced2=function(u3,Group,name,lkm) {
-  c1=c()
-  ACMEMedian=c();ACMEpval=c();ACMEVar=c()
-  ADEMedian=c();ADEpval=c();ADEVar=c()
-  c1= u3 #[u3[,'ADE'] < ADEMedian  & DV<ADEVar,] #& u3[,'z0.p']<ADEpval
-  ACMEMedian=0#median(c1[,'ACME'][c1[,'ACME']>0])
-  c1=c1[c1[,'ACME']>ACMEMedian & ((c1[,'ACME']-c1[,'ADE']) > 0), ] 
-  c1=c1[rev(order(c1[,'ACME'])),];       
-  c1=tryCatch({c1[1:lkm,]}, error = function(msg){return(c1)})
-  
-  write.xlsx(c1, file = paste(name,Group,date,'.xlsx'), append = FALSE, row.names = TRUE)
-  
-  return(c1)}
-
-plottings_sf=function(uh7ma,date,sick,Group) {
-  rt2=uh7ma #[,1:17]# rtot=rtot[,1:17]# rtot=data.frame(rtot) # name=paste(simss,'basic hypothesis',take)# https://stat.ethz.ch/R-manual/R-devel/library/stats/html/p.adjust.html# https://www.middleprofessor.com/files/applied-biostatistics_bookdown/_book/adding-covariates-to-a-linear-model# https://github.com/MarioniLab/miloR# https://www.nature.com/articles/s41467-023-40458-9/figures/4
-  name=paste('Contaminants_Steroids_BAs_or_Lipids_sims',date) # rtot=rtot_2000_mrct # rtot=uh5
-  
-  hoi=c(); 
-  hoi=scan(text=rt2[,1] , what=" ")#rownames(rt2)# names(rt2[,1]) rownames(rt2)
-  hoi=as.data.frame(matrix(hoi, ncol = 3,  byrow = TRUE), stringsAsFactors = FALSE)
-
-  colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ## https://stats.stackexchange.com/questions/282155/causal-mediation-analysis-negative-indirect-and-total-effect-positive-direct# https://www.researchgate.net/post/How_can_I_interpret_a_negative_indirect_effect_for_significant_mediation# https://stackoverflow.com/questions/31518150/gsub-in-r-is-not-replacing-dot replacing dot
-  
-  hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH.P4']='17a-OHP4'
-  hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH-P4']='17a-OHP4'
-  hoi[,'Steroids' ]  <- gsub("\\.", "-",  hoi[,'Steroids' ] ) #:)
-  hoi[,'Steroids' ][ hoi[,'Steroids' ]=='T-Epi-T']='T/Epi-T'
-  
-  df2 <- hoi %>%make_long('Contaminants','Steroids','Bile Acids or Lipids') 
-  #In case you need to print to computer: meda='Sankey plot of ', pdf(paste(meda,name,sick,Group,".pdf"), width = 20, height = 20,  pointsize = 18);
-  # print(ggplot(df2, aes(x = x,  next_x = next_x, node = node,  next_node = next_node,fill = factor(node),label = node)) +geom_sankey(flow.alpha = 0.5, node.color = 1) +        geom_sankey_label(size = 5.5, color = 1, fill = "white") +scale_fill_viridis_d() + theme_sankey(base_size = 30) + theme(legend.position = "none")+
-  #theme(axis.title.x = element_blank()));dev.off()
-  
-windowsFonts(A = windowsFont("Calibri (Body)")) 
-
-ggplot(df2, aes(x = x,  next_x = next_x, node = node,  next_node = next_node,fill = factor(node),label = node)) +
-          geom_sankey(flow.alpha = 1, node.color = 1) + 
-          geom_sankey_label(size = 3.0, color = 1, fill = "white") +
-          # scale_fill_viridis_d(option = "D", alpha = 0.95) + 
-          theme_sankey(base_size = 20) + 
-          scale_fill_grey(start = 0.5, end = 0.5)+
-          theme(axis.text.x = element_text(hjust = 0.5, vjust=7,colour = 'black'))+ #https://stackoverflow.com/questions/38862303/customize-ggplot2-axis-labels-with-different-colors
-          theme(legend.position = "none") +
-          theme(axis.title.x = element_blank())
-}
-
-
-library(readxl)
-setwd("C:/Users/patati/Desktop/TurkuOW/RWork/tests6/tests_basic/") #check this if needed...
-
-all_all=read_xlsx(path = "100basic All tikka3624 .xlsx") #total Male tikka76524 hyp4b_oki.xlsx") #e on healthy :)
-all_all=as.data.frame(all_all); all_all=all_all[!is.na(all_all$ACME),]; all_all=na.omit(all_all); all_all1=all_all
-
-all_Female=read_xlsx(path = "100basic Female tikka3624 .xlsx") #total Male tikka76524 hyp4b_oki.xlsx") #e on healthy :)
-all_Female=as.data.frame(all_Female); all_Female=all_Female[!is.na(all_Female$ACME),]; all_Female=na.omit(all_Female); 
-
-all_Male=read_xlsx(path = "100basic Male tikka3624 .xlsx") #total Male tikka76524 hyp4b_oki.xlsx") #e on healthy :)
-all_Male=as.data.frame(all_Male); all_Male=all_Male[!is.na(all_Male$ACME),]; all_Male=na.omit(all_Male); 
-
-sick='all samples'
-lkm=30;Group='All'; name='just all';date='tikka6924_alla'
-alma=reduced2(all_all1,Group,name,lkm);
-plottings_sf(alma,date,sick,Group)
-
-date='tikka6924_femala';name='just all';Group='female';
-almaf=reduced2(all_Female,Group,name,lkm); #all_Female
-almaf = na.omit(almaf)
-plottings_sf(almaf,date,sick,Group)
-
-date='tikka6924_mala';name='just all';Group='male';
-almam=reduced2(all_Male,Group,name,lkm);
-almam = na.omit(almam) #https://www.tutorialspoint.com/how-to-remove-rows-from-data-frame-in-r-that-contains-nan
-plottings_sf(almam,date,sick,Group)
-
-# something about forest plots etc. here... https://www.nature.com/articles/s41467-022-30875-7 
-
-```
-
 # Making Variance Explained Plots
-```{r, warning=FALSE,message=FALSE}
+```{r, warning=FALSE,message=FALSE,fig.width=6.0}
 # This is it! https://bioconductor.org/packages/release/bioc/vignettes/scater/inst/doc/overview.html
+#or
+# https://stats.stackexchange.com/questions/79399/calculate-variance-explained-by-each-predictor-in-multiple-regression-using-r
+# https://rdrr.io/github/MRCIEU/TwoSampleMR/man/get_r_from_pn.html
+# https://onlinestatbook.com/2/effect_size/variance_explained.html
+# https://stackoverflow.com/questions/10441437/why-am-i-getting-x-in-my-column-names-when-reading-a-data-frame
+# https://stackoverflow.com/questions/27044727/removing-characters-from-string-in-r
 
 varex_groups_plot=function(tv_all2,Group) { # if (Group=='Female') {cond=tv_all[,'Gender']==1} else if 
 an.error.occured=FALSE
 tv_all2=tv_all
 tryCatch( { tv_all2[,'Gender'] }, error = function(e) {an.error.occured <<- TRUE})
-if(print(an.error.occured)) {if (Group=='female') {cond=tv_all2[,'SEX.1F.2M']==min(tv_all2[,'SEX.1F.2M'])} else if (Group=='male') 
+if(an.error.occured) {if (Group=='female') {cond=tv_all2[,'SEX.1F.2M']==min(tv_all2[,'SEX.1F.2M'])} else if (Group=='male') 
   {cond=tv_all2[,'SEX.1F.2M']==max(tv_all2[,'SEX.1F.2M'])} else if (Group=='All'){cond=rep(TRUE,dim(tv_all2)[1])}} else {
 if (Group=='female') {cond=tv_all2[,'Gender']==min(tv_all2[,'Gender'])} else if (Group=='male') {cond=tv_all2[,'Gender']==max(tv_all2[,'Gender'])} else if (Group=='All')
 {cond=rep(TRUE,dim(tv_all2)[1])}}
@@ -644,103 +545,32 @@ sce@colData=DataFrame(hep[,2:8]) #it is DataFrame with big Ds and Fs
 names(colData(sce))=colnames(tv_all)[2:8]
 vars <- getVarianceExplained(sce,variables=names(colData(sce))[1:7])
 windowsFonts(A = windowsFont("Calibri (Body)"))
-plotExplanatoryVariables(vars) }
+plotExplanatoryVariables(vars) 
+
+
+
+
+
+}
 
 # I'll be using the tv_all (logged and then scaled) values here, even though in the original function took 'lognormed' values, i.e.
 # 'logNormCounts' #tässä funktiossa ensin tehdään normeeraus ja sitten vasta log2..., ts./or: 
 # https://bioconductor.org/packages/devel/bioc/vignettes/SingleCellExperiment/inst/doc/intro.html
 # counts <- assay(sce); # libsizes <- colSums(counts); # size.factors <- libsizes/mean(libsizes) # logcounts(sce) <- log2(t(t(counts)/size.factors) + 1)
 # logcounts(sce)=scale(log2(tv2)) #depending on the order of the normalizing/scaling this will change...
-#So, the way to go is:
-#https://bioinformatics.stackexchange.com/questions/22414/when-analysing-microarray-data-is-it-need-to-do-normalization-and-standardizati
+# So, the way to go is however:
+# https://bioinformatics.stackexchange.com/questions/22414/when-analysing-microarray-data-is-it-need-to-do-normalization-and-standardizati
 # https://bioinformatics.stackexchange.com/questions/22426/inconsistent-microarray-expression-levels-after-normalizing-with-log2
 # https://www.reddit.com/r/bioinformatics/comments/1ejs94m/log2_transformation_and_quantile_normalization/
 varex_groups_plot(tv_all,Group='All');
 varex_groups_plot(tv_all,Group='female');
 varex_groups_plot(tv_all,Group='male')
 
-#or
-# https://stats.stackexchange.com/questions/79399/calculate-variance-explained-by-each-predictor-in-multiple-regression-using-r
-# https://rdrr.io/github/MRCIEU/TwoSampleMR/man/get_r_from_pn.html
-# https://onlinestatbook.com/2/effect_size/variance_explained.html
-# https://stackoverflow.com/questions/10441437/why-am-i-getting-x-in-my-column-names-when-reading-a-data-frame
-# https://stackoverflow.com/questions/27044727/removing-characters-from-string-in-r
-```
-
-
-# Making Boxplots
-```{r, warning=FALSE,message=FALSE}
-#https://r-graph-gallery.com/265-grouped-boxplot-with-ggplot2.html
-
-boxplots=function(tvt,Group,Outcome,Out,oute,other) {
-  # tvt=ie
-if (Group=='Male') {tvt=tvt[tvt[,'Gender']==1,]} else if (Group=='Female') 
-{tvt=tvt[tvt[,'Gender']==0,]} else if (Group=='All') {tvt=tvt}
-Steroid=rep(colnames(tvt[,9:28]), each=dim(tvt)[1])
-data2=rep('Control',dim(tvt)[1])
-num=min(tvt[,Outcome])
-if (Outcome=='HOMA-IR') {num=1.5}
-data2[tvt[,Outcome]>num]='Case' #'Steatosis.Grade.0.To.3' #
-Treatment=data2
-note=unlist(tvt[,9:28])
-Concentration=as.vector(note)
-data=data.frame(Steroid, Treatment ,  Concentration)
-data[,'Group'] = 0
-# data$Steroid #check the Xs etc out..
-data$Steroid [data$Steroid  == '17aOH-P4']='17a-OHP4'
-# groups$Abbreviation[groups$Abbreviation == '17a-OHP4']='17aOH-P4'
-for (i in 1:21) {data[data$Steroid %in% groups$Abbreviation[i],'Group']=groups$Group[i]}
-title = paste(Out,"'s Effect to Concentrations of Steroids", ' in ',Group,sep="")
-if (Group=='Male') {lep=theme(legend.position = "none")} else if (Group=='Female') 
-{lep=theme(legend.position = "none")} else if (Group=='All') {lep=theme_classic2()+theme(axis.text.x=element_text(angle=90,hjust=0.95,vjust=0.2,size = 25))}
-# lep=theme(legend.position = "none")
-if (num==1.5) {e1=paste('Case (>',num,')',sep="");e2=paste('Control (=',num,')',sep="")} else {e1=paste('Case (>',0,')',sep="");e2=paste('Control (=',0,')',sep="")}
-
-data=data[!is.na(data$Concentration),]
-# grouped boxplot: https://stackoverflow.com/questions/32539222/group-boxplot-data-while-keeping-their-individual-x-axis-labels-in-ggplot2-in-r
-  ggplot(data, aes(x=Steroid, y=Concentration, fill=Treatment))+
-  geom_boxplot(notch=F, notchwidth=0.5,outlier.shape=1,outlier.size=2, coef=1.5)+
-  # coord_cartesian(ylim = c(0, 60000))+
-  theme(axis.text=element_text(color="black"))+
-  theme_classic2()+#https://stackoverflow.com/questions/34522732/changing-fonts-in-ggplot2
-  # scale_x_discrete(guide = guide_axis(angle = 90))+ https://stackoverflow.com/questions/37488075/align-axis-label-on-the-right-with-ggplot2
-  theme(axis.text.x=element_text(angle=90,hjust=0.95,vjust=0.2))+#annotate(geom="text",family="Broadway",size=20)+#annotate(geom="text",family="Calibri",size = 14)+
-  theme(panel.grid.minor=element_blank())+ #http://www.sthda.com/english/wiki/ggplot2-rotate-a-graph-reverse-and-flip-the-plot
-  labs(size= "Type",x = "Steroids",y = "Log2 of Picomolar Concentrations ", title=title,size = 25)+ #log2 Autoscaled
-  scale_fill_manual(values=c("orange","blue"),name=oute,labels=c(e1,e2))+ #abels=c("Case (>5)", "Control (=<5)"))
-  #showSignificance( c(1,1), 13.5, 0, "**")+
-  facet_grid(~Group, scales = "free_x", space = "free")+lep+
-  theme(text=element_text(size=12.5,family="Calibri"), #change font size of all text
-          axis.text=element_text(size=20), #change font size of axis text
-          axis.title=element_text(size=20), #change font size of axis titles
-          plot.title=element_text(size=20), #change font size of plot title
-          legend.text=element_text(size=20), #change font size of legend text
-          legend.title=element_text(size=20))+theme(axis.text=element_text(color="black"))#+annotate(geom="text",family="Broadway",size=20) # add_pval(plot, pairs = list(c(1, 2)), test='wilcox.test');plot
-  #https://datavizpyr.com/horizontal-boxplots-with-ggplot2-in-r/
-
-}
-
-tv_half_log22[,'11-KA4'][tv_half_log22[,'11-KA4']==min(tv_half_log22[,'11-KA4'])]=median(tv_half_log22[,'11-KA4'])
-other='23824e';ie=tv_half_log22## 'Steatosis Grade','Fibrosis Stage','Necroinflammation','HOMA-IR'
-windowsFonts(A = windowsFont("Calibri (Body)")) 
-
-Outcome='Steatosis Grade';Out='Steatosis'; oute='Steatosis';num=0;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
-Outcome='Fibrosis Stage';Out='Fibrosis'; oute='Fibrosis Stage';num=0;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other) 
-Outcome='Necroinflammation';Out='Necroinflammation'; oute='Level';num=0;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
-Outcome='HOMA-IR';Out='HOMA-IR'; oute='Level';num=1.5 ;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
-#check the imputed 'ie' dataframe from the beginning... as well as num #you may want to use logs...
-# Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
-
-# install.packages('ggpval')
-# library(superb)
-# library(ggpval)
-
 
 ```
-
 
 # Making Heatmaps with Linear Model Estimates
-```{r, warning=FALSE,message=FALSE}
+```{r, warning=FALSE,message=FALSE,fig.width=7.0}
 
 # You may need a rather big function to calculate the estimates and plot at the same time, since the spaces of exper. interest have been reduced from the max dataset size.
 
@@ -785,8 +615,7 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
       Treatment=hoesh[2]
       Mediator=hoesh[1]
       rm(hoesh)
-      
-      
+     
       hesh=rbind(hesh,c(y[j],xnam[i],Group,r,pss[2,4],rsadj))
     }}
   
@@ -1027,6 +856,18 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
          #.001, .01, .05, .01, .05, .1 .001, .01, .05, check males, .1, .05, .2
          tl.srt = 90, diag = TRUE,col = rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]),is.corr = FALSE) #,is.corr = FALSE
     
+# library(ragg)
+# # Oh! https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/
+# # https://r4ds.had.co.nz/graphics-for-communication.html#figure-sizing
+# 
+# path="C:/Users/patati/Documents/GitHub/new/" #oh, classical: https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
+# pngfile <- fs::path(path,paste0(Group,'ee',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
+# agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300,scaling = 2)
+# plot(p)
+# invisible(dev.off())
+# knitr::include_graphics(pngfile)   
+        
+        
     #https://stackoverflow.com/questions/26574054/how-to-change-font-size-of-the-correlation-coefficient-in-corrplot
     #https://stackoverflow.com/questions/9543343/plot-a-jpg-image-using-base-graphics-in-r
     # gw=getwd()# myjpg <- paste0(gw,'/',paste("Linear Model Estimate Plot of",hip1,Group,".jpg"))# library(imager)# image <- load.image(myjpg)# plot(image)
@@ -1103,6 +944,18 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
      sig.level = c(.001, .01, .05),cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length, tl.cex=0.8,
      tl.srt = 90, diag = TRUE,col = rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]),is.corr = FALSE) #,is.corr = FALSE
   
+  
+# library(ragg)
+# # Oh! https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/
+# # https://r4ds.had.co.nz/graphics-for-communication.html#figure-sizing
+# 
+# path="C:/Users/patati/Documents/GitHub/new/" #oh, classical: https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
+# pngfile <- fs::path(path,paste0(Group,'bb',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
+# agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300,scaling = 2)
+# plot(p)
+# invisible(dev.off())
+# knitr::include_graphics(pngfile) 
+  
     #https://www.jumpingrivers.com/blog/knitr-rmarkdown-image-size/
 
     
@@ -1132,4 +985,209 @@ metanorm_S_non_fdr=huus(tv_all,adj,sig.level,sick,sick_group,joo)
 
 
 ```
+
+# Making Causal Mediation Analysis
+```{r, warning=FALSE,message=FALSE}
+#The basic hypothesis. All are variables (y~x+m;m~x)
+loop_med_simplified1a=function(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group) { # if (Group=='Female') {cond=tv_all[,'Gender']==1} else if (Group=='Male') # {cond=tv_all[,'Gender']==2} else if (Group=='All') {cond=rep(TRUE,dim(tv_all)[1])}
+  if (Group=='female') {cond=tv_all[,'Gender']==min(tv_all[,'Gender'])} else if (Group=='male') {cond=tv_all[,'Gender']==max(tv_all[,'Gender'])} else if (Group=='All') {cond=rep(TRUE,dim(tv_all)[1])}
+  tv_red=c(); 
+  if (sick=='yes') {tv_red=tv_all[cond & as.vector(sick_group),]} else   {tv_red=tv_all[cond,]} 
+  X <- tv_red[,Treatment] #Standard values did not five erros # hep=colnames(X)[!colnames(X) %in% c( "Benzylparaben" ,"Methylparaben")] # X=X[,hep]
+  M <- tv_red[,Mediator]  #
+  Y <- tv_red[,Outcome]   #"Steatosis.Grade.0.To.3"       "Fibrosis.Stage.0.to.4"       "Necroinflammation"            "HOMA-IR"   
+  # cova <- tv_red[,c('AGE','BMI','Gender')] 
+  Data <- cbind(X,M,Y);   ## colnames(Data)[which(names(Data) == "X")] <- "PFOA_L"
+  colnames(Data) <- gsub(" ", "_", colnames(Data)) # colnames(Data[,1:2])[1]=Treatment
+  Data=data.frame(Data)
+  # https://rdrr.io/cran/mlma/man/data.org.html # https://cran.r-project.org/web/packages/mma/mma.pdf
+  # this time the b and c are in the loop, and b is the model 'M', i.e. M~X (e.g. Allocholic acid ~ PFOA_L)
+  # the c is the model 'Y', i.e. Y~M+X, e.g. CAR ~PFOA + Allocholic acid (note, just one mediator at the time... )
+  control.value=colMins(as.matrix(X)) #test also with colMedians colMins -abs(colMins(as.matrix(X))*2
+  treat.value=colMaxs(as.matrix(X))
+  #M~X
+  x=c();m=c(); y=c();ye=c()
+  for (i in 1:length(colnames(X))) {x=append(x,paste("Data[, ",i , "]", sep=""))}
+  for (j in (dim(X)[2]+1):(length(colnames(M))+dim(X)[2])) {m=append(m,paste("Data[, ",j , "]", sep="")) }
+  #Y~X+M
+  for (z in (dim(M)[2]+dim(X)[2]+1):(dim(Data)[2])) {y=append(y,paste("Data[, ",z , "]", sep="")) } #this dimension was essential for the loop names
+  med_out=c();res=c(); tmp=c();rn=c();med_oute=c();med_sense=c();resa=c()  
+  j=1;i=1;z=1
+  # simss=2; length(y)*length(m)*length(x)
+  for (i in 1:length(y)) {
+    for (j in 1:length(m)) { #control.value=mina[i]
+      for (z in 1:length(x)) {
+        fmla1 <- as.formula(paste(paste(m[j], collapse= "+")," ~ ", paste(x[z], collapse= "+"))) 
+        b = lm(fmla1, Data)
+        xm=paste(paste(c(x[z],m[j]), collapse= "+"))
+        fmla2 <- as.formula(paste(y[i]," ~ ", xm)) #https://www.statology.org/glm-vs-lm-in-r/
+        c = lm(fmla2, Data) 
+        if (t.val=='no'){med_oute=mediate(b, c, treat =  x[z], mediator = m[j],sims = simss)} else if (t.val=='yes') # control.value=control.value[z],treat.value=treat.value[z]  
+        {med_oute=mediate(b, c, treat =  x[z], mediator = m[j],sims = simss,control.value=control.value[z],treat.value=X[test,z] )} else if (t.val=='minmax') 
+        {med_oute=mediate(b, c, treat =  x[z], mediator = m[j],sims = simss,control.value=control.value[z],treat.value=treat.value[z] )} 
+        
+        med_out = summary(med_oute) #you need sims=100 min for the paper, maybe more like 1000... 10 was too little, but can get you results fast..
+        tmp=c(med_out$d0, med_out$d0.p, med_out$d0.ci[1],med_out$d0.ci[2],med_out$z0, med_out$z0.p, med_out$z0.ci[1],med_out$z0.ci[2],med_out$n1, med_out$n1.p,med_out$n1.ci[1],med_out$n1.ci[2],med_out$tau.coef,med_out$tau.p,med_out$tau.ci[1],med_out$tau.ci[2]) 
+        res <- rbind(res,tmp);
+        rn=append(rn,paste(colnames(X)[z],colnames(M)[j],colnames(Y)[i], sep=" ")) #attaching two rownames...
+        remove(tmp) }}} #https://intro2r.com/loops.html https://www.benjaminbell.co.uk/2022/12/loops-in-r-nested-loops.html 
+  
+  rownames(res)=rn #write.csv(rn,'iii.csv')
+  colnames(res)=c('ACME', 'd0.p', 'd0.ci_l','d0.ci_u','ADE', 'z0.p', 'z0.ci_l','z0.ci_u','Proportion Mediated', 'n1.p','n.ci_l','n1.ci_u','Total Effect','tau.p','tau.ci_l','tau.ci_u') #d0 and d1 are the same as.. 'd1', 'd1.p',
+  res=res[order(res[,2]),] #res=res[rev(order(res[,1])),]
+  rownames(res) <- gsub("X11", "11", rownames(res))
+  rownames(res) <- gsub("X17", "17", rownames(res))
+  write.xlsx(res, file = paste(name,Group,date,'.xlsx'), append = FALSE, row.names = TRUE) 
+  #https://stackoverflow.com/questions/21847830/handling-java-lang-outofmemoryerror-when-writing-to-excel-from-r
+  return(res)}
+
+
+#Testing hypothesis one:
+the_essentials=function(Treatment, Mediator, Outcome,tv, Group,name,simss,t.val,test,sick,sick_group,fn,lkm,date,joo,ip) {
+  hoi1=paste("C:/Users/patati/Desktop/TurkuOW/RWork/basic causal mediation with the counterfactuals/",fn,sep='')
+  setwd(hoi1) #https://topepo.github.io/caret/parallel-processing.html # https://ds-pl-r-book.netlify.app/optimization-in-r.html
+
+  name=paste(simss,'basic_divisions'); #sick='yes'
+  Group='All'; uh7ma=loop_med_simplified1a(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group);try({uh7ma},{uh7ma=data.frame(0)});  save(uh7ma,file=paste(fn,'all.RData'));#try({uh7ma},{uh7ma=data.frame(0)})
+  Group='female'; uh7f=loop_med_simplified1a(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group);  try({uh7f},{uh7f=data.frame(0)});save(uh7f, file=paste(fn,'female.RData'));
+  Group='male';   uh7m=loop_med_simplified1a(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group);try({uh7m},{uh7m=data.frame(0)});save(uh7m, file=paste(fn,'male.RData'));
+}
+
+simss=100;name='Jaot_OK_basica'; joo='ei';ip=1
+ccova=tv[,c("Steatosis.Grade.0.To.3" , "Fibrosis.Stage.0.to.4" ,"Necroinflammation" ,  "HOMA-IR")]
+sick_group=rowSums(ccova)>4
+file_names=c("Steatosis" , "Fibrosis" ,"Necroinflammation" ,  "HOMAIR", 'Menopause')
+lkm=30; joo='ei';ip=1; sick='yes'
+t.val='no'; Group='All' #name='generic';
+
+#All;
+joo='joo';sick='no'
+ccova=tv[,c("Steatosis.Grade.0.To.3", "Fibrosis.Stage.0.to.4" ,"Necroinflammation","HOMA-IR")] 
+fn='All'; sick_group=rowSums(ccova)>4 #toth#
+#Driving the analysis takes more than 1h (with a basic laptop 2023,100sims and all three groups) so drive the below only if needed:
+#the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick, sick_group,fn,lkm,date,joo,ip)
+# setwd("C:/Users/patati/Desktop/TurkuOW/RWork/basic causal mediation with the counterfactuals/") #check this if needed...
+
+#In case, the 'case' sample/subject analysis would be needed: 
+# Steatosis
+# ccovae=tv[,c("Steatosis.Grade.0.To.3")]; sick_group=ccovae>0 #toth# # hist(ccovae,breaks=100) # hist(ccova[,'HOMA-IR'],breaks=100)
+# fn=file_names[1]; 
+# the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group,fn,lkm,date,joo,ip)
+# #Fibrosis
+# ccovae=tv[,c("Fibrosis.Stage.0.to.4")]; 
+# sick_group=ccovae>0 #toth#
+# fn=file_names[2]; 
+# the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group,fn,lkm,date,joo,ip)
+# #Necroinfl.
+# ccovae=tv[,c("Necroinflammation")]; sick_group=ccovae>0 #toth#
+# fn=file_names[3];
+# the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group,fn,lkm,date,joo,ip)
+# Homa # remember to always test the function with minimun number setting or as light parameters as possible to get it through... before big runs
+# joo='ei';sick='yes'
+# ccovae=tv[,c("HOMA-IR")]; sick_group=ccovae>1.5 #toth#
+# fn=file_names[4]; 
+# the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group,fn,lkm,date,joo,ip)
+# Then there is also possibility for elab.
+
+```
+
+# Making Sankey Diagrams
+```{r, warning=FALSE,message=FALSE,fig.width=10.0}
+
+#To do these diagrams, you need to have a reduced dataset as well as a function that acounts the group (male/female)
+reduced2=function(u3,Group,name,lkm) {
+  c1=c()
+  ACMEMedian=c();ACMEpval=c();ACMEVar=c()
+  ADEMedian=c();ADEpval=c();ADEVar=c()
+  c1= u3 #[u3[,'ADE'] < ADEMedian  & DV<ADEVar,] #& u3[,'z0.p']<ADEpval
+  ACMEMedian=0#median(c1[,'ACME'][c1[,'ACME']>0])
+  c1=c1[c1[,'ACME']>ACMEMedian & ((c1[,'ACME']-c1[,'ADE']) > 0), ] 
+  c1=c1[rev(order(c1[,'ACME'])),];       
+  c1=tryCatch({c1[1:lkm,]}, error = function(msg){return(c1)})
+  
+  write.xlsx(c1, file = paste(name,Group,date,'.xlsx'), append = FALSE, row.names = TRUE)
+  
+  return(c1)}
+
+plottings_sf=function(uh7ma,date,sick,Group) {
+  rt2=uh7ma #[,1:17]# rtot=rtot[,1:17]# rtot=data.frame(rtot) # name=paste(simss,'basic hypothesis',take)# https://stat.ethz.ch/R-manual/R-devel/library/stats/html/p.adjust.html# https://www.middleprofessor.com/files/applied-biostatistics_bookdown/_book/adding-covariates-to-a-linear-model# https://github.com/MarioniLab/miloR# https://www.nature.com/articles/s41467-023-40458-9/figures/4
+  name=paste('Contaminants_Steroids_BAs_or_Lipids_sims',date) # rtot=rtot_2000_mrct # rtot=uh5
+  
+  hoi=c(); 
+  hoi=scan(text=rt2[,1] , what=" ")#rownames(rt2)# names(rt2[,1]) rownames(rt2)
+  hoi=as.data.frame(matrix(hoi, ncol = 3,  byrow = TRUE), stringsAsFactors = FALSE)
+
+  colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ## https://stats.stackexchange.com/questions/282155/causal-mediation-analysis-negative-indirect-and-total-effect-positive-direct# https://www.researchgate.net/post/How_can_I_interpret_a_negative_indirect_effect_for_significant_mediation# https://stackoverflow.com/questions/31518150/gsub-in-r-is-not-replacing-dot replacing dot
+  
+  hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH.P4']='17a-OHP4'
+  hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH-P4']='17a-OHP4'
+  hoi[,'Steroids' ]  <- gsub("\\.", "-",  hoi[,'Steroids' ] ) #:)
+  hoi[,'Steroids' ][ hoi[,'Steroids' ]=='T-Epi-T']='T/Epi-T'
+  
+  df2 <- hoi %>%make_long('Contaminants','Steroids','Bile Acids or Lipids') 
+  #In case you need to print to computer: meda='Sankey plot of ', pdf(paste(meda,name,sick,Group,".pdf"), width = 20, height = 20,  pointsize = 18);
+  # print(ggplot(df2, aes(x = x,  next_x = next_x, node = node,  next_node = next_node,fill = factor(node),label = node)) +geom_sankey(flow.alpha = 0.5, node.color = 1) +        geom_sankey_label(size = 5.5, color = 1, fill = "white") +scale_fill_viridis_d() + theme_sankey(base_size = 30) + theme(legend.position = "none")+
+  #theme(axis.title.x = element_blank()));dev.off()
+  
+windowsFonts(A = windowsFont("Calibri (Body)")) 
+
+p=ggplot(df2, aes(x = x,  next_x = next_x, node = node,  next_node = next_node,fill = factor(node),label = node)) +
+          geom_sankey(flow.alpha = 1, node.color = 1) + 
+          geom_sankey_label(size = 3.0, color = 1, fill = "white") +
+          # scale_fill_viridis_d(option = "D", alpha = 0.95) + 
+          theme_sankey(base_size = 24) + 
+          scale_fill_grey(start = 0.5, end = 0.5)+
+          theme(axis.text.x = element_text(hjust = 0.5, vjust=7,colour = 'black'))+ #https://stackoverflow.com/questions/38862303/customize-ggplot2-axis-labels-with-different-colors
+          theme(legend.position = "none") +
+          theme(axis.title.x = element_blank())
+library(ragg)
+# Oh! https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/
+# https://r4ds.had.co.nz/graphics-for-communication.html#figure-sizing
+
+path="C:/Users/patati/Documents/GitHub/new/" #oh, classical: https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
+pngfile <- fs::path(path,paste0(Group,'e',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
+agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300,scaling = 2)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
+
+# install.packages(c(ragg))
+
+
+# https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/
+}
+
+
+library(readxl)
+setwd("C:/Users/patati/Desktop/TurkuOW/RWork/tests6/tests_basic/") #check this if needed...
+
+all_all=read_xlsx(path = "100basic All tikka3624 .xlsx") #total Male tikka76524 hyp4b_oki.xlsx") #e on healthy :)
+all_all=as.data.frame(all_all); all_all=all_all[!is.na(all_all$ACME),]; all_all=na.omit(all_all); all_all1=all_all
+
+all_Female=read_xlsx(path = "100basic Female tikka3624 .xlsx") #total Male tikka76524 hyp4b_oki.xlsx") #e on healthy :)
+all_Female=as.data.frame(all_Female); all_Female=all_Female[!is.na(all_Female$ACME),]; all_Female=na.omit(all_Female); 
+
+all_Male=read_xlsx(path = "100basic Male tikka3624 .xlsx") #total Male tikka76524 hyp4b_oki.xlsx") #e on healthy :)
+all_Male=as.data.frame(all_Male); all_Male=all_Male[!is.na(all_Male$ACME),]; all_Male=na.omit(all_Male); 
+
+sick='all samples'
+lkm=30;Group='All'; name='just all';date='tikka6924_alla'
+alma=reduced2(all_all1,Group,name,lkm);
+plottings_sf(alma,date,sick,Group)
+
+date='tikka6924_femala';name='just all';Group='female';
+almaf=reduced2(all_Female,Group,name,lkm); #all_Female
+almaf = na.omit(almaf)
+plottings_sf(almaf,date,sick,Group)
+
+date='tikka6924_mala';name='just all';Group='male';
+almam=reduced2(all_Male,Group,name,lkm);
+almam = na.omit(almam) #https://www.tutorialspoint.com/how-to-remove-rows-from-data-frame-in-r-that-contains-nan
+plottings_sf(almam,date,sick,Group)
+
+# something about forest plots etc. here... https://www.nature.com/articles/s41467-022-30875-7 
+
+```
+
+
 
