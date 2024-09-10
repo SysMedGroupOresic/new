@@ -425,6 +425,7 @@ classes=modi #modi=4
 namesh=unique(g1)    #[c(1:6)[1:6 != modi]];
 cola=unique(grid.col)#[c(1:6)[1:6 != modi]]
 
+
 lgd_group = Legend(at = 'Both Genders', type = "points", legend_gp = gpar(col = 'black'), title_position = "topleft", title = title)
 lgd_points = Legend(at = namesh, type = "points", legend_gp = gpar(col = cola), title_position = "topleft", title = "Class")
 lgd_lines = Legend(at = c("Positive", "Negative"), type = "points", legend_gp = gpar(col = c('red','blue')), title_position = "topleft", title = "Correlation")
@@ -1152,7 +1153,7 @@ library(ragg)
 # https://r4ds.had.co.nz/graphics-for-communication.html#figure-sizing
 
 path="C:/Users/patati/Documents/GitHub/new/" #oh, classical: https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
-pngfile <- fs::path(path,paste0(Group,'e',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
+pngfile <- fs::path(path,paste0(Group,'ey',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
 agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300,scaling = 2)
 plot(p)
 invisible(dev.off())
