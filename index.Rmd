@@ -269,7 +269,7 @@ if (num==1.5) {e1=paste('Case (>',num,')',sep="");e2=paste('Control (=',num,')',
 
 data=data[!is.na(data$Concentration),]
 # grouped boxplot: https://stackoverflow.com/questions/32539222/group-boxplot-data-while-keeping-their-individual-x-axis-labels-in-ggplot2-in-r
-ggplot(data, aes(x=Steroid, y=Concentration, fill=Treatment))+
+p=ggplot(data, aes(x=Steroid, y=Concentration, fill=Treatment))+
 geom_boxplot(notch=F, notchwidth=0.5,outlier.shape=1,outlier.size=2, coef=1.5)+
 # coord_cartesian(ylim = c(0, 60000))+
 theme(axis.text=element_text(color="black"))+
@@ -289,6 +289,14 @@ theme(text=element_text(size=10.5,family="Calibri"), #change font size of all te
         legend.title=element_text(size=14))+theme(axis.text=element_text(color="black"))
   #+annotate(geom="text",family="Broadway",size=20) # add_pval(plot, pairs = list(c(1, 2)), test='wilcox.test');plot
   #https://datavizpyr.com/horizontal-boxplots-with-ggplot2-in-r/
+
+path="C:/Users/patati/Documents/GitHub/new/" #oh, classical: https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
+pngfile <- fs::path(path,paste0(Group,Out,'boxee',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
+agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300,scaling = 2)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
+    
 
 }
 
@@ -311,7 +319,7 @@ Outcome='HOMA-IR';Out='HOMA-IR'; oute='Level';num=1.5 ;Group='All';boxplots(ie,G
 ```
 
 # Making Chord Diagrams 
-```{r, warning=FALSE,message=FALSE,fig.width=7.0}
+```{r, warning=FALSE,message=FALSE,fig.width=9.0}
 # First the correlations for the chord diagrams (both male and female as well as total subjects):
 tv_c=data.frame(tv_c)
 tv_c=tv_c[,!colnames(tv_c) %in% c('Total_TG','PFAS',"Perfluorodecyl.ethanoic.acid")]
@@ -432,7 +440,7 @@ circos.text(mean(xlim), ylim[1] + .1, sector.name, facing = "clockwise", niceFac
 circos.axis(h = "top", labels.cex = 0.000001, major.tick.length = 0.2, sector.index = sector.name, track.index = 2)}, bg.border = NA) 
 windowsFonts(A = windowsFont("Calibri (Body)")) 
 draw(lgd_list_vertical, x = unit(5, "mm"), y = unit(5, "mm"), just = c("left", "bottom"))
-# dev.copy(jpeg,fig_name,width=9.2, height=12.5, units="in", res=1000);dev.off()
+
 # https://stackoverflow.com/questions/31943102/rotate-labels-in-a-chorddiagram-r-circlize
 
 #And then using a function for making the female and male chord diagrams... (checking later if this can be also for all.. all had one element more, i.e. 'gender' )
@@ -506,6 +514,8 @@ group_chords=function(vars,n_level,fig_name, big,rem,modi,colt,gend,colors) {
     
     windowsFonts(A = windowsFont("Calibri (Body)")) 
     draw(lgd_list_vertical, x = unit(5, "mm"), y = unit(5, "mm"), just = c("left", "bottom"))#} 
+
+
     }
 
 vars=list(resultaf,resultam); #
@@ -545,11 +555,18 @@ sce@colData=DataFrame(hep[,2:8]) #it is DataFrame with big Ds and Fs
 names(colData(sce))=colnames(tv_all)[2:8]
 vars <- getVarianceExplained(sce,variables=names(colData(sce))[1:7])
 windowsFonts(A = windowsFont("Calibri (Body)"))
-plotExplanatoryVariables(vars) 
+p=plotExplanatoryVariables(vars) 
 
+library(ragg)
+# Oh! https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/
+# https://r4ds.had.co.nz/graphics-for-communication.html#figure-sizing
 
-
-
+path="C:/Users/patati/Documents/GitHub/new/" #oh, classical: https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
+pngfile <- fs::path(path,paste0(Group,'vex',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
+agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300,scaling = 2)
+plot(p)
+invisible(dev.off())
+knitr::include_graphics(pngfile)
 
 }
 
@@ -576,7 +593,7 @@ varex_groups_plot(tv_all,Group='male')
 
 # Eli maksimilla vedetään... eli pitäis olla ok, sillä skaalattu vastaa korrelaatiota tss. skaalaus vielä miehiin...
 the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,bb
- 
+  # tv=tv_all
   if (Group=='male') {NAFLDo=tv[tv[,'Gender']==max(tv[,'Gender']),]} else if (Group=='female') 
   {NAFLDo=tv[tv[,'Gender']==min(tv[,'Gender']),]} else if (Group=='All') {NAFLDo=tv}
   SG0=NAFLDo[,c(2:dim(tv)[2])]
@@ -850,22 +867,25 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
 
     # https://www.rdocumentation.org/packages/corrplot/versions/0.94/topics/corrplot
     
-        corrplot(rs1, type = type, order = order,method=method, p.mat=rs2, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,pch.col='black',pch=pch,
-         sig.level = c(.001, .01, .05),cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length,tl.cex=0.5,       
-         # to get the font size.... https://www.rdocumentation.org/packages/corrplot/versions/0.94/topics/corrplot
-         #.001, .01, .05, .01, .05, .1 .001, .01, .05, check males, .1, .05, .2
-         tl.srt = 90, diag = TRUE,col = rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]),is.corr = FALSE) #,is.corr = FALSE
-    
+
+ 
+# install.packages('useful')
+# library(useful)
+           
 # library(ragg)
-# # Oh! https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/
-# # https://r4ds.had.co.nz/graphics-for-communication.html#figure-sizing
-# 
+# Oh! https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/
+# https://r4ds.had.co.nz/graphics-for-communication.html#figure-sizing
+
 # path="C:/Users/patati/Documents/GitHub/new/" #oh, classical: https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
-# pngfile <- fs::path(path,paste0(Group,'ee',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
+# pngfile <- fs::path(path,paste0(Group,'ee',".png")) #fs::path(knitr::fig_path(),  "theming2.png")
 # agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300,scaling = 2)
-# plot(p)
+corrplot(rs1, type = type, order = order,method=method, p.mat=rs2, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,pch.col='black',pch=pch,
+sig.level = c(.001, .01, .05),cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length,tl.cex=0.5,       
+ # to get the font size.... https://www.rdocumentation.org/packages/corrplot/versions/0.94/topics/corrplot
+ #.001, .01, .05, .01, .05, .1 .001, .01, .05, check males, .1, .05, .2
+tl.srt = 90, diag = TRUE,col = rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]),is.corr = FALSE) #,is.corr = FALSE
 # invisible(dev.off())
-# knitr::include_graphics(pngfile)   
+# knitr::include_graphics(pngfile)
         
         
     #https://stackoverflow.com/questions/26574054/how-to-change-font-size-of-the-correlation-coefficient-in-corrplot
@@ -935,27 +955,14 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
     
     rs1=as.matrix(rs1)
     rs2=as.matrix(rs2)
-    
-  # jpeg(paste("Linear Model Estimate Plot of",hip1,Group,".jpg"), width = width, height = height, quality = 100,pointsize = 20, res=300);
-  # source("https://raw.githubusercontent.com/dorianps/corrplot2/master/corrplot2.R")
-  # dev.off() #...
+
   
-  corrplot(rs1, type = type, order = order,method=method, p.mat=rs2, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,pch.col='black',pch=pch,
+corrplot(rs1, type = type, order = order,method=method, p.mat=rs2, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,pch.col='black',pch=pch,
      sig.level = c(.001, .01, .05),cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length, tl.cex=0.8,
      tl.srt = 90, diag = TRUE,col = rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]),is.corr = FALSE) #,is.corr = FALSE
-  
-  
-# library(ragg)
+
 # # Oh! https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/
 # # https://r4ds.had.co.nz/graphics-for-communication.html#figure-sizing
-# 
-# path="C:/Users/patati/Documents/GitHub/new/" #oh, classical: https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
-# pngfile <- fs::path(path,paste0(Group,'bb',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
-# agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300,scaling = 2)
-# plot(p)
-# invisible(dev.off())
-# knitr::include_graphics(pngfile) 
-  
     #https://www.jumpingrivers.com/blog/knitr-rmarkdown-image-size/
 
     
