@@ -12,9 +12,6 @@ output:
 
 ---
 
-
-
-
 # Loading All R Packages
 ```{r, warning=FALSE,message=FALSE}
 library(scales);library("plotrix");library(Maaslin2);  library(ggtext);library(lavaan);library(psych);library("xlsx");library(lsr);library(quantreg);library("readxl")
@@ -435,10 +432,7 @@ group_chords=function(vars,n_level,fig_name, big,rem,modi,colt,gend,colors,a,b,c
     # dev.copy(jpeg,paste0(gend,'hie.jpeg'),width=9, height=12, units="in", res=1000);dev.off() # This is already done
 
 knitr::include_graphics(paste0(gend,'hie.jpeg'))
-
-    }
-
-
+}
 
 #All variables
 n_level=0.2; circos.clear(); vars=list(resulta)
@@ -459,6 +453,7 @@ gend=c('Male');colors=c('black');group_chords(vars[[2]],n_level,fig_name,big,rem
 
 
 ```
+
 
 # Making Variance Explained Plots
 ```{r, warning=FALSE,message=FALSE,fig.width=6.0}
@@ -578,7 +573,6 @@ brks_heatmap <- function(mat, color_palette){
 knitr::include_graphics("cohensd_tikka.jpeg")
 
 ```
-
 
 # Making Heatmaps with Linear Model Estimates
 ```{r, warning=FALSE,message=FALSE,fig.width=7.0}
@@ -975,7 +969,6 @@ adj='nook'; sig.level=c(.001,0.01, 0.05); sick='no'; joo='joo' #sickGroup..
 metanorm_S_non_fdr=huus(tv_all,adj,sig.level,sick,sick_group,joo)
 
 ```
-
 ```{r, echo=FALSE, out.width="50%", fig.cap="Heatmap of LMEs (linear model estimates) from Steroids vs. BAs & Lipids & Covariates with All Subjects"}
 knitr::include_graphics("Linear Model Estimate Plot of BAs_lipids_as_y vs. steroids_as_x All .jpg")
 ```
@@ -986,11 +979,9 @@ knitr::include_graphics("Linear Model Estimate Plot of BAs_lipids_as_y vs. stero
 knitr::include_graphics("Linear Model Estimate Plot of BAs_lipids_as_y vs. steroids_as_x male .jpg")
 ```
 ```{r, echo=FALSE, out.width="50%", fig.cap="Heatmap of LMEs from Steroids vs. PFAS & Covariates with All Subjects"}
-#fig.cap="Linear Model Estimates between Steroids and Variables"
 knitr::include_graphics("Linear Model Estimate Plot of Steroids_y vs. PFAS_as_x All .jpg")
 ```
 ```{r, echo=FALSE, out.width="50%", fig.cap="Heatmap of LMEs from Steroids vs. PFAS & Covariates with Female Subjects"}
-#fig.cap="Linear Model Estimates between Steroids and Variables"
 knitr::include_graphics("Linear Model Estimate Plot of Steroids_y vs. PFAS_as_x female .jpg")
 ```
 ```{r, echo=FALSE, out.width="50%", fig.cap="Heatmap of LMEs from Steroids vs. PFAS & Covariates with Male Subjects"}
@@ -1004,6 +995,83 @@ knitr::include_graphics("Linear Model Estimate Plot of Steroids_y vs. PFAS_as_x 
 # [6] "Linear Model Estimate Plot of Steroids_y vs. PFAS_as_x male .jpg"  
 ```
 
+# Making Network Plot
+```{r, warning=FALSE,message=FALSE,fig.width=10.0}
+
+# Following the previous work for doing the network plot (https://r-graph-gallery.com/network.html)
+# Here the main data of the plot takes correlations:
+tv_c=tv_all#[,9:dim(tv_covscl)[2]] #tv_half_log22 #cbind(tv[,1:8], tv_half_log2) #check also not logged and then the auto one
+tv_c=tv_c[,!colnames(tv_c) %in% c('Total_TG','PFAS','Perfluorodecyl.ethanoic.acid')]; tv_c=tv_c[,!colnames(tv_c) %in% x4]
+colnames(tv_c)[colnames(tv_c)=="17aOH-P4"]="17a-OHP4"
+dat = tv_c; 
+dat=dat[,!colnames(dat) %in% c('Gender','PatientNumber')] #SEX.1F.2M
+resulta <- (rcorr(as.matrix(dat), type = c('spearman')))$r
+n_level=0.9 #this is high to get connections between all the verteces (pampulat)
+Nrr=qpNrr(resulta, verbose=FALSE);Nrr[is.na(Nrr)]=1;#print(hist(as.numeric(Nrr),breaks=50)); 
+cond=data.frame(as.matrix(Nrr<n_level))
+RN=data.frame(resulta);tes_t=cond*RN;tes_t=as.matrix(tes_t);resulta=tes_t;colnames(resulta)=rownames(resulta) #https://www.geeksforgeeks.org/elementwise-matrix-multiplication-in-r/
+tes_t=resulta
+a=length(x1)-2;b=length(x2);c=length(x3);d=length(x4);e=length(x5);f=length(x6);
+
+# Removing self-correlation
+tes_t[1:a,1:a]=0
+tes_t[(a+1):(a+b),(a+1):(a+b)]=0
+tes_t[(a+b+1):(a+b+c),(a+b+1):(a+b+c)]=0
+tes_t[(a+b+c+1):(a+b+c+e),(a+b+c+1):(a+b+c+e)]=0
+tes_t[(a+b+c+e+1):(a+b+c+e+f),(a+b+c+e+1):(a+b+c+e+f)]=0
+
+tes_t=tes_t[colnames(tes_t)[7:66],colnames(tes_t)[7:66]] # tes_t=resulta #ks. correlations
+g <- graph_from_adjacency_matrix(tes_t, mode="upper", weighted=TRUE, diag=FALSE)
+e <- as_edgelist(g); df <- as.data.frame(cbind(e,E(g)$weight)); #
+df[,3]=as.numeric(df[, 3])
+hoi=df # hoi[rev(order(hoi[,3])),]
+hoi=hoi[!duplicated(hoi[,c(1,2)]),]
+
+# library, https://r-graph-gallery.com/249-igraph-network-map-a-color.html
+library(igraph)
+# # create data:
+links <- data.frame(
+  source=c("A","A", "A", "A", "A","J", "B", "B", "C", "C", "D","I"),
+  target=c("B","B", "C", "D", "J","A","E", "F", "G", "H", "I","I"),
+  importance=(sample(1:4, 12, replace=T)))
+colnames(hoi)=colnames(links)
+links=hoi
+sources=hoi %>% distinct(source) %>% rename(source='label')
+destinations=hoi %>% distinct(target) %>% rename(target ='label')
+nodess <- full_join(sources, destinations, by = "label")
+
+xc=x5[x5 %in% nodess$label]
+xb=x3[x3 %in% nodess$label]
+xl=x6[x6 %in% nodess$label]
+x2[x2 =='17aOH-P4']='17a-OHP4' #Next time check these wrong names early on... :)
+xs=x2[x2 %in% nodess$label]
+nodess$label=c(xc,xb,xl,xs)
+
+nodes <- data.frame(name=nodess[,1], #  carac=c( rep("Contaminants",length(7)),rep("Bile Acids",length(u2)),rep("Lipids",length(u3)),rep("Steroids",ls))) #range on kaikki +1
+  carac=( c(rep("Contaminants",length(xc)),rep("Bile Acids",length(xb)),rep("Lipids",length(xl)),rep("Steroids",length(xs))))) #range on kaikki +1
+
+# Turn it into igraph object
+network <- graph_from_data_frame(d=links, vertices=nodes, directed=F) 
+# Make a palette of 3 colors
+library(RColorBrewer);library(ragg)
+
+windowsFonts(A = windowsFont("Calibri (Body)"))
+coul  <- c('#B2BEB5','Green','Red','Orange') # brewer.pal(2, "Set1") ,'#ADD8E6','#faf0e6'
+# Create a vector of color
+my_color <- coul[as.numeric(as.factor(V(network)$carac))]
+
+#These above execution lines have been already done,
+# jpeg('network.jpeg',width=4, height=4.7, units="in",quality = 100, pointsize = 7, res=1000)
+# plot(network, mode = "circle",vertex.color=my_color, vertex.size = 10,
+#      edge.arrow.size = 0.8,vertex.label.cex = 0.35,edge.width=as.numeric(E(network)$importance)*6.00 )
+# legend("topright", legend=levels(as.factor(V(network)$carac))  ,
+#        col = coul , bty = "n", pch=20 , pt.cex = 1.3, cex = 1.3, text.col=coul ,
+#        horiz = FALSE, inset = c(-0.01, 0.80))
+# dev.off()
+
+# And now just showing the figure separately:
+knitr::include_graphics('network.jpeg')
+```
 
 # Making Causal Mediation Analysis
 ```{r, warning=FALSE,message=FALSE}
@@ -1198,6 +1266,101 @@ date='tikka6924_mala';name='just all';Group='male';
 almam=reduced2(all_Male,Group,name,lkm);
 almam = na.omit(almam) #https://www.tutorialspoint.com/how-to-remove-rows-from-data-frame-in-r-that-contains-nan
 plottings_sf(almam,date,sick,Group)
+
+```
+
+# References
+```{r, warning=FALSE,message=FALSE}
+
+# Here are the reference links unceremoniously in order of appearance (checked some, but not necessarily all, duplicates):
+
+# https://stackoverflow.com/questions/43527520/r-markdown-yaml-scanner-error-mapping-values
+# https://appsilon.com/imputation-in-r 
+# https://www.datasciencemadesimple.com/get-minimum-value-of-a-column-in-r-2/?expand_article=1
+# https://readxl.tidyverse.org/articles/column-names.html
+# https://www.analyticsvidhya.com/blog/2021/06/hypothesis-testing-parametric-and-non-parametric-
+# https://stackoverflow.com/questions/54264980/r-how-to-set-row-names-attribute-as-numeric-from-character 
+# https://www.datasciencemadesimple.com/get-minimum-value-of-a-column-in-r-2/?expand_article=1
+# https://stackoverflow.com/questions/13676878/fastest-way-to-get-min-from-every-column-in-a-matrix
+# https://www.geeksforgeeks.org/performing-logarithmic-computations-in-r-programming-log-log10-log1p-and-log2-functions/ 
+# https://stackoverflow.com/questions/50476717/i-want-to-align-match-two-
+# https://mdatools.com/docs/preprocessing--autoscaling.html
+# https://svkucheryavski.gitbooks.io/mdatools/content/preprocessing/text.html
+# https://stackoverflow.com/questions/6984796/how-to-paste-a-string-on-each-element-of-a-vector-of-strings-using-apply-in-r
+# https://stackoverflow.com/questions/18997297/remove-ending-of-string-with-gsub
+# https://rdrr.io/bioc/qpgraph/man/qpNrr.html
+# https://sparkbyexamples.com/r-programming/r-remove-from-vector-with-examples/
+# https://stackoverflow.com/questions/18997297/remove-ending-of-string-with-gsub
+# https://r-graph-gallery.com/265-grouped-boxplot-with-ggplot2.html
+# https://stackoverflow.com/questions/53724834/why-does-the-plot-size-differ-between-docx-and-html-in-rmarkdownrender
+# https://stackoverflow.com/questions/32539222/group-boxplot-data-while-keeping-their-individual-x-axis-labels-in-ggplot2-in-r
+# https://stackoverflow.com/questions/34522732/changing-fonts-in-ggplot2
+# https://stackoverflow.com/questions/37488075/align-axis-label-on-the-right-with-ggplot2
+# http://www.sthda.com/english/wiki/ggplot2-rotate-a-graph-
+# http://www.sthda.com/english/articles/24-ggpubr-publication-ready-plots/76-add-p-values-and-significance-levels-to-ggplots/
+# https://stackoverflow.com/questions/76758153/is-there-a-way-to-change-the-asterisks-to-match-custom-p-values 
+# https://datavizpyr.com/horizontal-boxplots-with-ggplot2-in-r/
+# https://stackoverflow.com/questions/72564551/a-custom-legend-unrelated-to-data-in-ggplot
+# https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
+# https://stackoverflow.com/questions/66429500/how-to-make-raggagg-png-device-work-with-ggsave
+# https://stackoverflow.com/questions/45271448/r-finding-intersection-between-two-vectors
+# https://jokergoo.github.io/circlize_book/book/advanced-layout.htmlcombine-circular-plots
+# https://stackoverflow.com/questions/31943102/rotate-labels-in-a-chorddiagram-r-circlize
+# https://bioconductor.org/packages/release/bioc/vignettes/scater/inst/doc/overview.html
+# https://stats.stackexchange.com/questions/79399/calculate-variance-explained-by-each-predictor-in-multiple-regression-using-r
+# https://rdrr.io/github/MRCIEU/TwoSampleMR/man/get_r_from_pn.html
+# https://onlinestatbook.com/2/effect_size/variance_explained.html
+# https://stackoverflow.com/questions/10441437/why-am-i-getting-x-in-my-column-names-when-reading-a-data-frame
+# https://stackoverflow.com/questions/27044727/removing-characters-from-string-in-r
+# https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/
+# https://r4ds.had.co.nz/graphics-for-communication.htmlfigure-sizing
+# https://bioconductor.org/packages/devel/bioc/vignettes/SingleCellExperiment/inst/doc/intro.html
+# https://bioinformatics.stackexchange.com/questions/22414/when-analysing-microarray-data-is-it-need-to-do-normalization-and-standardizati
+# https://bioinformatics.stackexchange.com/questions/22426/inconsistent-microarray-expression-levels-after-normalizing-with-log2
+# https://www.reddit.com/r/bioinformatics/comments/1ejs94m/log2_transformation_and_quantile_normalization/
+# https://www.statology.org/cohens-d-in-r/
+# https://stackoverflow.com/questions/10688137/how-to-fix-spaces-in-column-names-of-a-data-frame-remove-spaces-inject-dots
+# https://stats.stackexchange.com/questions/190763/how-to-decide-which-glm-family-to-use   
+# https://gettinggeneticsdone.blogspot.com/2011/01/rstats-function-for-extracting-f-test-p.html
+# https://www.rdocumentation.org/packages/corrplot/versions/0.94/topics/corrplot
+# https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/
+# https://r4ds.had.co.nz/graphics-for-communication.htmlfigure-sizing
+# https://www.rdocumentation.org/packages/corrplot/versions/0.94/topics/corrplot
+# https://stackoverflow.com/questions/26574054/how-to-change-font-size-of-the-correlation-coefficient-in-corrplot
+# https://stackoverflow.com/questions/9543343/plot-a-jpg-image-using-base-graphics-in-r
+# https://scales.arabpsychology.com/stats/how-to-remove-the-last-character-from-a-string-in-r-2-examples/
+# https://r-graph-gallery.com/network.html)
+# https://www.geeksforgeeks.org/elementwise-matrix-multiplication-in-r/
+# https://r-graph-gallery.com/249-igraph-network-map-a-color.html
+# https://rdrr.io/cran/mlma/man/data.org.html 
+# https://cran.r-project.org/web/packages/mma/mma.pdf
+# https://www.statology.org/glm-vs-lm-in-r/
+# https://intro2r.com/loops.html 
+# https://www.benjaminbell.co.uk/2022/12/loops-in-r-nested-loops.html 
+# https://stackoverflow.com/questions/21847830/handling-java-lang-outofmemoryerror-when-writing-to-excel-from-r
+# https://topepo.github.io/caret/parallel-processing.html 
+# https://ds-pl-r-book.netlify.app/optimization-in-r.html
+# https://stat.ethz.ch/R-manual/R-devel/library/stats/html/p.adjust.html 
+# https://www.middleprofessor.com/files/applied-biostatistics_bookdown/_book/adding-covariates-to-a-linear-model
+# https://github.com/MarioniLab/miloR
+# https://www.nature.com/articles/s41467-023-40458-9/figures/4
+# https://stats.stackexchange.com/questions/282155/causal-mediation-analysis-negative-indirect-and-total-effect-positive-direct 
+# https://www.researchgate.net/post/How_can_I_interpret_a_negative_indirect_effect_for_significant_mediation
+# https://stackoverflow.com/questions/31518150/gsub-in-r-is-not-replacing-dot replacing dot
+# https://stackoverflow.com/questions/38862303/customize-ggplot2-axis-labels-with-different-colors
+# https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/
+# https://r4ds.had.co.nz/graphics-for-communication.htmlfigure-sizing
+# https://www.tutorialspoint.com/how-to-remove-rows-from-data-frame-in-r-that-contains-nan
+
+```
+
+# Disclaimer
+```{r, warning=FALSE,message=FALSE}
+# This is a part of on-going research work that has not been published yet and I cannot take a responsibility if something above is not working/ok in your system/research/etc. in 100% accuracy. 
+# Furthermore, I am inbound to update these sites relatively often so a grain of salt is needed when reading these... :)
+# In addition, no sensitive data has been shared and you see only 'examples' here. Moreover, I am not an expert on biology or specific biochemical or mechanical questions. 
+# Not to mention few, I just want to say that I am just doing the analysis for understanding the data partly on its own right with the context as mentioned above and partly as an orientation work.
+# Thanks and sorry for possible inconveniences in advance. :)
 
 ```
 
