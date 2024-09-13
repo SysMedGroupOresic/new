@@ -9,6 +9,7 @@ output:
   lightbox: true
   gallery: false
   highlight: tango
+  # fig.align = 'left'
 
 ---
 
@@ -16,29 +17,25 @@ output:
 ```{r, warning=FALSE,message=FALSE}
 library(scales);library("plotrix");library(Maaslin2);  library(ggtext);library(lavaan);library(psych);library("xlsx");library(lsr);library(quantreg);library("readxl")
 library(semPlot);library(mediation);require(lme4);require(reshape2);library(mlma);library(binilib);library(plyr);library("viridis");library(RColorBrewer) 
-#library(mma);# library(d3heatmap);
 library(magrittr); library(ggplot2);library( "censReg" );library(ggsankey);library(dplyr);library(tidyverse);library(dmetar);library(meta);library(ggforestplot); 
 ## Warning, do not add: 'library(forestplot)'! It is not working with ggforestplot... (9.9.24)
 library(mdatools);library(circlize);library(igraph);library('bigsnpr');library(rcompanion);library(scRNAseq);
 library(tibble);library(stringr);library(MOFA2);library('qpgraph') 
-#ok
 library("grid"); library("ggplotify");library(ggpubr);library(rstatix);library(datarium);library(RColorBrewer); library(ggh4x); library(effsize)
 library(chorddiag);library(corrplot);library(scater);library(mdatools);options(scipen = 999); library(car);library(FSA);library(pathviewr);library(glmnet)
 library("lmtest");library(PerformanceAnalytics);library(psych);library("readxl");library(ggforce);library(ComplexHeatmap);library(ragg) 
-#These are ok to drive in start:
 library('Hmisc');library(correlation);library(ggcorrplot);library(pheatmap);library(mgcv);library('ppcor');library(superb)
-library(rmdformats);library(prettydoc);library(hrbrthemes);library(tint);library(tufte)# library(ComplexHeatmap); # library("heatmaply")
+library(rmdformats);library(prettydoc);library(hrbrthemes);library(tint);library(tufte)
 library(extrafont)
 
 ```
 
 # Setting Global Variables
 ```{r, warning=FALSE,message=FALSE}
-
-date='tikka6924' #change this...
-#install.packages("ppcor") just in case the 'install' function here...
-# font_import() #this is important if you have not loaded them before
-loadfonts(device = "win") #this is important 
+date='tikka13924' #Change this...
+# install.packages("ppcor") just in case the 'install' function here...
+# font_import() # This is important if you have not loaded them before
+# loadfonts(device = "win") #Same applies here.
 ```
 
 # Importing Data and Metadata
@@ -80,7 +77,7 @@ te=ME[which(ME[,1] %in% ME2),'E']
 MASLD[as.character(to),'E']=te
 #These (11-KA4) will perhaps change in the lab (sometime after 24.10.23):
 M11=read.csv('11KA4_tikka231023.csv',header=TRUE, sep=";")
-M11[,1][c(1:5,9)];MASLD[as.character(M11[,1][c(1:5,9)]),'11-KA4'] #These were denoted with 'big interference'
+# M11[,1][c(1:5,9)];MASLD[as.character(M11[,1][c(1:5,9)]),'11-KA4'] #These were denoted with 'big interference'
 MASLD[as.character(M11[,1][c(1:5,9)]),'11-KA4'] = NA #Alternatively: median(MASLD[!rownames(MASLD) %in% as.character(M11[,1][c(1:5,9)]),'11-KA4'])
 a=MASLD[order(MASLD[,'BMI']),'BMI']
 b=NAFLD[order(NAFLD[,'BMI']),'BMI']
@@ -96,12 +93,12 @@ Base=data.frame(read_excel("Liver_bile_acids_PFAS.xlsx",sheet = "Serum_BA",.name
 C4=data.frame(read_excel("Liver_bile_acids_PFAS.xlsx",sheet = "C4",.name_repair = "minimal")); rownames(C4)=as.vector(unlist(C4[,1]))
 Clini=data.frame(read_excel("Matching clinical data_all.xlsx",sheet = "Sheet1",.name_repair = "minimal")); rownames(Clini)=as.vector(unlist(Clini[,1]));
 # https://www.analyticsvidhya.com/blog/2021/06/hypothesis-testing-parametric-and-non-parametric-tests-in-statistics/
-MASLD[1:2,2:30] #or head(MASLD);
+MASLD[1:2,2:27] #or head(MASLD);
 
 #The below ordering needs to be changed...
 Bali=Bali[as.character(MASLD$PatientNumber),];Bali[1:3,2:10] #https://stackoverflow.com/questions/54264980/r-how-to-set-row-names-attribute-as-numeric-from-character I did otherway around
-Base=Base[as.character(MASLD$PatientNumber),];Base[1:3,2:10]
-Clini=Clini[as.character(MASLD$PatientNumber),];#Clini[1:3,2:10] # Many of these are irrelevant here... so not opening them, they would exhaust the file
+Base=Base[as.character(MASLD$PatientNumber),];#Base[1:3,2:10]
+Clini=Clini[as.character(MASLD$PatientNumber),];#Clini[1:3,2:10] # Many of these are irrelevant here... so not opening them, they would exhaust this file
 C4=C4[as.character(MASLD$PatientNumber),];#C4[1:3,]
 Pfase=Pfase[as.character(MASLD$PatientNumber),];Pfase[1:3,2:10]
 
@@ -112,7 +109,7 @@ colnames(menopause)=c('row_names',menopause[2,2:dim(menopause)[2]]); menopause=m
 menopause=menopause[as.character(MASLD$PatientNumber),]
 colnames(Pfase)[colnames(Pfase)=='PFHxA.1']='PFHxA_Branched'
 Pfase=Pfase[,colnames(Pfase)!='Benzylparaben.1']
-Pfase[Pfase[,'Benzylparaben']>10,'Benzylparaben']=NA #m
+Pfase[Pfase[,'Benzylparaben']>10,'Benzylparaben']=NA 
 
 Jeihou=data.frame(read_excel("Copy of BA_liverfat_RawData.xls",.name_repair = "minimal")); row.names(Jeihou)=Jeihou[,1];Jeihou=Jeihou[as.character(MASLD$PatientNumber),]
 u=Jeihou[Jeihou[,'GHDGA']=='<LLOQ',1]; a=u[!is.na(u)]; b=rownames(Bali[Bali[,'GHDGA']==1,]);
@@ -161,8 +158,8 @@ x3 <- paste(x3, "_L", sep="") #https://stackoverflow.com/questions/6984796/how-t
 x4=gsub("(-[0-9]*)*.1", "", x4) #https://stackoverflow.com/questions/18997297/remove-ending-of-string-with-gsub
 x4 <- paste(x4, "_S", sep="")# https://rdrr.io/bioc/qpgraph/man/qpNrr.html
 x5a=x5[1:9]
-x6=x5[10:length(x5)] #dividing to lipids
-x5=x5a  #making sure that PFAS are separate
+x6=x5[10:length(x5)] #Dividing to lipids
+x5=x5a  #Making sure that PFAS are separate
 nm = c(x1,x2,x3,x4,x5,x6); nm=c('PatientNumber','Gender','AGE','BMI','Steatosis Grade','Fibrosis Stage','Necroinflammation','HOMA-IR',nm[9:length(nm)])
 colnames(tv_all)=nm; #tv_all[1:5,1:30]; #NAFLD[1:2,1:28];
 colnames(tv_all)[colnames(tv_all)=='MASLD[, \"PFAS\"]']='PFAS';
@@ -214,7 +211,7 @@ tv_LOG_covscl=tv_half_log22
 tv_LOG_covNS=cbind(tv[,1:8],tv_half_log22[,9:dim(tv_half_log22)[2]])
 colnames(tv_covNS)[1:8]=colnames(tv_all)[1:8]
 colnames(tv_LOG_covNS)[1:8]=colnames(tv_all)[1:8]
-#This is needed occacionally:
+#This is needed occasionally:
 tv_c=tv_covscl 
 # https://stackoverflow.com/questions/6984796/how-to-paste-a-string-on-each-element-of-a-vector-of-strings-using-apply-in-r
 # https://stackoverflow.com/questions/18997297/remove-ending-of-string-with-gsub
@@ -305,7 +302,7 @@ Outcome='HOMA-IR';Out='HOMA-IR'; oute='Level';num=1.5 ;Group='All';boxplots(ie,G
 ```
 
 # Making Forest Plots
-```{r, warning=FALSE,message=FALSE,fig.width=6.0} 
+```{r, warning=FALSE,message=FALSE,fig.width=6.0,fig.align="left"} 
 
 #Some further definitions are needed
 NAFLD=cbind(tv[,1:28])#,tv_half_log2[,1:20])#tv[,1:28]);
@@ -318,8 +315,6 @@ colnames(NAFLD) <- gsub("11", "X11", colnames(NAFLD))
 colnames(NAFLD) <- gsub("17", "X17", colnames(NAFLD))
 colnames(NAFLD) <- gsub("#", ".", colnames(NAFLD))
 colnames(NAFLD)[colnames(NAFLD)=='X17aOH.P4']='X17.aOHP4' #oh...
-
-# fyi: https://bookdown.org/content/b472c7b3-ede5-40f0-9677-75c3704c7e5c/more-than-one-mediator.html
 
 #This works with the autoscaled (raw if loge=1 and remove 1 in the means) data NAFLD as well...
 pre_errors_2=function(NAFLD,Outcome,Group,name,ordera,oute,first,e,xlim) { # Group='Female'
@@ -474,45 +469,45 @@ Group='Male'; name12=paste("Forest plot of",Group, "Steroid Ratios in",Out); pre
 
 ```
 
-```{r,echo=FALSE, out.width="25%",fig.cap=name1}
+```{r,echo=FALSE, out.width="25%",fig.cap=name1,fig.align="left"}
 path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(path,paste(name1 ,"divi.jpg")))
 ```
-```{r,echo=FALSE, out.width="25%",fig.cap=name2}
+```{r,echo=FALSE, out.width="25%",fig.cap=name2,fig.align="left"}
 path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(path,paste(name2 ,"divi.jpg")))
 ```
-```{r,echo=FALSE, out.width="25%",fig.cap=name3}
+```{r,echo=FALSE, out.width="25%",fig.cap=name3,fig.align="left"}
 path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(path,paste(name3 ,"divi.jpg")))
 ```
-```{r,echo=FALSE, out.width="25%",fig.cap=name4}
+```{r,echo=FALSE, out.width="25%",fig.cap=name4,fig.align="left"}
 path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(path,paste(name4 ,"divi.jpg")))
 ```
-```{r,echo=FALSE, out.width="25%",fig.cap=name5}
+```{r,echo=FALSE, out.width="25%",fig.cap=name5,fig.align="left"}
 path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(path,paste(name5 ,"divi.jpg")))
 ```
-```{r,echo=FALSE, out.width="25%",fig.cap=name6}
+```{r,echo=FALSE, out.width="25%",fig.cap=name6,fig.align="left"}
 path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(path,paste(name6 ,"divi.jpg")))
 ```
-```{r,echo=FALSE, out.width="25%",fig.cap=name7}
+```{r,echo=FALSE, out.width="25%",fig.cap=name7,fig.align="left"}
 path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(path,paste(name7 ,"divi.jpg")))
 ```
-```{r,echo=FALSE, out.width="25%",fig.cap=name8}
+```{r,echo=FALSE, out.width="25%",fig.cap=name8,fig.align="left"}
 path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(path,paste(name8 ,"divi.jpg")))
 ```
-```{r,echo=FALSE, out.width="25%",fig.cap=name9}
+```{r,echo=FALSE, out.width="25%",fig.cap=name9,fig.align="left"}
 path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(path,paste(name9 ,"divi.jpg")))
 ```
-```{r,echo=FALSE, out.width="25%",fig.cap=name10}
+```{r,echo=FALSE, out.width="25%",fig.cap=name10,fig.align="left"}
 path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(path,paste(name10 ,"divi.jpg")))
 ```
-```{r,echo=FALSE, out.width="25%",fig.cap=name11}
+```{r,echo=FALSE, out.width="25%",fig.cap=name11,fig.align="left"}
 path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(path,paste(name11 ,"divi.jpg")))
 ```
-```{r,echo=FALSE, out.width="25%",fig.cap=name11}
-path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(path,paste(name11 ,"divi.jpg")))
+```{r,echo=FALSE, out.width="25%",fig.cap=name12,fig.align="left"}
+path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(path,paste(name12 ,"divi.jpg")))
 ```
 
 # Making Chord Diagrams 
-```{r, warning=FALSE,message=FALSE,fig.width=9.0}
+```{r, warning=FALSE,message=FALSE,fig.width=9.0,fig.align="left"}
 # First the correlations for the chord diagrams (both male and female as well as total subjects):
 tv_c=data.frame(tv_c)
 tv_c=tv_c[,!colnames(tv_c) %in% c('Total_TG','PFAS',"Perfluorodecyl.ethanoic.acid")]
@@ -656,7 +651,7 @@ gend=c('Male');colors=c('black');group_chords(vars[[2]],n_level,fig_name,big,rem
 ```
 
 # Making Variance Explained Plots
-```{r, warning=FALSE,message=FALSE,fig.width=6.0}
+```{r, warning=FALSE,message=FALSE,fig.width=6.0,fig.align="left"}
 # This is it! https://bioconductor.org/packages/release/bioc/vignettes/scater/inst/doc/overview.html
 #or
 # https://stats.stackexchange.com/questions/79399/calculate-variance-explained-by-each-predictor-in-multiple-regression-using-r
@@ -714,7 +709,7 @@ varex_groups_plot(tv_all,Group='male')
 ```
 
 # Making Heatmap with Effect Sizes
-```{r, warning=FALSE,message=FALSE,fig.width=9.0}
+```{r, warning=FALSE,message=FALSE,fig.width=9.0,fig.align="left"}
 #For calculating the effect sizes, I'll use the Cohen's d
 # https://www.statology.org/cohens-d-in-r/
 cohd=function(NAFLD, tv,Group,Outcome) {
@@ -775,7 +770,7 @@ knitr::include_graphics("cohensd_tikka.jpeg")
 ```
 
 # Making Heatmaps with Linear Model Estimates
-```{r, warning=FALSE,message=FALSE,fig.width=7.0}
+```{r, warning=FALSE,message=FALSE,fig.width=7.0,fig.align="left"}
 
 # You may need a rather big function to calculate the estimates and plot at the same time, since the spaces of exper. interest have been reduced from the max dataset size.
 
@@ -785,18 +780,16 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
   if (Group=='male') {NAFLDo=tv[tv[,'Gender']==max(tv[,'Gender']),]} else if (Group=='female') 
   {NAFLDo=tv[tv[,'Gender']==min(tv[,'Gender']),]} else if (Group=='All') {NAFLDo=tv}
   SG0=NAFLDo[,c(2:dim(tv)[2])]
-
   #https://stackoverflow.com/questions/10688137/how-to-fix-spaces-in-column-names-of-a-data-frame-remove-spaces-inject-dots
   oknames=colnames(SG0)
   SG0=data.frame(SG0)
   colnames(SG0)
   colnames(SG0[,8:27]) <- gsub("-", ".", colnames(SG0[,8:27]))
   colnames(SG0[,8:27]) <- gsub("/", ".", colnames(SG0[,8:27]))
-  # SG0=destroyX(data.frame(SG0))
   hesh=c()
   xnam <- colnames(SG0)[c(4:7)]
   Treatment2=Treatment
-  y <- Treatment2 #colnames(SG0)[c(70:76)]
+  y <- Treatment2 
   hoesh=c()
   
   j=1;i=1;p.val=c()
@@ -807,13 +800,11 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
       poissone=lm( fmla, data=SG0) # anova(poissone);# poissone
       p.val=c();p.val <- anova(poissone)$'Pr(>F)'[1]
       ps=summary(poissone);
-      pss=ps[[4]] # fmla <- as.formula(paste(paste(c(colnames(SG0[,8:27])[j]," ~ "), collapse= ""), paste(c(xnam[i],'BMI','AGE','Gender'), collapse= "+")))
-      # uh=c();uh=summary(poissone)$fstatistic # https://gettinggeneticsdone.blogspot.com/2011/01/rstats-function-for-extracting-f-test-p.html
-      # p.val <- pf(uh[1], df1 = uh[2], df2 = uh[3],lower.tail=F)
+      pss=ps[[4]] #https://gettinggeneticsdone.blogspot.com/2011/01/rstats-function-for-extracting-f-test-p.html
       hoesh=c(y[j],xnam[i],Group,pss[2,1],pss[2,4],pss[2,2])
 
       jeps=SG0# 
-      r=as.numeric(hoesh[4]) #Suom. tää oli aikasemmin 'hösh', mutta sitten tuli ongelmia
+      r=as.numeric(hoesh[4]) #This was previuosly 'hösh', but for some reason it started to not work. Suom. tää oli aikasemmin 'hösh', mutta sitten tuli ongelmia. Hi hii.
       p=as.numeric(hoesh[5])
       rsadj=as.numeric(hoesh[6])
       colnames(jeps)=colnames(tv)[2:dim(tv)[2]]
@@ -877,14 +868,13 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
   
 
   j=1;i=1; rm(xnam,y)
-  xnam <- Treatment2#colnames(SG0)[c(70:76)]#paste("x", 1:25, sep="") 28:length(colnames(SG0)
+  xnam <- Treatment2
   y = colnames(SG0[,8:27])
   for (i in 1:length(xnam)) {
     for (j in 1:length(y)) {
-      # if (file.exists(sub_dir)){next}
       if (Group!='All')  {fmla <- as.formula(paste(paste(c(y[j]," ~ "), collapse= ""), paste(c(xnam[i],'BMI','AGE'), collapse= "+")))} else if (Group=='All') 
       {fmla <- as.formula(paste(paste(c(y[j]," ~ "), collapse= ""), paste(c(xnam[i],'BMI','AGE','Gender'), collapse= "+")))} #https://stats.stackexchange.com/questions/190763/how-to-decide-which-glm-family-to-use
-      poissone=lm( fmla, data=SG0) # anova(poissone);# poissone
+      poissone=lm( fmla, data=SG0) 
       p.val=c();p.val <- anova(poissone)$'Pr(>F)'[1]
       ps=summary(poissone);
       pss=ps[[4]] # 
@@ -899,7 +889,6 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
       Mediator=hoesh[1]
       hesh=rbind(hesh,c(y[j],xnam[i],Group,r,pss[2,4],rsadj))}}
 
-  
   # # 1)  steroids=BA/lipid
   
   # if (Group!='All') {
@@ -980,6 +969,7 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
   if (ok=='big') {
     
     rsa=c();joi=c()
+    
     # Eli 'kaksi' vielä tarvitaan...
     # 1) BA/lipid=covar ja steroidit, ja 2) steroid=covar
 
@@ -998,19 +988,17 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
     i=4;rs=c()
     
     for (i in 4:5) {
-      # i=4
       rs=joi[,c(1,2,i)] # rs=data.frame(rs)
       rs=reshape(rs,idvar="x",timevar="y",direction="wide")
       rownames(rs)=rs[,1]
       rs=rs[,-1]
 
-      library(stringr) # x1 = "aallworldpopulations"
+      library(stringr)
       colnames(rs)=str_sub(colnames(rs),3,-1)
       
       colnames(rs) <- gsub("\\.", "-", colnames(rs))
       colnames(rs) <- gsub("X11", "11", colnames(rs))
       colnames(rs) <- gsub("X17", "17", colnames(rs))
-      # colnames(rs)["Steatosis-Grade"]
       colnames(rs)[colnames(rs)=="T-Epi-T"]="T/Epi-T"
       
       rownames(rs)[rownames(rs)=="Steatosis.Grade"]="Steatosis Grade"
@@ -1024,9 +1012,7 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
       heps[heps=="17aOH-P4"]="17a-OHP4"
       cme1=match(heps,colnames(rs))
       cme2=match(c(covas,x3,x6),rownames(rs))
-      
       rs=rs[cme2,cme1]
-      
       rsa=rbind(rsa,rs) }
     
     
@@ -1046,7 +1032,6 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
   
     rs1=as.matrix(rs1)
     rs2=as.matrix(rs2)
-
     
     width=2500; height=4400
     order="original"; range='orig';corre='no_renorm'; type='full'; method='color';#ga='All';gf='Female';gm='Male' #color square
@@ -1054,15 +1039,15 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
     ho=Group;hip1='BAs_lipids_as_y vs. steroids_as_x'
 
     # https://www.rdocumentation.org/packages/corrplot/versions/0.94/topics/corrplot
-# Oh! https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/
-# https://r4ds.had.co.nz/graphics-for-communication.html#figure-sizing
+    # Oh! https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/
+    # https://r4ds.had.co.nz/graphics-for-communication.html#figure-sizing
 
 #I have driven these separately for html: 
     # for that you need:     # jpeg(paste("Linear Model Estimate Plot ofe",hip1,Group,".jpg"), width = width, height = height, quality = 100,pointsize = 16, res=300); 
 
 #     corrplot(rs1, type = type, order = order,method=method, p.mat=rs2, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,pch.col='black',pch=pch,
 # sig.level = c(.001, .01, .05),cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length,tl.cex=0.5,
-# #  # to get the font size.... https://www.rdocumentation.org/packages/corrplot/versions/0.94/topics/corrplot
+# #  #
 # tl.srt = 90, diag = TRUE,col = rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]),is.corr = FALSE) #,is.corr = FALSE
     # and: dev.off() #
 
@@ -1076,10 +1061,10 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
     rsa=c();rs1=c();rs2=c()
   
     c1=hoi[,1] %in% x5
-    hoi[c1,] #tää tulee suoraan tällä PFAS 7:lle ekalle
+    hoi[c1,] # This gives you the PFAS (x5) ok. Tää tulee suoraan tällä PFAS 7:lle ekalle
     c2=hoi[,1] %in% names(table(hoi[,1]))[!names(table(hoi[,1])) %in% c(x3,x5,x6)] #vaikeemman kautta
     hyy=c1 & c2
-    hoi2=hoi[c2 | c1 ,] #tähän myoes
+    hoi2=hoi[c2 | c1 ,] #Likewise...
     rownames(hoi2)=1:dim(hoi2)[1]
     hoi2=hoi2[1:182,]
     a=hoi2[1:42,1];b=hoi2[1:42,2]
@@ -1090,13 +1075,13 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
     rse=c()
     for (i in 4:5) {
       
-      rse=hoi2[,c(1,2,i)] # rs=data.frame(rs)
+      rse=hoi2[,c(1,2,i)] 
       rse=rse[order(rse[,1]),]
       rs=reshape(rse,idvar="x",timevar="y",direction="wide")
       rownames(rs)=rs[,1]
       rs=rs[,-1]
       
-      library(stringr) # x1 = "aallworldpopulations"
+      library(stringr) 
       colnames(rs)=str_sub(colnames(rs),3,-1)
 
       colnames(rs) <- gsub("\\.", "-", colnames(rs))
@@ -1120,7 +1105,6 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
     rs1a=rsa[1:7,];
     rs2a=rsa[8:14,]
     rs1=rs1a;rs2=rs2a
-    # rownames(rs2)=str_sub(rownames(rs2), end = -2)
     width=5500; height=2300
     
     order="original"; range='orig';corre='no_renorm'; type='full'; method='color'; #ga='All';gf='Female';gm='Male' #color square
@@ -1129,9 +1113,7 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
     rs1 <- mutate_all(rs1, function(x) as.numeric(as.character(x)))
     rs2 <- mutate_all(rs2, function(x) as.numeric(as.character(x)))
     rs1=rango(rs1,-0.5,0.5) #check if needed
-    
-    # E.g., rs1[rs1 > 0.25]=0.25 # rs1[rs1 < -0.25]=-0.25 or aa, bb
-    
+
     rs1=as.matrix(rs1)
     rs2=as.matrix(rs2)
 
@@ -1169,22 +1151,22 @@ adj='nook'; sig.level=c(.001,0.01, 0.05); sick='no'; joo='joo' #sickGroup..
 metanorm_S_non_fdr=huus(tv_all,adj,sig.level,sick,sick_group,joo)
 
 ```
-```{r, echo=FALSE, out.width="50%", fig.cap="Heatmap of LMEs (linear model estimates) from Steroids vs. BAs & Lipids & Covariates with All Subjects"}
+```{r, echo=FALSE, out.width="50%", fig.cap="Heatmap of LMEs (linear model estimates) from Steroids vs. BAs & Lipids & Covariates with All Subjects",fig.align="left"}
 knitr::include_graphics("Linear Model Estimate Plot of BAs_lipids_as_y vs. steroids_as_x All .jpg")
 ```
-```{r, echo=FALSE, out.width="50%", fig.cap="Heatmap of LMEs from Steroids vs. BAs & Lipids & Covariates with Female Subjects"}
+```{r, echo=FALSE, out.width="50%", fig.cap="Heatmap of LMEs from Steroids vs. BAs & Lipids & Covariates with Female Subjects",fig.align="left"}
 knitr::include_graphics("Linear Model Estimate Plot of BAs_lipids_as_y vs. steroids_as_x female .jpg")
 ```
-```{r, echo=FALSE, out.width="50%", fig.cap="Heatmap of LMEs from Steroids vs. BAs & Lipids & Covariates with Male Subjects"}
+```{r, echo=FALSE, out.width="50%", fig.cap="Heatmap of LMEs from Steroids vs. BAs & Lipids & Covariates with Male Subjects",fig.align="left"}
 knitr::include_graphics("Linear Model Estimate Plot of BAs_lipids_as_y vs. steroids_as_x male .jpg")
 ```
-```{r, echo=FALSE, out.width="50%", fig.cap="Heatmap of LMEs from Steroids vs. PFAS & Covariates with All Subjects"}
+```{r, echo=FALSE, out.width="50%", fig.cap="Heatmap of LMEs from Steroids vs. PFAS & Covariates with All Subjects",fig.align="left"}
 knitr::include_graphics("Linear Model Estimate Plot of Steroids_y vs. PFAS_as_x All .jpg")
 ```
-```{r, echo=FALSE, out.width="50%", fig.cap="Heatmap of LMEs from Steroids vs. PFAS & Covariates with Female Subjects"}
+```{r, echo=FALSE, out.width="50%", fig.cap="Heatmap of LMEs from Steroids vs. PFAS & Covariates with Female Subjects",fig.align="left"}
 knitr::include_graphics("Linear Model Estimate Plot of Steroids_y vs. PFAS_as_x female .jpg")
 ```
-```{r, echo=FALSE, out.width="50%", fig.cap="Heatmap of LMEs from Steroids vs. PFAS & Covariates with Male Subjects"}
+```{r, echo=FALSE, out.width="50%", fig.cap="Heatmap of LMEs from Steroids vs. PFAS & Covariates with Male Subjects",fig.align="left"}
 #fig.cap="Linear Model Estimates between Steroids and Variables"
 knitr::include_graphics("Linear Model Estimate Plot of Steroids_y vs. PFAS_as_x male .jpg")
 # [1] "Linear Model Estimate Plot of BAs_lipids_as_y vs. steroids_as_x All .jpg"   
@@ -1196,7 +1178,7 @@ knitr::include_graphics("Linear Model Estimate Plot of Steroids_y vs. PFAS_as_x 
 ```
 
 # Making Network Plot
-```{r, warning=FALSE,message=FALSE,fig.width=10.0}
+```{r, warning=FALSE,message=FALSE,fig.width=10.0,fig.align="left"}
 
 # Following the previous work for doing the network plot (https://r-graph-gallery.com/network.html)
 # Here the main data of the plot takes correlations:
@@ -1227,7 +1209,7 @@ df[,3]=as.numeric(df[, 3])
 hoi=df # hoi[rev(order(hoi[,3])),]
 hoi=hoi[!duplicated(hoi[,c(1,2)]),]
 
-# library, https://r-graph-gallery.com/249-igraph-network-map-a-color.html
+# https://r-graph-gallery.com/249-igraph-network-map-a-color.html
 library(igraph)
 # # create data:
 links <- data.frame(
@@ -1274,16 +1256,15 @@ knitr::include_graphics('network.jpeg')
 ```
 
 # Making Causal Mediation Analysis
-```{r, warning=FALSE,message=FALSE}
+```{r, warning=FALSE,message=FALSE,fig.align="left"}
 #The basic hypothesis. All are variables (y~x+m;m~x)
-loop_med_simplified1a=function(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group) { # if (Group=='Female') {cond=tv_all[,'Gender']==1} else if (Group=='Male') # {cond=tv_all[,'Gender']==2} else if (Group=='All') {cond=rep(TRUE,dim(tv_all)[1])}
+loop_med_simplified1a=function(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group) {
   if (Group=='female') {cond=tv_all[,'Gender']==min(tv_all[,'Gender'])} else if (Group=='male') {cond=tv_all[,'Gender']==max(tv_all[,'Gender'])} else if (Group=='All') {cond=rep(TRUE,dim(tv_all)[1])}
   tv_red=c(); 
   if (sick=='yes') {tv_red=tv_all[cond & as.vector(sick_group),]} else   {tv_red=tv_all[cond,]} 
   X <- tv_red[,Treatment] #Standard values did not five erros # hep=colnames(X)[!colnames(X) %in% c( "Benzylparaben" ,"Methylparaben")] # X=X[,hep]
   M <- tv_red[,Mediator]  #
   Y <- tv_red[,Outcome]   #"Steatosis.Grade.0.To.3"       "Fibrosis.Stage.0.to.4"       "Necroinflammation"            "HOMA-IR"   
-  # cova <- tv_red[,c('AGE','BMI','Gender')] 
   Data <- cbind(X,M,Y);   ## colnames(Data)[which(names(Data) == "X")] <- "PFOA_L"
   colnames(Data) <- gsub(" ", "_", colnames(Data)) # colnames(Data[,1:2])[1]=Treatment
   Data=data.frame(Data)
@@ -1300,7 +1281,6 @@ loop_med_simplified1a=function(Treatment, Mediator, Outcome,tv_all,Group,name,si
   for (z in (dim(M)[2]+dim(X)[2]+1):(dim(Data)[2])) {y=append(y,paste("Data[, ",z , "]", sep="")) } #this dimension was essential for the loop names
   med_out=c();res=c(); tmp=c();rn=c();med_oute=c();med_sense=c();resa=c()  
   j=1;i=1;z=1
-  # simss=2; length(y)*length(m)*length(x)
   for (i in 1:length(y)) {
     for (j in 1:length(m)) { #control.value=mina[i]
       for (z in 1:length(x)) {
@@ -1328,7 +1308,6 @@ loop_med_simplified1a=function(Treatment, Mediator, Outcome,tv_all,Group,name,si
   #https://stackoverflow.com/questions/21847830/handling-java-lang-outofmemoryerror-when-writing-to-excel-from-r
   return(res)}
 
-
 #Testing hypothesis one:
 the_essentials=function(Treatment, Mediator, Outcome,tv, Group,name,simss,t.val,test,sick,sick_group,fn,lkm,date,joo,ip) {
   hoi1=paste("C:/Users/patati/Desktop/TurkuOW/RWork/basic causal mediation with the counterfactuals/",fn,sep='')
@@ -1352,8 +1331,8 @@ joo='joo';sick='no'
 ccova=tv[,c("Steatosis.Grade.0.To.3", "Fibrosis.Stage.0.to.4" ,"Necroinflammation","HOMA-IR")] 
 fn='All'; sick_group=rowSums(ccova)>4 #toth#
 
-#Driving the analysis takes more than 1h (with a basic laptop 2023,100sims and all three groups (all, female and male)) so drive the below only if needed:
-#the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick, sick_group,fn,lkm,date,joo,ip)
+# Driving the analysis takes more than 1h (with a basic laptop 2023,100sims and all three groups (all, female and male)) so drive the below only if needed:
+# the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick, sick_group,fn,lkm,date,joo,ip)
 # setwd("C:/Users/patati/Desktop/TurkuOW/RWork/basic causal mediation with the counterfactuals/") #check this if needed...
 
 # In case, the 'case' sample/subject analysis would be needed: 
@@ -1378,11 +1357,12 @@ fn='All'; sick_group=rowSums(ccova)>4 #toth#
 
 # In addition, then there is also possibility for elaborations, i.e. the adjustments, of the models, 
 # but I'll leave it from here for the time being... (please do ask if needed: patati 'tilde' utu dot fi) :)
+# fyi: https://bookdown.org/content/b472c7b3-ede5-40f0-9677-75c3704c7e5c/more-than-one-mediator.html
 
 ```
 
 # Making Sankey Diagrams
-```{r, warning=FALSE,message=FALSE,fig.width=10.0}
+```{r, warning=FALSE,message=FALSE,fig.width=10.0,fig.align="left"}
 
 #To do these diagrams, you need to have a reduced dataset as well as a function that acounts the group (male/female)
 reduced2=function(u3,Group,name,lkm) {
@@ -1472,9 +1452,233 @@ plottings_sf(almam,date,sick,Group)
 
 ```
 
+# Handy Left-over Functions 
+```{r, warning=FALSE,message=FALSE,fig.width=10.0,fig.align="left"}
+
+# For determining the sample sizes in each case:
+#If you have case/control as >0/0 (homa.ir was converted as per 1.5), or then see the other function if you have the division
+sample_size=function(NAFLD,Outcome,Group) { 
+  if (Group=='Male') {NAFLDo=NAFLD[NAFLD[,'SEX.1F.2M']==2,]} else if (Group=='Female') {NAFLDo=NAFLD[NAFLD[,'SEX.1F.2M']==1,]} else if (Group=='All') {NAFLDo=NAFLD} 
+  sample_data=c();n0=c();n1=c()
+  for (i in 1:2) {
+    if (i==1) 
+    {SG0=NAFLDo[NAFLDo[,Outcome] == 0,];n0=dim(SG0)[1]; sample_data=append(sample_data,n0)} else if (i==2) {SG0=NAFLDo[NAFLDo[,Outcome] > 0,];n1=dim(SG0)[1];sample_data=append(sample_data,n1)}
+  }
+  return(sample_data)} 
+
+#Yes other one too...
+sample_size2=function(NAFLD,Outcome,Group,sick_groupe) { 
+  sample_data=c();n0=c();n1=c();NAFLDo=data.frame()
+  for (i in 1:2) {
+    if (i==1) {if (Group=='Male') {NAFLDo=NAFLD[!sick_groupe & NAFLD[,'SEX.1F.2M']==2,]} else if (Group=='Female') 
+        {NAFLDo=NAFLD[!sick_groupe & NAFLD[,'SEX.1F.2M']==1,]} else if (Group=='All') {NAFLDo=NAFLD[!sick_groupe,]}; n0=dim(NAFLDo)[1];sample_data=append(sample_data,n0)} 
+    else if (i==2) {if (Group=='Male') {NAFLDo=NAFLD[sick_groupe & NAFLD[,'SEX.1F.2M']==2,]} else if (Group=='Female') 
+          {NAFLDo=NAFLD[sick_groupe & NAFLD[,'SEX.1F.2M']==1,]} else if (Group=='All') {NAFLDo=NAFLD[sick_groupe,]}; n1=dim(NAFLDo)[1];sample_data=append(sample_data,n1)}}
+  return(sample_data)} 
+
+#In case you do not have NAFLD data folder already......
+NAFLD=cbind(tv[,1:28])
+colnames(NAFLD) #autoscaled; # NAFLD=cbind(tv[,1:8],tv_half_log2[,1:20]) 
+NAFLD[NAFLD[,c(5)]>0,5]=1;NAFLD[NAFLD[,c(6)]>0,6]=1;NAFLD[NAFLD[,c(7)]>0,7]=1;
+NAFLD[NAFLD[,c(8)] <= 1.5,8]=0;NAFLD[NAFLD[,c(8)]>1.5,8]=1; 
+colnames(NAFLD) <- gsub("-", ".", colnames(NAFLD))
+colnames(NAFLD) <- gsub("/", ".", colnames(NAFLD))
+colnames(NAFLD) <- gsub("11", "X11", colnames(NAFLD))
+colnames(NAFLD) <- gsub("17", "X17", colnames(NAFLD))
+colnames(NAFLD) <- gsub("#", ".", colnames(NAFLD))
+colnames(NAFLD)[colnames(NAFLD)=='X17aOH.P4']='X17.aOHP4' #oh...
+
+jappend=c(); 
+
+Outcome='Steatosis.Grade.0.To.3';
+Group='All'; jappend=c(jappend,sample_size(NAFLD,Outcome,Group)); 
+Group='Female';jappend=c(jappend,sample_size(NAFLD,Outcome,Group))
+Group='Male'; jappend=c(jappend,sample_size(NAFLD,Outcome,Group))
+
+Outcome='Fibrosis.Stage.0.to.4'; 
+Group='All'; jappend=c(jappend,sample_size(NAFLD,Outcome,Group)) #
+Group='Female';jappend=c(jappend,sample_size(NAFLD,Outcome,Group))
+Group='Male'; jappend=c(jappend,sample_size(NAFLD,Outcome,Group))
+
+Outcome='Necroinflammation'; Group='All'; 
+jappend=c(jappend,sample_size(NAFLD,Outcome,Group)) #not the very first though...
+Group='Female';jappend=c(jappend,sample_size(NAFLD,Outcome,Group))
+Group='Male'; jappend=c(jappend,sample_size(NAFLD,Outcome,Group))
+
+Outcome='HOMA.IR';# xlim=c(0.1,5.3)
+Group='All';jappend=c(jappend,sample_size(NAFLD,Outcome,Group)) #not the very first though...# xlim=c(0.1,1.7)
+Group='Female';jappend=c(jappend,sample_size(NAFLD,Outcome,Group))
+Group='Male'; jappend=c(jappend,sample_size(NAFLD,Outcome,Group))
+
+matrix(unlist(jappend),ncol=8) #rows are all female and male and columns case vs. control (all outcomes...)
+
+# For menopause
+# ccovae=tv[,c("AGE")]; c1=ccovae<56; c2=ccovae>44; sick_groupe=c1 & c2 
+# #tv[,c("AGE")][c1 & c2] # fn=file_names[5]; # the_essentials(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_groupe,fn,lkm,date,joo)
+# Group='All';jappend=c(jappend,sample_size2(NAFLD,Outcome,Group,sick_groupe)) #not the very first though...# xlim=c(0.1,1.7)
+# Group='Female';jappend=c(jappend,sample_size2(NAFLD,Outcome,Group,sick_groupe))
+# Group='Male'; jappend=c(jappend,sample_size2(NAFLD,Outcome,Group,sick_groupe))
+# 
+# # #For masld
+# ccova=tv[,c("Steatosis.Grade.0.To.3" , "Fibrosis.Stage.0.to.4" ,"Necroinflammation" ,  "HOMA-IR")] 
+# fn='MASLD';sick_groupe=rowSums(ccova)>4 #toth#
+# Group='All';jappend=c(jappend,sample_size2(NAFLD,Outcome,Group,sick_groupe)) #not the very first though...# xlim=c(0.1,1.7)
+# Group='Female';jappend=c(jappend,sample_size2(NAFLD,Outcome,Group,sick_groupe))
+# Group='Male'; jappend=c(jappend,sample_size2(NAFLD,Outcome,Group,sick_groupe))
+
+#Determining the mean (+-Q) in all, female and male
+mean_q1q3=function(Group) {
+cM=c();csd=c();tot=c();tot2=c();tot3=c()
+if (Group=='Female') {cond=tv_all[,'Gender']==min(tv_all[,'Gender'])} else if (Group=='Male') {cond=tv_all[,'Gender']==max(tv_all[,'Gender'])} else if (Group=='All') {cond=rep(TRUE,dim(tv_all)[1])}
+tv_red=c(); 
+tv_red=tv[cond,]
+#Standard values did not five erros # hep=colnames(X)[!colnames(X) %in% c( "Benzylparaben" ,"Methylparaben")] # X=X[,hep]
+M <- tv_red[,Mediator]  #
+cM=round(apply(M, 2, median,na.rm = TRUE),0)
+quants <- c(0.25,0.75)
+csd=round(apply( M , 2 , quantile , probs = quants , na.rm = TRUE ),0)
+tot=rbind(cM,csd)
+tot2=cbind(tot2,tot)
+return(tot2)}
+
+totQ=mean_q1q3('All');femQ=mean_q1q3('Female');menQ=mean_q1q3('Male')
+tot3=cbind(t(totQ),t(femQ),t(menQ)); print(tot3)
+# write.xlsx(tot3, file ='steroid_mean_std.xlsx', append = FALSE, row.names = TRUE)  #https://stackoverflow.com/questions/21847830/handling-java-lang-outofmemoryerror-when-writing-to-excel-from-r
+
+# I wanted to check the steroids with highest ACMEs between healthy (all, all) and sick (all, all).
+# I needed to have the cutoffs and ways to see the overlaps. For that, I developed a function called 'the_combos'
+#Some data is needed... :)
+setwd("C:/Users/patati/Desktop/TurkuOW/RWork/hypo_basic/Tiedostot/") #check this if needed... hypo4
+files <- list.files(pattern="*.RData")
+ldf <- lapply(files, load)
+list_of_files <- list() #create empty list
+#loop through the files
+for (i in files) {print(i); list_of_files[[i]] <- get(load(paste0("", i)))}  #add files to list position
+#https://www.reddit.com/r/Rlanguage/comments/nq773b/reading_multiple_rdata_files_into_a_list/
+names(list_of_files) <- files #https://stackoverflow.com/questions/38643000/naming-list-elements-in-r
+library(stringr)
+
+the_combos=function(list_of_files,Group,cond) { #cond='' vastaa kaikkia
+#General categories of females or males (without 'All, 'MASLD, and 'Menopause')
+u <- names(list_of_files)
+a <- Group #note the writing, yes with " " in between. " female"  or " male" or " all"
+ie=grep(a,u,fixed=TRUE); u2=u[ie]
+del=c(grep("All",u2,fixed=TRUE),grep("MASLD",u2,fixed=TRUE),grep("Menopause",u2,fixed=TRUE))
+yl=1:length(u2); lop=yl[!yl %in% del]
+u=u2[lop] #general male
+ie=grep(cond,u,fixed=TRUE); u=u[ie]
+a <- "sick"; ie=grep(a,u,fixed=TRUE); u3=u[ie]# sick ones, male or females
+u_sick=list_of_files[u3]#https://www.tutorialspoint.com/how-to-extract-strings-that-contains-a-particular-substring-in-an-r-vector
+a='healthy';ie=grep(a,u,fixed=TRUE);u4=u[ie]
+u_healthy=list_of_files[u4] # u_healthy=list_of_files[grep(a,u,fixed=TRUE)] 
+# plot(as.numeric(u_sick[[1]][,1]))# plot(1:500,as.numeric(u_sick[[1]][1:500,1]))
+
+tcross=function(u_sick) { 
+  all_names = c(); i=1
+  for (i in (1:length(u_sick))) { #length(u_sick) is 18
+    us=u_sick[[i]]
+    aux=c();
+    if (dim(us)[1]>200) {aux=200} else {aux=dim(us)[1]}
+    # plot(1:aux,as.numeric(us[1:aux,1]))
+    values=(1:(length(as.numeric(us[,1]))-1))
+    coo=c(); z=0
+    for (z in values) {coo=append(coo,abs(us[z,1]-us[(z+1),1]))}  
+    pss=which(coo>quantile(coo,0.95));ro=round(length(coo)/3)# pss[pss<ro]#round(length(which(coo>quantile(coo,0.95)))/2)]
+    dpp=diff(pss[pss<ro]) #https://stackoverflow.com/questions/13602170/how-do-i-find-the-difference-between-two-values-without-knowing-which-is-larger
+    dpp_sort=sort(dpp,decreasing = TRUE)
+    if (length(dpp_sort)<5) { for_comp=length(dpp)+1} else {
+      if (sum(dpp_sort[1:5]>5)==5) {cf=dpp_sort[5];cff=which(dpp>cf)[1]} else {cf=dpp_sort[2];cff=which(dpp>cf)[1]}
+      cff=which(dpp>(cf-1))[1]
+      for_comp=pss[cff]; }
+    
+    if (aux<30) {for_comp  =max(which(as.vector(us[,1]>0)))}
+    if (aux>30) {if (max(pss[pss<ro])<30) (for_comp=30)} #due the small amount of good ones that can be like 4...
+    
+    rt2=us[1:for_comp,]; j=0
+    hoi=c();for (j in 1:dim(rt2)[1]) {hoi=append(hoi,scan(text=rownames(rt2)[j], what=""))}
+    hoi=as.data.frame(matrix(hoi, ncol = 4,  byrow = TRUE), stringsAsFactors = FALSE)
+    hoi[,2] <- gsub("\\.", "-",  hoi[,2] ) #:)
+    xz=round(quantile(table(hoi[,2]),0.25)); if (xz<2) {xz=0} else {xz=xz} #let's start with 25% and if not ok go to like 5%
+    names=c();names=names(table(hoi[,2])[table(hoi[,2])>xz]) 
+    # print(all_names)
+    all_names=append(names,all_names)
+  }
+  return(sort(table(all_names),decreasing = TRUE))  
+}
+tc_sick=tcross(u_sick);tc_healthy=tcross(u_healthy) # table(the_cross)# hist(table(the_cross),breaks=10)
+cae1=as.numeric(names(sort(table(tc_sick),decreasing = TRUE)))[1];cae2=as.numeric(names(sort(table(tc_sick),decreasing = TRUE)))[2]
+if (max(tc_sick)==cae1 | max(tc_sick)==cae2)
+cfn=cae2-1 #sometimes as with females no differences, i.. tc_sick;rev(as.numeric(names(table(tc_sick))))[2]-1#
+if (is.na(cfn)) {steroid_sick=names(tc_sick)} else {steroid_sick=names(tc_sick[tc_sick>(cfn)])}
+cae1=as.numeric(names(sort(table(tc_healthy),decreasing = TRUE)))[1];cae2=as.numeric(names(sort(table(tc_healthy),decreasing = TRUE)))[2]
+if (max(tc_healthy)==cae1 | max(tc_healthy)==cae2)
+cfn=cae2-1 
+if (is.na(cfn)) {steroid_healthy=names(tc_healthy)} else {steroid_healthy=names(tc_healthy[tc_healthy>(cfn)])}
+# https://stackoverflow.com/questions/45271448/r-finding-intersection-between-two-vectors
+tbe=intersect(steroid_healthy, steroid_sick)
+totaali_sh_all=steroid_sick[!steroid_sick %in% tbe] #https://www.geeksforgeeks.org/difference-between-two-vectors-in-r/ 
+return(list(steroid_sick,tbe,totaali_sh_all)) } #"17a-OHP4" "DHT"      "DOC"      'P4'
+
+Group = ' all'; cond='';all_all=the_combos(list_of_files,Group,cond) #ekat allit ('All...') oli deletoitu, yes, ja käytetty vain spesifisiä alleja...
+Group = ' female'; cond='';female_all=the_combos(list_of_files,Group,cond) 
+Group = ' male'; cond='';male_all=the_combos(list_of_files,Group,cond) 
+
+Group = ' all'; cond='Steatosis';all_steatosis=the_combos(list_of_files,Group,cond) 
+Group = ' female'; cond='Steatosis';female_steatosis=the_combos(list_of_files,Group,cond) 
+Group = ' male'; cond='Steatosis';male_steatosis=the_combos(list_of_files,Group,cond) 
+Group = ' all'; cond='Fibrosis';all_Fibrosis=the_combos(list_of_files,Group,cond) 
+Group = ' female'; cond='Fibrosis';female_Fibrosis=the_combos(list_of_files,Group,cond) 
+Group = ' male'; cond='Fibrosis';male_Fibrosis=the_combos(list_of_files,Group,cond) 
+Group = ' all'; cond='Necroinflammation';all_Necroinflammation=the_combos(list_of_files,Group,cond) 
+Group = ' female'; cond='Necroinflammation';female_Necroinflammation=the_combos(list_of_files,Group,cond) 
+Group = ' male'; cond='Necroinflammation'; male_Necroinflammation=the_combos(list_of_files,Group,cond) 
+Group = ' all'; cond='HOMAIR'; all_HOMAIR=the_combos(list_of_files,Group,cond) 
+Group = ' female'; cond='HOMAIR'; female_HOMAIR=the_combos(list_of_files,Group,cond) 
+Group = ' male'; cond='HOMAIR'; male_HOMAIR=the_combos(list_of_files,Group,cond) 
+
+pottees=c(  all_all[3],female_all[3],male_all[3],
+            all_steatosis[3],female_steatosis[3],male_steatosis[3],
+            all_Fibrosis[3],female_Fibrosis[3],male_Fibrosis[3],
+            all_Necroinflammation[3],female_Necroinflammation[3],male_Necroinflammation[3],
+            all_HOMAIR[3],female_HOMAIR[3],male_HOMAIR[3])
+#In case you need to print the above list. This is good for printing list of list in anyways:
+# mylist <- pottees; file <- paste0("myfile_ok",date,".txt"); conn <- file(description=file, open="w")
+# newlist <- lapply(seq_len(length(mylist)), function(i){
+#   lapply(seq_len(length(mylist[[i]])), function(j) {
+#     temp <- c(i, j, mylist[[i]][[j]])
+#     writeLines(text=paste(temp, collapse=","), con=conn, sep="\r\n")  
+#   }) }); close(conn)
+
+#So this will give the most common steroids in all cases compared to all cases in all the subjects (all, female, male)
+table(unlist(pottees))[rev(order(table(unlist(pottees))))]
+```
+
+# Disclaimer
+```{r, warning=FALSE,message=FALSE}
+# This is a part of on-going research work that has not been published yet and I cannot take a responsibility if something above is not working/ok in your system/research/etc. in 100% accuracy. 
+# Furthermore, I am inbound to update these sites relatively often so a grain of salt is needed when reading these... :)
+# In addition, no sensitive data has been shared and you see only 'examples' here. Moreover, I am not an expert on biology or specific biochemical or mechanical questions. 
+# Not to mention few, I just want to say that I am just doing the analysis for understanding the data partly on its own right with the context as mentioned above and partly as an orientation work.
+# Thanks and sorry for possible inconveniences in advance. :)
+
+```
+
+# About R Setups
+```{r, warning=FALSE,message=FALSE}
+# As per this date (12.9.24), all the above codes work to produce results with the data files given.
+# All the packages have been copied to local drive (12.9.24), i.e. the content of '.libPaths()'
+# R is 'R version 4.3.1 (2023-06-16 ucrt)' (with 'version'/'getRversion()' command)
+# And RStudio is '2024.4.0.735' (with 'RStudio.Version()' command)
+# In addition, the following information regarding the setups is given:
+sessionInfo()
+
+```
+
 # References
 ```{r, warning=FALSE,message=FALSE}
+
 # Here are the reference links unceremoniously in order of appearance:
+
 # https://stackoverflow.com/questions/43527520/r-markdown-yaml-scanner-error-mapping-values
 # https://appsilon.com/imputation-in-r 
 # https://www.datasciencemadesimple.com/get-minimum-value-of-a-column-in-r-2/?expand_article=1
@@ -1565,6 +1769,7 @@ plottings_sf(almam,date,sick,Group)
 # https://www.benjaminbell.co.uk/2022/12/loops-in-r-nested-loops.html 
 # https://stackoverflow.com/questions/21847830/handling-java-lang-outofmemoryerror-when-writing-to-excel-from-r
 # https://topepo.github.io/caret/parallel-processing.html 
+# https://bookdown.org/content/b472c7b3-ede5-40f0-9677-75c3704c7e5c/more-than-one-mediator.html
 # https://ds-pl-r-book.netlify.app/optimization-in-r.html
 # https://stat.ethz.ch/R-manual/R-devel/library/stats/html/p.adjust.html 
 # https://www.middleprofessor.com/files/applied-biostatistics_bookdown/_book/adding-covariates-to-a-linear-model
@@ -1575,27 +1780,11 @@ plottings_sf(almam,date,sick,Group)
 # https://stackoverflow.com/questions/31518150/gsub-in-r-is-not-replacing-dot replacing dot
 # https://stackoverflow.com/questions/38862303/customize-ggplot2-axis-labels-with-different-colors
 # https://www.tutorialspoint.com/how-to-remove-rows-from-data-frame-in-r-that-contains-nan
+# https://www.reddit.com/r/Rlanguage/comments/nq773b/reading_multiple_rdata_files_into_a_list/
+# https://stackoverflow.com/questions/38643000/naming-list-elements-in-r
+# https://www.tutorialspoint.com/how-to-extract-strings-that-contains-a-particular-substring-in-an-r-vector
+# https://stackoverflow.com/questions/13602170/how-do-i-find-the-difference-between-two-values-without-knowing-which-is-larger
+# https://www.geeksforgeeks.org/difference-between-two-vectors-in-r/ 
+
 
 ```
-
-# Disclaimer
-```{r, warning=FALSE,message=FALSE}
-# This is a part of on-going research work that has not been published yet and I cannot take a responsibility if something above is not working/ok in your system/research/etc. in 100% accuracy. 
-# Furthermore, I am inbound to update these sites relatively often so a grain of salt is needed when reading these... :)
-# In addition, no sensitive data has been shared and you see only 'examples' here. Moreover, I am not an expert on biology or specific biochemical or mechanical questions. 
-# Not to mention few, I just want to say that I am just doing the analysis for understanding the data partly on its own right with the context as mentioned above and partly as an orientation work.
-# Thanks and sorry for possible inconveniences in advance. :)
-
-```
-
-# About R Setups
-```{r, warning=FALSE,message=FALSE}
-# As per this date (12.9.24), all the above codes work to produce results with the data files given.
-# All the packages have been copied to local drive (12.9.24), i.e. the content of '.libPaths()'
-# R is 'R version 4.3.1 (2023-06-16 ucrt)' (with 'version'/'getRversion()' command)
-# And RStudio is '2024.4.0.735' (with 'RStudio.Version()' command)
-# In addition, the following information regarding the setups is given:
-sessionInfo()
-
-```
-
