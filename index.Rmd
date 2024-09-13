@@ -120,7 +120,7 @@ Bali[as.character(heps),'GHDGA']=NA
 #https://www.datasciencemadesimple.com/get-minimum-value-of-a-column-in-r-2/?expand_article=1
 mat=Bali[,c('TbMCA','ToMCA','TDCA','TDHCA','TLCA')]
 mat[!mat>1]=10000
-mat[mat==2]=10000 #colmins ei toiminuyt ja käytin:
+mat[mat==2]=10000 #Colmins did not work so I used (i.e. colmins ei toiminut ja käytin):
 hip=do.call(pmin, lapply(1:nrow(mat), function(i)mat[i,])) #https://stackoverflow.com/questions/13676878/fastest-way-to-get-min-from-every-column-in-a-matrix
 hou=c('TbMCA','ToMCA','TDCA','TDHCA','TLCA')
 for (i in 1:5) {Bali[Bali[,hou[i]]==1,hou[i]]=hip[i]}
@@ -128,7 +128,8 @@ for (i in 1:5) {Bali[Bali[,hou[i]]==2,hou[i]]=hip[i]}
 
 #An imputation for the missing values:
 C4[is.na(C4[,2]),2]=median(C4[!is.na(C4[,2]),2]) #assuming that these were not below quantitation and replacing with median
-#https://www.geeksforgeeks.org/performing-logarithmic-computations-in-r-programming-log-log10-log1p-and-log2-functions/# https://stackoverflow.com/questions/50476717/i-want-to-align-match-two-unequal-columns
+# https://www.geeksforgeeks.org/performing-logarithmic-computations-in-r-programming-log-log10-log1p-and-log2-functions/
+# https://stackoverflow.com/questions/50476717/i-want-to-align-match-two-unequal-columns
 
 #Matching two unequal columns.. match the names of one original column (dat2) to ones that are missing (dat1 with to other) #Not sure if this should be this difficult...
 tv=cbind(MASLD[,1],NAFLD[,2:7],Clini[,'HOMA.IR'],MASLD[,colnames(NAFLD[,8:27])],Bali[,2:dim(Bali)[2]], C4[,2:dim(C4)[2]],Base[,2:dim(Base)[2]],Pfase[,(2:(dim(Pfase)[2]))], MASLD[,'PFAS']);
@@ -175,7 +176,8 @@ x3=colnames(tv_half_log22[,(v2+1):(v3)]);v4=(dim(Base)[2])+v3
 x3=x3[c(length(x3),1:(length(x3)-1))]
 x4=colnames(tv_half_log22[,(v3+1):(v4-1)]);
 x5=colnames(tv_half_log22[,(v4):(dim(tv_half_log22)[2])]);
-x3 <- paste(x3, "_L", sep="") #https://stackoverflow.com/questions/6984796/how-to-paste-a-string-on-each-element-of-a-vector-of-strings-using-apply-in-r
+x3 <- paste(x3, "_L", sep="") 
+#https://stackoverflow.com/questions/6984796/how-to-paste-a-string-on-each-element-of-a-vector-of-strings-using-apply-in-r
 x4=gsub("(-[0-9]*)*.1", "", x4) #https://stackoverflow.com/questions/18997297/remove-ending-of-string-with-gsub
 x4 <- paste(x4, "_S", sep="")# https://rdrr.io/bioc/qpgraph/man/qpNrr.html
 x5a=x5[1:9]
@@ -2249,6 +2251,9 @@ sessionInfo()
 # https://stackoverflow.com/questions/26574054/how-to-change-font-size-of-the-correlation-coefficient-in-corrplot
 # https://stackoverflow.com/questions/9543343/plot-a-jpg-image-using-base-graphics-in-r
 # https://scales.arabpsychology.com/stats/how-to-remove-the-last-character-from-a-string-in-r-2-examples/
+# https://ggplot2.tidyverse.org/reference/geom_smooth.html
+# https://stats.stackexchange.com/questions/190763/how-to-decide-which-glm-family-to-use
+# https://www.geeksforgeeks.org/r-check-if-a-directory-exists-and-create-if-it-does-not/
 # https://r-graph-gallery.com/network.html)
 # https://www.geeksforgeeks.org/elementwise-matrix-multiplication-in-r/
 # https://r-graph-gallery.com/249-igraph-network-map-a-color.html
