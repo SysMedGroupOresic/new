@@ -9,6 +9,7 @@ output:
   lightbox: true
   gallery: false
   highlight: tango
+  # code_folding: show
   # fig.align = 'left'
 
 ---
@@ -32,12 +33,11 @@ library(extrafont)
 
 # Setting Global Variables
 ```{r, warning=FALSE,message=FALSE}
-date='tikka13924' #Change this...
+date='tikka14924' #Change this...
 # install.packages("ppcor") just in case the 'install' function here...
 # font_import() # This is important if you have not loaded them before
 # loadfonts(device = "win") #Same applies here.
 ```
-
 # Importing Data and Metadata
 ```{r, warning=FALSE,message=FALSE}
 
@@ -1183,7 +1183,6 @@ knitr::include_graphics("Linear Model Estimate Plot of Steroids_y vs. PFAS_as_x 
 ```
 
 # Making Scatter Plots
-
 ```{r, warning=FALSE,message=FALSE,fig.width=10.0,fig.align="left"}
 #maksimilla vedetään... eli pitäis olla ok, sillä skaalattu vastaa korrelaatiota tss. skaalaus vielä miehiin...
 the_fun_figs=function(tv_all,Group,hopiu,aa,bb,fn) { #  ok,aa,bb
@@ -1397,12 +1396,11 @@ the_fun_figs=function(tv_all,Group,hopiu,aa,bb,fn) { #  ok,aa,bb
       
     }}
 
-  
   # Eli 'kaksi' vielä tarvitaan...
   # 1) BA/lipid=covar ja steroidit, ja 2) steroid=covar
   #tai oikeastaan ehkä... steroid=covar ja steroid = BA/lipid
   
-  # # 1) BA/lipid=covar ja steroids
+  # # 1) (BA/lipid=covar ja steroids)
    #https://stats.stackexchange.com/questions/190763/how-to-decide-which-glm-family-to-use
 
   # # 1)  steroids=BA/lipid
@@ -1526,7 +1524,6 @@ fn='metabnorm//covScaled//non_fdr//'#
 # E.g.: ".../RWork/metabnorm/covScaled/non_fdr/'Subject'/Hexcer/Correlations plotted All Hexcer S .jpg" 
 # fyi: do the 'subject' folders (all, male, fem.) separately
 ```
-
 ```{r, echo=FALSE, out.width="50%", fig.cap="Correlations Scatter Plotted_All_Hexcer S",fig.align="left"}
 knitr::include_graphics('Correlations plotted All Hexcer S .jpg')
 ```
@@ -1548,7 +1545,6 @@ knitr::include_graphics('Correlations plotted male C4_L P5 .jpg')
 
 # Making Network Plot
 ```{r, warning=FALSE,message=FALSE,fig.width=10.0,fig.align="left"}
-
 # Following the previous work for doing the network plot (https://r-graph-gallery.com/network.html)
 # Here the main data of the plot takes correlations:
 tv_c=tv_all#[,9:dim(tv_covscl)[2]] #tv_half_log22 #cbind(tv[,1:8], tv_half_log2) #check also not logged and then the auto one
@@ -1959,7 +1955,7 @@ sample_size=function(NAFLD,Outcome,Group) {
   }
   return(sample_data)} 
 
-#Yes other one too...
+#Yes other one too... for continuous variables, such as HOMA-IR and age (~ menopause)
 sample_size2=function(NAFLD,Outcome,Group,sick_groupe) { 
   sample_data=c();n0=c();n1=c();NAFLDo=data.frame()
   for (i in 1:2) {
@@ -2140,17 +2136,57 @@ pottees=c(  all_all[3],female_all[3],male_all[3],
 #     temp <- c(i, j, mylist[[i]][[j]])
 #     writeLines(text=paste(temp, collapse=","), con=conn, sep="\r\n")  
 #   }) }); close(conn)
-
 #So this will give the most common steroids in all cases compared to all cases in all the subjects (all, female, male)
 table(unlist(pottees))[rev(order(table(unlist(pottees))))]
+
+
+#For comparing the PFAS/steroid/BA (or lipid) in healthy and sick mediation:
+#Load all the variables in the folder:
+setwd("C:/Users/patati/Desktop/TurkuOW/RWork/hypo4/Tiedostot/") #check this if needed...
+files <- list.files(pattern="*.RData")
+ldf <- lapply(files, load)
+list_of_files <- list() #create empty list
+#loop through the files
+for (i in files) {list_of_files[[i]] <- get(load(paste0("", i)))}  #add files to list position
+names(list_of_files) <- files #ht
+#https://www.reddit.com/r/Rlanguage/comments/nq773b/reading_multiple_rdata_files_into_a_list/
+#https://stackoverflow.com/questions/38643000/naming-list-elements-in-r
+
+health=c();sickness=c()
+for (i in 1:length(names(list_of_files))) if (str_detect(names(list_of_files)[i],'healthy')) {health=append(health,list_of_files[i])} else if (str_detect(names(list_of_files)[i],'sick')) {sickness=append(sickness,list_of_files[i])} 
+health2=c();sickness2=c()
+i=0;for (i in 1:length(c(health))){health[[i]][rev(order(health[[i]][,1])),];health2=rbind(health2,health[[i]][1:10,])}
+i=0;for (i in 1:length(c(sickness))){sickness[[i]][rev(order(sickness[[i]][,1])),];sickness2=rbind(sickness2,sickness[[i]][1:10,])}
+health2=cbind(rownames(health2),health2);sickness2=cbind(rownames(sickness2),sickness2)
+colnames(health2)=c('Mediation','ACME', 'd0.p', 'd0.ci_l','d0.ci_u','ADE', 'z0.p', 'z0.ci_l','z0.ci_u','Proportion Mediated', 'n1.p','n.ci_l','n1.ci_u','Total Effect','tau.p','tau.ci_l','tau.ci_u')
+colnames(sickness2)=c('Mediation','ACME', 'd0.p', 'd0.ci_l','d0.ci_u','ADE', 'z0.p', 'z0.ci_l','z0.ci_u','Proportion Mediated', 'n1.p','n.ci_l','n1.ci_u','Total Effect','tau.p','tau.ci_l','tau.ci_u')
+rownames(health2)=str_replace_all(rep( names(health),each = 10), ".RData", "")
+rownames(sickness2)=str_replace_all(rep( names(sickness),each = 10), ".RData", "")
+# https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/rep
+# https://stackoverflow.com/questions/10294284/remove-all-special-characters-from-a-string-in-r
+# https://stackoverflow.com/questions/38643000/naming-list-elements-in-r
+hoi=c(); hoi=scan(text=health2[,1], what=""); hoi=as.data.frame(matrix(hoi, ncol = 4,  byrow = TRUE), stringsAsFactors = FALSE)
+colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids','Desig.'); hoi_healthy=hoi[,c('Contaminants','Steroids','Bile Acids or Lipids')]
+hoi=c(); hoi=scan(text=sickness2[,1], what=""); hoi=as.data.frame(matrix(hoi, ncol = 4,  byrow = TRUE), stringsAsFactors = FALSE)
+colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids','Desig.');
+hoi_sick=hoi[,c('Contaminants','Steroids','Bile Acids or Lipids')] ## https://stats.stackexchange.com/questions/282155/causal-mediation-analysis-negative-indirect-and-total-effect-positive-direct
+
+# So the differences between contaminants (in the sick vs. healthy 'mediation') are:
+table(hoi_sick[,1])[rev(order(table(hoi_sick[,1])))];table(hoi_healthy[,1])[rev(order(table(hoi_healthy[,1])))]
+# Differences Between Steroids
+table(hoi_sick[,2])[rev(order(table(hoi_sick[,2])))];table(hoi_healthy[,2])[rev(order(table(hoi_healthy[,2])))]
+# Differences Between BAs/Lipids
+table(hoi_sick[,3])[rev(order(table(hoi_sick[,3])))];table(hoi_healthy[,3])[rev(order(table(hoi_healthy[,3])))]
+
 ```
 
 # Disclaimer
 ```{r, warning=FALSE,message=FALSE}
 # This is a part of on-going research work that has not been published yet and I cannot take a responsibility if something above is not working/ok in your system/research/etc. in 100% accuracy. 
 # Furthermore, I am inbound to update these sites relatively often so a grain of salt is needed when reading these... :)
-# In addition, no sensitive data has been shared and you see only 'examples' here. Moreover, I am not an expert on biology or specific biochemical or mechanical questions. 
-# Not to mention few, I just want to say that I am just doing the analysis for understanding the data partly on its own right with the context as mentioned above and partly as an orientation work.
+# Please note also that most of the plotting functions have bee commented out so that their execution would not take time when compiling as well as due quality reasons: Rmarkdown print is not as good in the screen and in final (html) document as the similar with knitr's 'include_graphics' that shows the full scale image.
+# In addition, no sensitive data has been shared and you see only 'examples' here. Moreover, I am not an expert on biology (or even at computing per se) and may not know your specific biochemical and/or mechanical questions that you maybe using this for. 
+# Not to mention few, I just want to say that I am just doing the analysis for understanding the data partly on its own right with the context as mentioned above and partly as a starting 'side project'.
 # Thanks and sorry for possible inconveniences in advance! :)
 
 ```
@@ -2229,6 +2265,11 @@ sessionInfo()
 # https://stackoverflow.com/questions/62093084/set-geom-vline-line-types-and-sizes-with-aes-mapping-in-ggplot2
 # https://www.google.com/search?q=calculate+standard+error&sca_esv=564912168&rlz=1C1GCEA_enFI1072FI1072&ei=qjsBZYbOL-WMxc8PjumCkAg&ved=0ahUKEwiGy8qF4aaBAxVlRvEDHY60AIIQ4dUDCBA&uact=5&oq=calculate+standard+error&gs_lp=Egxnd3Mtd2l6LXNlcnAiGGNhbGN1bGF0ZSBzdGFuZGFyZCBlcnJvcjIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYigUYsAMYQzIKEAAYigUYsAMYQ0jVRFDZEFjXIHACeAGQAQCYAUSgAZMEqgEBObgBA8gBAPgBAcICBhAAGAcYHsICCBAAGAcYHhgKwgIIEAAYBxgeGBPCAgoQABgHGB4YExgK4gMEGAAgQeIDBRIBMSBAiAYBkAYK&sclient=gws-wiz-serp
 # https://stackoverflow.com/questions/45271448/r-finding-intersection-between-two-vectors
+# https://www.reddit.com/r/Rlanguage/comments/nq773b/reading_multiple_rdata_files_into_a_list/
+# https://stackoverflow.com/questions/38643000/naming-list-elements-in-r
+# https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/rep
+# https://stackoverflow.com/questions/10294284/remove-all-special-characters-from-a-string-in-r
+# https://stats.stackexchange.com/questions/282155/causal-mediation-analysis-negative-indirect-and-total-effect-positive-direct
 # https://jokergoo.github.io/circlize_book/book/advanced-layout.htmlcombine-circular-plots
 # https://stackoverflow.com/questions/31943102/rotate-labels-in-a-chorddiagram-r-circlize
 # https://bioconductor.org/packages/release/bioc/vignettes/scater/inst/doc/overview.html
@@ -2266,7 +2307,6 @@ sessionInfo()
 # https://topepo.github.io/caret/parallel-processing.html 
 # https://bookdown.org/content/b472c7b3-ede5-40f0-9677-75c3704c7e5c/more-than-one-mediator.html
 # https://ds-pl-r-book.netlify.app/optimization-in-r.html
-# https://stats.stackexchange.com/questions/282155/causal-mediation-analysis-negative-indirect-and-total-effect-positive-direct
 # https://stackoverflow.com/questions/31518150/gsub-in-r-is-not-replacing-dot 
 # https://www.rdocumentation.org/packages/corrplot/versions/0.92/topics/corrplot
 # https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html
@@ -2281,8 +2321,6 @@ sessionInfo()
 # https://stackoverflow.com/questions/31518150/gsub-in-r-is-not-replacing-dot replacing dot
 # https://stackoverflow.com/questions/38862303/customize-ggplot2-axis-labels-with-different-colors
 # https://www.tutorialspoint.com/how-to-remove-rows-from-data-frame-in-r-that-contains-nan
-# https://www.reddit.com/r/Rlanguage/comments/nq773b/reading_multiple_rdata_files_into_a_list/
-# https://stackoverflow.com/questions/38643000/naming-list-elements-in-r
 # https://www.tutorialspoint.com/how-to-extract-strings-that-contains-a-particular-substring-in-an-r-vector
 # https://stackoverflow.com/questions/13602170/how-do-i-find-the-difference-between-two-values-without-knowing-which-is-larger
 # https://www.geeksforgeeks.org/difference-between-two-vectors-in-r/ 
