@@ -12,7 +12,19 @@ output:
   # code_folding: show
   # fig.align = 'left'
 
+
 ---
+
+# Introduction
+```{r, warning=FALSE,message=FALSE}
+
+# Welcome to the 'steroid data analysis' webpage! 
+
+# The procedures and explanations to make all the analysis and plots are in their individual chapters below and
+# there is a small 'disclaimer' at the end also to emphasize that this site is mainly for educational purposes.
+# Please let me know if you have any questions. For that, use the 'following' email: patati at the university of Turku
+
+```
 
 # Loading All R Packages
 ```{r, warning=FALSE,message=FALSE}
@@ -33,7 +45,7 @@ library(extrafont)
 
 # Setting Global Variables
 ```{r, warning=FALSE,message=FALSE}
-date='tikka14924' #Change this...
+date='tikka16924' #Change this...
 # install.packages("ppcor") just in case the 'install' function here...
 # font_import() # This is important if you have not loaded them before
 # loadfonts(device = "win") #Same applies here.
@@ -226,7 +238,7 @@ tv_c=tv_covscl
 #https://stackoverflow.com/questions/53724834/why-does-the-plot-size-differ-between-docx-and-html-in-rmarkdownrender
 
 boxplots=function(tvt,Group,Outcome,Out,oute,other) {
-  # tvt=ie
+
 if (Group=='Male') {tvt=tvt[tvt[,'Gender']==1,]} else if (Group=='Female') 
 {tvt=tvt[tvt[,'Gender']==0,]} else if (Group=='All') {tvt=tvt}
 Steroid=rep(colnames(tvt[,9:28]), each=dim(tvt)[1])
@@ -2197,7 +2209,7 @@ table(hoi_sick[,3])[rev(order(table(hoi_sick[,3])))];table(hoi_healthy[,3])[rev(
 
 # About R Setups
 ```{r, warning=FALSE,message=FALSE}
-# As per this date (12.9.24), all the above codes work to produce results with the data files given.
+# As per this date (16.9.24), all the above codes work to produce results with the data files given.
 # All the packages have been copied to local drive (12.9.24), i.e. the content of '.libPaths()'
 # R is 'R version 4.3.1 (2023-06-16 ucrt)' (with 'version'/'getRversion()' command)
 # And RStudio is '2024.4.0.735' (with 'RStudio.Version()' command)
