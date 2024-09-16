@@ -75,7 +75,7 @@ ME2=rownames(MASLD[MASLD[,'E']==106000,])
 to=ME[which(ME[,1] %in% ME2),'patient.number']
 te=ME[which(ME[,1] %in% ME2),'E']
 MASLD[as.character(to),'E']=te
-#These (11-KA4) will perhaps change in the lab (sometime after 24.10.23):
+# These (11-KA4) will perhaps change in the lab (sometime after 24.10.23):
 M11=read.csv('11KA4_tikka231023.csv',header=TRUE, sep=";")
 # M11[,1][c(1:5,9)];MASLD[as.character(M11[,1][c(1:5,9)]),'11-KA4'] #These were denoted with 'big interference'
 MASLD[as.character(M11[,1][c(1:5,9)]),'11-KA4'] = NA #Alternatively: median(MASLD[!rownames(MASLD) %in% as.character(M11[,1][c(1:5,9)]),'11-KA4'])
@@ -86,23 +86,23 @@ NAFLD=NAFLD[order(NAFLD[,'BMI']),]
 NAFLD=NAFLD[NAFLD[,'BMI']!=them,]
 MASLD=MASLD[order(MASLD[,'BMI']),]
 #https://appsilon.com/imputation-in-r/ #https://www.datasciencemadesimple.com/get-minimum-value-of-a-column-in-r-2/?expand_article=1
-#New data import withouth changing the conames: https://readxl.tidyverse.org/articles/column-names.html
+# New data import withouth changing the conames: https://readxl.tidyverse.org/articles/column-names.html
 Bali=data.frame(read_excel("Liver_bile_acids_PFAS.xlsx",sheet = "Liver_BA",.name_repair = "minimal")); row.names(Bali)=Bali[,1]
 Pfase=data.frame(read_excel("Liver_bile_acids_PFAS.xlsx",sheet = "PFAS_serum",.name_repair = "minimal")); rownames(Pfase)=as.vector(unlist(Pfase[,1]))
 Base=data.frame(read_excel("Liver_bile_acids_PFAS.xlsx",sheet = "Serum_BA",.name_repair = "minimal"));rownames(Base)=as.vector(unlist(Base[,1]))
 C4=data.frame(read_excel("Liver_bile_acids_PFAS.xlsx",sheet = "C4",.name_repair = "minimal")); rownames(C4)=as.vector(unlist(C4[,1]))
 Clini=data.frame(read_excel("Matching clinical data_all.xlsx",sheet = "Sheet1",.name_repair = "minimal")); rownames(Clini)=as.vector(unlist(Clini[,1]));
-# https://www.analyticsvidhya.com/blog/2021/06/hypothesis-testing-parametric-and-non-parametric-tests-in-statistics/
+#https://www.analyticsvidhya.com/blog/2021/06/hypothesis-testing-parametric-and-non-parametric-tests-in-statistics/
 MASLD[1:2,2:27] #or head(MASLD);
 
-#The below ordering needs to be changed...
+# The below ordering needs to be changed...
 Bali=Bali[as.character(MASLD$PatientNumber),];Bali[1:3,2:10] #https://stackoverflow.com/questions/54264980/r-how-to-set-row-names-attribute-as-numeric-from-character I did otherway around
 Base=Base[as.character(MASLD$PatientNumber),];#Base[1:3,2:10]
 Clini=Clini[as.character(MASLD$PatientNumber),];#Clini[1:3,2:10] # Many of these are irrelevant here... so not opening them, they would exhaust this file
 C4=C4[as.character(MASLD$PatientNumber),];#C4[1:3,]
 Pfase=Pfase[as.character(MASLD$PatientNumber),];Pfase[1:3,2:10]
 
-#Menopause markers:
+# Menopause markers:
 menopause=read_excel("Putative_metabolic_markers_menopause.xlsx",sheet='menopause markers',.name_repair = "minimal"); #rownames(Clini)=as.vector(unlist(Clini[,1]));
 menopause=menopause[8:dim(menopause)[1],]; menopause=menopause[,-15]; menopause[2,2:14]=menopause[1,2:14]; menopause=data.frame(menopause); menopause[2,13:14]=c('v1','v2'); #dim(menopause)
 colnames(menopause)=c('row_names',menopause[2,2:dim(menopause)[2]]); menopause=menopause[3:dim(menopause)[1],];rownames(menopause)=as.vector(unlist(menopause[,1]));
@@ -126,10 +126,10 @@ hou=c('TbMCA','ToMCA','TDCA','TDHCA','TLCA')
 for (i in 1:5) {Bali[Bali[,hou[i]]==1,hou[i]]=hip[i]}
 for (i in 1:5) {Bali[Bali[,hou[i]]==2,hou[i]]=hip[i]}
 
-#An imputation for the missing values:
+# An imputation for the missing values:
 C4[is.na(C4[,2]),2]=median(C4[!is.na(C4[,2]),2]) #assuming that these were not below quantitation and replacing with median
-# https://www.geeksforgeeks.org/performing-logarithmic-computations-in-r-programming-log-log10-log1p-and-log2-functions/
-# https://stackoverflow.com/questions/50476717/i-want-to-align-match-two-unequal-columns
+#https://www.geeksforgeeks.org/performing-logarithmic-computations-in-r-programming-log-log10-log1p-and-log2-functions/
+#https://stackoverflow.com/questions/50476717/i-want-to-align-match-two-unequal-columns
 
 #Matching two unequal columns.. match the names of one original column (dat2) to ones that are missing (dat1 with to other) #Not sure if this should be this difficult...
 tv=cbind(MASLD[,1],NAFLD[,2:7],Clini[,'HOMA.IR'],MASLD[,colnames(NAFLD[,8:27])],Bali[,2:dim(Bali)[2]], C4[,2:dim(C4)[2]],Base[,2:dim(Base)[2]],Pfase[,(2:(dim(Pfase)[2]))], MASLD[,'PFAS']);
@@ -139,19 +139,19 @@ colnames(tv)[colnames(tv)=="MASLD[, 1]" ]='PatientNumber';#colnames(tv)#
 rownames(tv)=unlist(Bali[,1]); 
 hep=colnames(tv)[!colnames(tv) %in% c( "Benzylparaben" ,"Methylparaben")] 
 
-#Not sure when it is the best time to take not needed variables away, perhaps at the very end?
+# Not sure when it is the best time to take not needed variables away, perhaps at the very end?
 tv=tv[,hep]
 # Here I add the lipids. In the future, I need to divide all the groups in their own components e.g. dataframe called 'lipids' so that adding them will be more straightforward:
 tv=cbind(tv,MASLD[,(dim(MASLD)[2]-13):dim(MASLD)[2]]) 
 
-#The basic preprocessing is just the below lines:
+# The basic preprocessing is just the below lines:
 tve=tv[,2:dim(tv)[2]]; tve[tve == 0] <- NA; #Almost all variables are here
 tv_half <- tve %>% mutate(replace(., is.na(.), min(., na.rm = T)/2)) #https://mdatools.com/docs/preprocessing--autoscaling.html
 tv_half_log2 <- log2(tv_half);
 tv_auto <- prep.autoscale(tv_half_log2, center = TRUE, scale = TRUE);  #https://svkucheryavski.gitbooks.io/mdatools/content/preprocessing/text.html
 tv_all=cbind(tv[,1],tv_auto); 
 
-#Changing the column names needs to have separate variables for each type of variable (contaminant, steroid, etc.)
+# Changing the column names needs to have separate variables for each type of variable (contaminant, steroid, etc.)
 x1=colnames(tv_all[,c(1:8)]); v2=dim(NAFLD)[2]+1
 x2=colnames(tv_all[,9:v2]);v3=(dim(Bali)[2]+v2);x3=colnames(tv_all[,(v2+1):(v3)]);v4=(dim(Base)[2])+v3
 x4=colnames(tv_all[,(v3+1):(v4-1)]);x5=colnames(tv_all[,(v4):(dim(tv_all)[2])]); 
@@ -168,7 +168,7 @@ colnames(tv_all)[colnames(tv_all)=='MASLD[, \"PFAS\"]']='PFAS';
 x5=x5[x5!='PFAS'];x5=x5[x5!='Perfluorodecyl.ethanoic.acid']; x6=x6[x6!='Total_TG'] # x1;x2;x3;x4;x5;
 tv_all=tv_all[,!colnames(tv_all) %in% c('Total_TG','PFAS',"Perfluorodecyl.ethanoic.acid")]
 
-#In case you would need just the logged values:
+# In case you would need just the logged values:
 tv_half_log22=cbind(tv[,1],tv_half_log2);
 x1=colnames(tv_half_log22[,c(1:8)]); v2=dim(NAFLD)[2]+1
 x2=colnames(tv_half_log22[,9:v2]);v3=(dim(Bali)[2]+v2);
@@ -190,12 +190,12 @@ colnames(tv_half_log22)[colnames(tv_half_log22)=='MASLD[, \"PFAS\"]']='PFAS';
 x5=x5[x5!='PFAS'];x5=x5[x5!='Perfluorodecyl.ethanoic.acid']; x6=x6[x6!='Total_TG'] # x1;x2;x3;x4;x5;
 tv_half_log22=tv_half_log22[,!colnames(tv_half_log22) %in% c('Total_TG','PFAS',"Perfluorodecyl.ethanoic.acid")]
 
-#This needs to be done early on:
+# This needs to be done early on:
 colnames(tv)[colnames(tv)=='17aOH-P4']='17a-OHP4'
 colnames(tv_half_log22)[colnames(tv_half_log22)=='17aOH-P4']='17a-OHP4'
 colnames(tv_all)[colnames(tv_all)=='17aOH-P4']='17a-OHP4'
 
-#This needs to be done also soon, to gather all the treatment etc. variable names separately...: 
+# This needs to be done also soon, to gather all the treatment etc. variable names separately...: 
 Treatment=colnames(tv_all)[71:77];
 Mediator=colnames(tv_all)[9:28];
 Outcome=colnames(tv_all)[c(29:51,78:90)]; ##https://sparkbyexamples.com/r-programming/r-remove-from-vector-with-examples/
@@ -206,18 +206,17 @@ Outcome=Outcome[!Outcome %in% c('Total_TG','PFAS','Perfluorodecyl.ethanoic.acid'
 Outcome=Outcome[! Outcome %in% x4] #https://sparkbyexamples.com/r-programming/r-remove-from-vector-with-examples/
 Mediator[Mediator=="17aOH-P4"]="17a-OHP4"
 
-#In case you would need nonscaled covariates and scaled/logged all other variables:
+# In case you would need nonscaled covariates and scaled/logged all other variables:
 tv_covscl=tv_all
 tv_covNS=cbind(tv[,1:8],tv_all[,9:dim(tv_all)[2]])
 tv_LOG_covscl=tv_half_log22
 tv_LOG_covNS=cbind(tv[,1:8],tv_half_log22[,9:dim(tv_half_log22)[2]])
 colnames(tv_covNS)[1:8]=colnames(tv_all)[1:8]
 colnames(tv_LOG_covNS)[1:8]=colnames(tv_all)[1:8]
-#This is needed occasionally:
+# This is needed occasionally:
 tv_c=tv_covscl 
 # https://stackoverflow.com/questions/6984796/how-to-paste-a-string-on-each-element-of-a-vector-of-strings-using-apply-in-r
-# https://stackoverflow.com/questions/18997297/remove-ending-of-string-with-gsub
-# https://rdrr.io/bioc/qpgraph/man/qpNrr.html
+# https://stackoverflow.com/questions/18997297/remove-ending-of-string-with-gsub # https://rdrr.io/bioc/qpgraph/man/qpNrr.html
 
 ```
 
@@ -306,11 +305,11 @@ Outcome='HOMA-IR';Out='HOMA-IR'; oute='Level';num=1.5 ;Group='All';boxplots(ie,G
 # Making Forest Plots
 ```{r, warning=FALSE,message=FALSE,fig.width=6.0,fig.align="left"} 
 
-#Some further definitions are needed
+# Some further definitions are needed
 NAFLD=cbind(tv[,1:28])#,tv_half_log2[,1:20])#tv[,1:28]);
 NAFLD[NAFLD[,c(5)]>0,5]=1;NAFLD[NAFLD[,c(6)]>0,6]=1;NAFLD[NAFLD[,c(7)]>0,7]=1;
 NAFLD[NAFLD[,c(8)] <= 1.5,8]=0;NAFLD[NAFLD[,c(8)]>1.5,8]=1; 
-#You need to do this to get rid of Xs and other not recognizable for the below function:
+# You need to do this to get rid of Xs and other not recognizable for the below function:
 colnames(NAFLD) <- gsub("-", ".", colnames(NAFLD))
 colnames(NAFLD) <- gsub("/", ".", colnames(NAFLD))
 colnames(NAFLD) <- gsub("11", "X11", colnames(NAFLD))
@@ -318,7 +317,7 @@ colnames(NAFLD) <- gsub("17", "X17", colnames(NAFLD))
 colnames(NAFLD) <- gsub("#", ".", colnames(NAFLD))
 colnames(NAFLD)[colnames(NAFLD)=='X17aOH.P4']='X17.aOHP4' #oh...
 
-#This works with the autoscaled (raw if loge=1 and remove 1 in the means) data NAFLD as well...
+# This works with the autoscaled (raw if loge=1 and remove 1 in the means) data NAFLD as well...
 pre_errors_2=function(NAFLD,Outcome,Group,name,ordera,oute,first,e,xlim) { # Group='Female'
   
   if (Group=='Male') {NAFLDo=NAFLD[NAFLD[,'SEX.1F.2M']==2,]} else if (Group=='Female') 
@@ -330,9 +329,8 @@ pre_errors_2=function(NAFLD,Outcome,Group,name,ordera,oute,first,e,xlim) { # Gro
     #https://stats.stackexchange.com/questions/237256/is-the-shapiro-wilk-test-only-applicable-to-smaller-sample-sizes # https://statisticsbyjim.com/hypothesis-testing/nonparametric-parametric-tests/
     means=c();for (j in 9:28) {means=append(means,median(SG0[,j], na.rm=TRUE))} 
     #https://www.statology.org/mean-standard-deviation-grouped-data/ # https://amsi.org.au/ESA_Senior_Years/SeniorTopic4/4h/4h_2content_11.html # https://www.themathdoctors.org/mean-and-standard-deviation-of-grouped-data/
-    sds=c();for (j in 9:28) {sds=append(sds,sd(SG0[,j],na.rm=TRUE))} #tähän jäätiin...
-    error_lower=means-sds# error_lower[error_lower <= 0] = 0
-    error_upper=means+sds; error=sds
+    sds=c();for (j in 9:28) {sds=append(sds,sd(SG0[,j],na.rm=TRUE))} #here we are... :)
+    error_lower=means-sds; error_upper=means+sds; error=sds
     sample_data <- append(sample_data,data.frame(study=colnames(NAFLD[,9:28]),index=colnames(NAFLD[,9:28]),result=means,error=error))} # cate<- (str_extract(colnames(SG0[,9:28]), "[aA-zZ]+"))    #https://stackoverflow.com/questions/29825537/group-categories-in-r-according-to-first-letters-of-a-string
     # https://datatofish.com/create-dataframe-in-r/#if you know: ga=groups[,'Abbreviation']; md=metad[,'name']; unique(c(ga,md)); ga[!(ga %in% md)]; ga[ga=="17a-OHP4"]="17aOH-P4"
   # https://stackoverflow.com/questions/31518150/gsub-in-r-is-not-replacing-dot
@@ -344,12 +342,8 @@ pre_errors_2=function(NAFLD,Outcome,Group,name,ordera,oute,first,e,xlim) { # Gro
   ps=c();for (j in 9:28) {xnam <- colnames(NAFLDo)[j]; fmla <- as.formula(paste(xnam, "~",Outcome));
   ps=append(ps,wilcox.test(fmla, data = NAFLDo,exact = FALSE)$p.value)}#kruskal.test
   # http://www.sthda.com/english/wiki/unpaired-two-samples-wilcoxon-test-in-r
-
-  # print(mean(df[df[,1]==e,'result.1']));#hist(df[df[,1]==e,'result.1'],breaks=50)
-  # print(mean(df[df[,1]==e,'result']));#hist(df[df[,1]==e,'result'],breaks=50)
   # https://www.statisticshowto.com/probability-and-statistics/statistics-definitions/parametric-and-non-parametric-data/
   a=df[df[,1]==e,'result.1']/df[df[,1]==e,'result']; 
-  # print(a); print(log(a))
   v2=data.frame(log(df$result.1/df$result)) #this should give the right order of the variables if not the absolute change
   v2[,'result']=v2[,1];v2[,'name']=df$study;v2=v2[,2:3]
   v2[,'name'] <- gsub("\\.", "-", v2[,'name']) #https://stackoverflow.com/questions/31518150/gsub-in-r-is-not-replacing-dot
@@ -364,12 +358,10 @@ pre_errors_2=function(NAFLD,Outcome,Group,name,ordera,oute,first,e,xlim) { # Gro
   #https://en.wikipedia.org/wiki/Wilcoxon_signed-rank_test
   v2[,'result_pure']=(df$result.1/df$result) #case and control
   v2[,'error']=(abs((1/df$result)*df$error.1)+abs((df$result.1/df$result^2)*df$error))/dim(NAFLDo)[1]*1.64
-
-  #This error above is ok... it is from the Jukka Vaari 1993 Fysiikan Laboratoriotyöt  
+  # This 'error' definition above is ok... it is from the Jukka Vaari 1993 Fysiikan Laboratoriotyöt  
   v2[,'error'][v2[,'error']>(median(v2[,'error'])+sd(v2[,'error']))]=median(v2[,'error'])*1.25
   v2[,'errord1a']=v2[,'result_pure']-v2[,'error']#(df$result.1-dy)/(df$result+dx)# #
   v2[,'errord2a']=v2[,'result_pure']+v2[,'error']#(df$result.1+dy)/(df$result-dx)##
-
   v2[,'errord1']=log(v2[,'errord1a'])
   v2[,'errord2']=log(v2[,'errord2a'])
   v2[,'result']=log(v2[,'result_pure'])
@@ -377,9 +369,9 @@ pre_errors_2=function(NAFLD,Outcome,Group,name,ordera,oute,first,e,xlim) { # Gro
   v2[,'Case']=df$result.1 #
   #https://stackoverflow.com/questions/31518150/gsub-in-r-is-not-replacing-dot
 
-  v2[,'pval0']=v2[,'pval']#fp$pval
-  v2[,'pval1']=v2[,'pval']#fp$pval # write.csv(v2n, 'scaled_fibrosis results.csv')# write.csv(v2c, 'raw_fibrosis results.csv')# v2$pval0[order(v2$pval0)]
-  v2[,'Significance0']= v2[,'pval0']<0.1#(v2[,case1]  < 1 & v2[,case2] < 1) | (v2[,case1]  >= 1 & v2[,case2] >= 1)
+  v2[,'pval0']=v2[,'pval']
+  v2[,'pval1']=v2[,'pval']
+  v2[,'Significance0']= v2[,'pval0']<0.1#
   v2[,'Significance0'][v2[,'Significance0']==TRUE]='Yes'
   v2[,'Significance0'][v2[,'Significance0']==FALSE]='No'
   v2[,'Color0']=v2[,'pval0'] < 0.1#(v2[,case1]  < 1 & v2[,case2] < 1) | (v2[,case1]  >= 1 & v2[,case2] >= 1)
@@ -400,10 +392,9 @@ pre_errors_2=function(NAFLD,Outcome,Group,name,ordera,oute,first,e,xlim) { # Gro
   v2=v2[rev(order(v2[,'result'])),]
 
   xlab = "Autoscaled Concentrations (SE)" #xlab = "Raw Concentrations in Log10 Scale (SE)"}
-  xlim=c(min(v2$errord1),max(v2$errord2))
-  # xlim=c(min(v2$result)*1.1,max(v2$result)*1.1) # if (xlim[2]>1) {xlim[2]=1};# if (xlim[1] < -0.75) {xlim[1]=-0.75};
+  xlim=c(min(v2$errord1),max(v2$errord2)) #Occasionally: xlim=c(min(v2$result)*1.1,max(v2$result)*1.1) # if (xlim[2]>1) {xlim[2]=1};# if (xlim[1] < -0.75) {xlim[1]=-0.75};
   
-  #Below wex, has been done already:
+  # Below wex, has been done already:
   # plote2=forestplot(df = v2, #drive tba_example_v3_oh_tikka17823.R if not working via 'x' error #coef, #
   #                   estimate = result,
   #                   se=0,#abs(errord1-errord2)/4, #sterr,##this makes the significant value:
@@ -433,21 +424,19 @@ pre_errors_2=function(NAFLD,Outcome,Group,name,ordera,oute,first,e,xlim) { # Gro
   # for (i in stripr) {j <- which(grepl('rect', g$grobs[[i]]$grobs[[1]]$childrenOrder))
   #   g$grobs[[i]]$grobs[[1]]$children[[j]]$gp$fill <- fills[k]; k <- k+1}
   # grid::grid.draw(g)
-  # https://stackoverflow.com/questions/24169675/multiple-colors-in-a-facet-strip-background-in-ggplot
-  # http://www.sthda.com/english/wiki/ggplot2-axis-scales-and-transformations #https://www.statology.org/geom_point-fill/
-  # https://stackoverflow.com/questions/62093084/set-geom-vline-line-types-and-sizes-with-aes-mapping-in-ggplot2
-  # https://www.google.com/search?q=calculate+standard+error&sca_esv=564912168&rlz=1C1GCEA_enFI1072FI1072&ei=qjsBZYbOL-WMxc8PjumCkAg&ved=0ahUKEwiGy8qF4aaBAxVlRvEDHY60AIIQ4dUDCBA&uact=5&oq=calculate+standard+error&gs_lp=Egxnd3Mtd2l6LXNlcnAiGGNhbGN1bGF0ZSBzdGFuZGFyZCBlcnJvcjIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYigUYsAMYQzIKEAAYigUYsAMYQ0jVRFDZEFjXIHACeAGQAQCYAUSgAZMEqgEBObgBA8gBAPgBAcICBhAAGAcYHsICCBAAGAcYHhgKwgIIEAAYBxgeGBPCAgoQABgHGB4YExgK4gMEGAAgQeIDBRIBMSBAiAYBkAYK&sclient=gws-wiz-serp
-  # This has been already done:
+  # # https://stackoverflow.com/questions/24169675/multiple-colors-in-a-facet-strip-background-in-ggplot
+  # # http://www.sthda.com/english/wiki/ggplot2-axis-scales-and-transformations #https://www.statology.org/geom_point-fill/
+  # # https://stackoverflow.com/questions/62093084/set-geom-vline-line-types-and-sizes-with-aes-mapping-in-ggplot2
+  # # https://www.google.com/search?q=calculate+standard+error&sca_esv=564912168&rlz=1C1GCEA_enFI1072FI1072&ei=qjsBZYbOL-WMxc8PjumCkAg&ved=0ahUKEwiGy8qF4aaBAxVlRvEDHY60AIIQ4dUDCBA&uact=5&oq=calculate+standard+error&gs_lp=Egxnd3Mtd2l6LXNlcnAiGGNhbGN1bGF0ZSBzdGFuZGFyZCBlcnJvcjIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYigUYsAMYQzIKEAAYigUYsAMYQ0jVRFDZEFjXIHACeAGQAQCYAUSgAZMEqgEBObgBA8gBAPgBAcICBhAAGAcYHsICCBAAGAcYHhgKwgIIEAAYBxgeGBPCAgoQABgHGB4YExgK4gMEGAAgQeIDBRIBMSBAiAYBkAYK&sclient=gws-wiz-serp
+  # # This has been already done:
   # jpeg(paste(name ,"divi.jpg"), width = 7500, height = 11000, quality = 100,pointsize = 16, res=1000); print(grid::grid.draw(g));dev.off();
-  
+
   # return(ordera) #If you do not want to have 'null' to the Rmarkdown/html take this away 
   } 
 
 
-# This is with first(!!), use it
-# is normal (non-log scale) image (and autoscaled), loge=1 is  log10 scale image (and raw data)
-# Necroinflammation  HOMA-IR Steatosis.Grade.0.To.3 Fibrosis.Stage.0.to.4
-loge=0; Outcome='Steatosis.Grade.0.To.3';Out='Steatosis'; oute='Steatosis';first=TRUE; e='P4';ordera=c();
+# This is with first(!!). Use it. 
+Outcome='Steatosis.Grade.0.To.3';Out='Steatosis'; oute='Steatosis';first=TRUE; e='P4';ordera=c();
 Group='All';name1=paste("Forest plot of",Group, "Steroid Ratios in",Out);hel=pre_errors_2(NAFLD,Outcome,Group,name1,ordera,oute,first,e,xlim)
 #Afterwards:
 first=FALSE;
@@ -635,7 +624,7 @@ group_chords=function(vars,n_level,fig_name, big,rem,modi,colt,gend,colors,a,b,c
 knitr::include_graphics(paste0(gend,'hie.jpeg'))
 }
 
-#All variables
+# All variables
 n_level=0.2; circos.clear(); vars=list(resulta)
 big='Yes';title='All Variables' # 
 rem=x4; modi=5; colt='black'
@@ -643,7 +632,7 @@ a=length(x1)-1;b=length(x2);c=length(x3);
 d=length(x4);e=length(x5);f=length(x6);#Check inside function
 gend=c('All');colors=c('blue');group_chords(vars[[1]],n_level,fig_name,big,rem,modi,colt,gend,colors,a,b,c,d,e,f) #this drives the function
 
-#Genderwise:
+# Genderwise:
 vars=list(resultaf,resultam); #
 big='No';title='Genders Separated'; #or 'Yes' for the big plot alone
 rem=x4; modi=4; colt='black';colors=c('white','black');#rem=x3; modi=5; colt='green';
@@ -658,7 +647,7 @@ gend=c('Male');colors=c('black');group_chords(vars[[2]],n_level,fig_name,big,rem
 # Making Variance Explained Plots
 ```{r, warning=FALSE,message=FALSE,fig.width=6.0,fig.align="left"}
 # This is it! https://bioconductor.org/packages/release/bioc/vignettes/scater/inst/doc/overview.html
-#or
+# or
 # https://stats.stackexchange.com/questions/79399/calculate-variance-explained-by-each-predictor-in-multiple-regression-using-r
 # https://rdrr.io/github/MRCIEU/TwoSampleMR/man/get_r_from_pn.html
 # https://onlinestatbook.com/2/effect_size/variance_explained.html
@@ -1182,7 +1171,7 @@ knitr::include_graphics("Linear Model Estimate Plot of Steroids_y vs. PFAS_as_x 
 # [6] "Linear Model Estimate Plot of Steroids_y vs. PFAS_as_x male .jpg"  
 ```
 
-# Making Scatter Plots with Model Curves 
+# Making Scatter Plots with Models 
 ```{r, warning=FALSE,message=FALSE,fig.width=10.0,fig.align="left"}
 # This should be as good as it gets... eli  maksimilla vedetään... eli pitäis olla ok, sillä skaalattu vastaa korrelaatiota tss. skaalaus vielä miehiin...
 the_fun_figs=function(tv_all,Group,hopiu,aa,bb,fn) { #  ok,aa,bb
@@ -1622,7 +1611,7 @@ knitr::include_graphics('network.jpeg')
 
 # Making Causal Mediation Analysis
 ```{r, warning=FALSE,message=FALSE,fig.align="left"}
-#The basic hypothesis. All are variables (y~x+m;m~x)
+# The basic hypothesis. All are variables (y~x+m;m~x)
 loop_med_simplified1a=function(Treatment, Mediator, Outcome,tv_all,Group,name,simss,t.val,test,sick,sick_group) {
   if (Group=='female') {cond=tv_all[,'Gender']==min(tv_all[,'Gender'])} else if (Group=='male') {cond=tv_all[,'Gender']==max(tv_all[,'Gender'])} else if (Group=='All') {cond=rep(TRUE,dim(tv_all)[1])}
   tv_red=c(); 
@@ -1673,7 +1662,7 @@ loop_med_simplified1a=function(Treatment, Mediator, Outcome,tv_all,Group,name,si
   #https://stackoverflow.com/questions/21847830/handling-java-lang-outofmemoryerror-when-writing-to-excel-from-r
   return(res)}
 
-#Testing hypothesis one:
+# Testing hypothesis one:
 the_essentials=function(Treatment, Mediator, Outcome,tv, Group,name,simss,t.val,test,sick,sick_group,fn,lkm,date,joo,ip) {
   hoi1=paste("C:/Users/patati/Desktop/TurkuOW/RWork/basic causal mediation with the counterfactuals/",fn,sep='')
   setwd(hoi1) #https://topepo.github.io/caret/parallel-processing.html # https://ds-pl-r-book.netlify.app/optimization-in-r.html
@@ -1691,7 +1680,7 @@ file_names=c("Steatosis" , "Fibrosis" ,"Necroinflammation" ,  "HOMAIR", 'Menopau
 lkm=30; joo='ei';ip=1; sick='yes'
 t.val='no'; Group='All' #name='generic';
 
-#All;
+# All;
 joo='joo';sick='no'
 ccova=tv[,c("Steatosis.Grade.0.To.3", "Fibrosis.Stage.0.to.4" ,"Necroinflammation","HOMA-IR")] 
 fn='All'; sick_group=rowSums(ccova)>4 #toth#
@@ -1730,14 +1719,12 @@ fn='All'; sick_group=rowSums(ccova)>4 #toth#
 ```{r, warning=FALSE,message=FALSE,fig.width=10.0,fig.align="left"}
 setwd("C:/Users/patati/Desktop/TurkuOW/RWork/tests6/tests_basic_cova/the all/") #check this if needed...
 library(readxl)
-#... all: " uh7ma.RData"  3 files 
 all_all=read_xlsx(path = "100basic_okcovaha All tikka5624 .xlsx") # #_2 
 all_all=as.data.frame(all_all); all_all=all_all[!is.na(all_all[,1]),];rownames(all_all)=all_all[,1]; all_all=all_all[,2:dim(all_all)[2]]; all_all=all_all[rev(order(all_all[,1])),]
-all_all=all_all; #all_Female=all_all;all_Male=all_all, this is important: all_all=all_all[!is.na(all_all[,1]),]
-all_all=all_all[all_all[,1]>0,]
-## https://stats.stackexchange.com/questions/282155/causal-mediation-analysis-negative-indirect-and-total-effect-positive-direct
-# # https://www.researchgate.net/post/How_can_I_interpret_a_negative_indirect_effect_for_significant_mediation
-# # https://stackoverflow.com/questions/31518150/gsub-in-r-is-not-replacing-dot replacing dot
+all_all=all_all; all_all=all_all[all_all[,1]>0,]
+#https://stats.stackexchange.com/questions/282155/causal-mediation-analysis-negative-indirect-and-total-effect-positive-direct
+#https://www.researchgate.net/post/How_can_I_interpret_a_negative_indirect_effect_for_significant_mediation
+#https://stackoverflow.com/questions/31518150/gsub-in-r-is-not-replacing-dot replacing dot
 
 rt2=all_all
 rt2=rt2[rt2[,1]>0,]
