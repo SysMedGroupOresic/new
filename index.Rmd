@@ -1184,7 +1184,7 @@ knitr::include_graphics("Linear Model Estimate Plot of Steroids_y vs. PFAS_as_x 
 
 # Making Scatter Plots with Model Curves 
 ```{r, warning=FALSE,message=FALSE,fig.width=10.0,fig.align="left"}
-#maksimilla vedetään... eli pitäis olla ok, sillä skaalattu vastaa korrelaatiota tss. skaalaus vielä miehiin...
+# This should be as good as it gets... eli  maksimilla vedetään... eli pitäis olla ok, sillä skaalattu vastaa korrelaatiota tss. skaalaus vielä miehiin...
 the_fun_figs=function(tv_all,Group,hopiu,aa,bb,fn) { #  ok,aa,bb
   if (Group=='male') {NAFLDo=tv_all[tv_all[,'Gender']==max(tv_all[,'Gender']),]} else if (Group=='female') 
   {NAFLDo=tv_all[tv_all[,'Gender']==min(tv_all[,'Gender']),]} else if (Group=='All') {NAFLDo=tv_all}
