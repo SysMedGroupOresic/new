@@ -248,7 +248,7 @@ title = paste(Out,"'s Effect to Concentrations of Steroids", ' in ',Group,sep=""
 if (Group=='Male') {lep=theme(legend.position = "none")} else if (Group=='Female') 
 {lep=theme(legend.position = "none")} else if (Group=='All') {lep=theme_classic2()+theme(axis.text.x=element_text(angle=90,hjust=0.95,vjust=0.2,size = 14))}
 # lep=theme(legend.position = "none")
-if (num==1.5) {e1=paste('Case (>',num,')',sep="");e2=paste('Control (=',num,')',sep=""); e3=paste('****<0.001', '***<0.01', '**<0.5', '*<0.1')} else {e1=paste('Case (>',0,')',sep="");e2=paste('Control (=',0,')',sep="");e3=paste('****<0.001', '***<0.01', '**<0.5', '*<0.1')}
+if (num==1.5) {e1=paste('Case (>',num,')',sep="");e2=paste('Control (=',num,')',sep=""); e3=paste('****<0.001', '***<0.01', '**<0.05', '*<0.1')} else {e1=paste('Case (>',0,')',sep="");e2=paste('Control (=',0,')',sep="");e3=paste('****<0.001', '***<0.01', '**<0.5', '*<0.1')}
 
 e3=paste('****<0.001', '***<0.01', '**<0.5', '*<0.1')
 
@@ -1731,7 +1731,7 @@ fn='All'; sick_group=rowSums(ccova)>4 #toth#
 setwd("C:/Users/patati/Desktop/TurkuOW/RWork/tests6/tests_basic_cova/the all/") #check this if needed...
 library(readxl)
 #... all: " uh7ma.RData"  3 files 
-all_all=read_xlsx(path = "100basic_okcovaha All tikka5624 .xlsx") #e on healthy :) #_2 
+all_all=read_xlsx(path = "100basic_okcovaha All tikka5624 .xlsx") # #_2 
 all_all=as.data.frame(all_all); all_all=all_all[!is.na(all_all[,1]),];rownames(all_all)=all_all[,1]; all_all=all_all[,2:dim(all_all)[2]]; all_all=all_all[rev(order(all_all[,1])),]
 all_all=all_all; #all_Female=all_all;all_Male=all_all, this is important: all_all=all_all[!is.na(all_all[,1]),]
 all_all=all_all[all_all[,1]>0,]
@@ -1875,8 +1875,8 @@ plottings_sf=function(uh7ma,date,sick,Group) {
   
   hoi=c(); 
   hoi=scan(text=rt2[,1] , what=" ")#rownames(rt2)# names(rt2[,1]) rownames(rt2)
-  hoi=as.data.frame(matrix(hoi, ncol = 3,  byrow = TRUE), stringsAsFactors = FALSE)
-
+  hoi=as.data.frame(matrix(hoi, ncol = 3,  byrow = TRUE), stringsAsFactors = FALSE) #Check this number (ncol) 3/4
+hoi=hoi[,1:3]
   colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ## https://stats.stackexchange.com/questions/282155/causal-mediation-analysis-negative-indirect-and-total-effect-positive-direct# https://www.researchgate.net/post/How_can_I_interpret_a_negative_indirect_effect_for_significant_mediation# https://stackoverflow.com/questions/31518150/gsub-in-r-is-not-replacing-dot replacing dot
   
   hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH.P4']='17a-OHP4'
@@ -1892,14 +1892,19 @@ plottings_sf=function(uh7ma,date,sick,Group) {
 windowsFonts(A = windowsFont("Calibri (Body)")) 
 
 p=ggplot(df2, aes(x = x,  next_x = next_x, node = node,  next_node = next_node,fill = factor(node),label = node)) +
-          geom_sankey(flow.alpha = 1, node.color = 1) + 
+          geom_sankey(flow.alpha = 1, node.color = 1) +
           geom_sankey_label(size = 3.0, color = 1, fill = "white") +
-          # scale_fill_viridis_d(option = "D", alpha = 0.95) + 
-          theme_sankey(base_size = 24) + 
-          scale_fill_grey(start = 0.5, end = 0.5)+
+          # scale_fill_viridis_d(option = "D", alpha = 0.95) +
+          theme_sankey(base_size = 24) +
+          # scale_fill_grey(start = 0.5, end = 0.5)+
           theme(axis.text.x = element_text(hjust = 0.5, vjust=7,colour = 'black'))+ #https://stackoverflow.com/questions/38862303/customize-ggplot2-axis-labels-with-different-colors
           theme(legend.position = "none") +
           theme(axis.title.x = element_blank())
+
+#Nicer colors than grey:
+# p=ggplot(df2, aes(x = x,  next_x = next_x, node = node,  next_node = next_node,fill = factor(node),label = node)) +geom_sankey(flow.alpha = 0.5, node.color = 1) + geom_sankey_label(size = 3.5, color = 1, fill = "white") +
+# scale_fill_viridis_d() + theme_sankey(base_size = 16) + theme(legend.position = "none")+theme(axis.title.x = element_blank());
+
 library(ragg)
 # Oh! https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/
 # https://r4ds.had.co.nz/graphics-for-communication.html#figure-sizing
@@ -1912,17 +1917,18 @@ invisible(dev.off())
 knitr::include_graphics(pngfile)
 }
 
+
 library(readxl)
 setwd("C:/Users/patati/Desktop/TurkuOW/RWork/tests6/tests_basic/") #check this if needed...
 
-all_all=read_xlsx(path = "100basic All tikka3624 .xlsx") #total Male tikka76524 hyp4b_oki.xlsx") #e on healthy :)
+all_all=read_xlsx(path = "100basic All tikka3624 .xlsx") #total Male tikka76524 hyp4b_oki.xlsx") #
 all_all=as.data.frame(all_all); all_all=all_all[!is.na(all_all$ACME),]; all_all=na.omit(all_all); all_all1=all_all
 
-all_Female=read_xlsx(path = "100basic Female tikka3624 .xlsx") #total Male tikka76524 hyp4b_oki.xlsx") #e on healthy :)
-all_Female=as.data.frame(all_Female); all_Female=all_Female[!is.na(all_Female$ACME),]; all_Female=na.omit(all_Female); 
+all_Female=read_xlsx(path = "100basic Female tikka3624 .xlsx") #total Male tikka76524 hyp4b_oki.xlsx") #
+all_Female=as.data.frame(all_Female); all_Female=all_Female[!is.na(all_Female$ACME),]; all_Female=na.omit(all_Female);
 
-all_Male=read_xlsx(path = "100basic Male tikka3624 .xlsx") #total Male tikka76524 hyp4b_oki.xlsx") #e on healthy :)
-all_Male=as.data.frame(all_Male); all_Male=all_Male[!is.na(all_Male$ACME),]; all_Male=na.omit(all_Male); 
+all_Male=read_xlsx(path = "100basic Male tikka3624 .xlsx") #total Male tikka76524 hyp4b_oki.xlsx") #
+all_Male=as.data.frame(all_Male); all_Male=all_Male[!is.na(all_Male$ACME),]; all_Male=na.omit(all_Male);
 
 sick='all samples'
 lkm=30;Group='All'; name='just all';date='tikka6924_alla'
@@ -1938,6 +1944,17 @@ date='tikka6924_mala';name='just all';Group='male';
 almam=reduced2(all_Male,Group,name,lkm);
 almam = na.omit(almam) #https://www.tutorialspoint.com/how-to-remove-rows-from-data-frame-in-r-that-contains-nan
 plottings_sf(almam,date,sick,Group)
+
+# In case you need something else from somewhere else...
+# setwd("C:/Users/patati/Desktop/TurkuOW/RWork/hypo4/HOMAIR/perus_ok")
+# all_all=read_xlsx(path = "100 hypo4_yes_sick All tikka76524 hyp4a_oki.xlsx") #total Male tikka76524 hyp4b_oki.xlsx") #
+# all_all=as.data.frame(all_all); all_all=all_all[!is.na(all_all$ACME),]; all_all=na.omit(all_all); all_all1=all_all
+# 
+# all_Female=read_xlsx(path = "100 hypo4_yes_sick Female tikka76524 hyp4a_oki.xlsx") #total Male tikka76524 hyp4b_oki.xlsx") #
+# all_Female=as.data.frame(all_Female); all_Female=all_Female[!is.na(all_Female$ACME),]; all_Female=na.omit(all_Female); 
+# 
+# all_Male=read_xlsx(path = "100 hypo4_yes_sick Male tikka76524 hyp4a_oki.xlsx") #total Male tikka76524 hyp4b_oki.xlsx") #
+# all_Male=as.data.frame(all_Male); all_Male=all_Male[!is.na(all_Male$ACME),]; all_Male=na.omit(all_Male); 
 
 ```
 
