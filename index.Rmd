@@ -20,8 +20,9 @@ output:
 
 # Welcome to the 'steroid data analysis' webpage! 
 
-# The procedures and explanations to make all the analysis and plots are in their individual chapters below and
-# there is a small 'disclaimer' at the end also to emphasize that this site is mainly for educational purposes.
+# The procedures and explanations to make all the analysis and plots are in their individual chapters below. 
+# These methods could be also easily applied to other types of data sets and metabolites than 'steroids' and their respective metadata per se. 
+# In addition, there is a small 'disclaimer' also at the end of this webpage to emphasize that this site is mainly for educational purposes.
 # Please let me know if you have any questions. For that, use the 'following' email: patati at the university of Turku
 
 ```
@@ -45,7 +46,7 @@ library(extrafont)
 
 # Setting Global Variables
 ```{r, warning=FALSE,message=FALSE}
-date='tikka16924' #Change this...
+date='tikka17924' #Change this...
 # install.packages("ppcor") just in case the 'install' function here...
 # font_import() # This is important if you have not loaded them before
 # loadfonts(device = "win") #Same applies here.
@@ -437,9 +438,10 @@ pre_errors_2=function(NAFLD,Outcome,Group,name,ordera,oute,first,e,xlim) { # Gro
   #   g$grobs[[i]]$grobs[[1]]$children[[j]]$gp$fill <- fills[k]; k <- k+1}
   # grid::grid.draw(g)
   # # https://stackoverflow.com/questions/24169675/multiple-colors-in-a-facet-strip-background-in-ggplot
-  # # http://www.sthda.com/english/wiki/ggplot2-axis-scales-and-transformations #https://www.statology.org/geom_point-fill/
+  # # http://www.sthda.com/english/wiki/ggplot2-axis-scales-and-transformations 
+  # # https://www.statology.org/geom_point-fill/
   # # https://stackoverflow.com/questions/62093084/set-geom-vline-line-types-and-sizes-with-aes-mapping-in-ggplot2
-  # # https://www.google.com/search?q=calculate+standard+error&sca_esv=564912168&rlz=1C1GCEA_enFI1072FI1072&ei=qjsBZYbOL-WMxc8PjumCkAg&ved=0ahUKEwiGy8qF4aaBAxVlRvEDHY60AIIQ4dUDCBA&uact=5&oq=calculate+standard+error&gs_lp=Egxnd3Mtd2l6LXNlcnAiGGNhbGN1bGF0ZSBzdGFuZGFyZCBlcnJvcjIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYigUYsAMYQzIKEAAYigUYsAMYQ0jVRFDZEFjXIHACeAGQAQCYAUSgAZMEqgEBObgBA8gBAPgBAcICBhAAGAcYHsICCBAAGAcYHhgKwgIIEAAYBxgeGBPCAgoQABgHGB4YExgK4gMEGAAgQeIDBRIBMSBAiAYBkAYK&sclient=gws-wiz-serp
+  # # https://en.wikipedia.org/wiki/Standard_error
   # # This has been already done:
   # jpeg(paste(name ,"divi.jpg"), width = 7500, height = 11000, quality = 100,pointsize = 16, res=1000); print(grid::grid.draw(g));dev.off();
 
@@ -1608,7 +1610,7 @@ coul  <- c('#B2BEB5','Green','Red','Orange') # brewer.pal(2, "Set1") ,'#ADD8E6',
 # Create a vector of color
 my_color <- coul[as.numeric(as.factor(V(network)$carac))]
 
-#These above execution lines have been already done,
+# These above execution lines have been already done,
 # jpeg('network.jpeg',width=4, height=4.7, units="in",quality = 100, pointsize = 7, res=1000)
 # plot(network, mode = "circle",vertex.color=my_color, vertex.size = 10,
 #      edge.arrow.size = 0.8,vertex.label.cex = 0.35,edge.width=as.numeric(E(network)$importance)*6.00 )
@@ -1971,7 +1973,7 @@ sample_size=function(NAFLD,Outcome,Group) {
   }
   return(sample_data)} 
 
-#Yes other one too... for continuous variables, such as HOMA-IR and age (~ menopause)
+# Yes other one too... for continuous variables, such as HOMA-IR and age (~ menopause)
 sample_size2=function(NAFLD,Outcome,Group,sick_groupe) { 
   sample_data=c();n0=c();n1=c();NAFLDo=data.frame()
   for (i in 1:2) {
@@ -2023,7 +2025,7 @@ matrix(unlist(jappend),ncol=8) #rows are all female and male and columns case vs
 # Group='Female';jappend=c(jappend,sample_size2(NAFLD,Outcome,Group,sick_groupe))
 # Group='Male'; jappend=c(jappend,sample_size2(NAFLD,Outcome,Group,sick_groupe))
 # 
-# # #For masld
+# For 'masld'
 # ccova=tv[,c("Steatosis.Grade.0.To.3" , "Fibrosis.Stage.0.to.4" ,"Necroinflammation" ,  "HOMA-IR")] 
 # fn='MASLD';sick_groupe=rowSums(ccova)>4 #toth#
 # Group='All';jappend=c(jappend,sample_size2(NAFLD,Outcome,Group,sick_groupe)) #not the very first though...# xlim=c(0.1,1.7)
@@ -2075,8 +2077,6 @@ a <- "sick"; ie=grep(a,u,fixed=TRUE); u3=u[ie]# sick ones, male or females
 u_sick=list_of_files[u3]#https://www.tutorialspoint.com/how-to-extract-strings-that-contains-a-particular-substring-in-an-r-vector
 a='healthy';ie=grep(a,u,fixed=TRUE);u4=u[ie]
 u_healthy=list_of_files[u4] # u_healthy=list_of_files[grep(a,u,fixed=TRUE)] 
-# plot(as.numeric(u_sick[[1]][,1]))# plot(1:500,as.numeric(u_sick[[1]][1:500,1]))
-
 tcross=function(u_sick) { 
   all_names = c(); i=1
   for (i in (1:length(u_sick))) { #length(u_sick) is 18
@@ -2145,6 +2145,7 @@ pottees=c(  all_all[3],female_all[3],male_all[3],
             all_Fibrosis[3],female_Fibrosis[3],male_Fibrosis[3],
             all_Necroinflammation[3],female_Necroinflammation[3],male_Necroinflammation[3],
             all_HOMAIR[3],female_HOMAIR[3],male_HOMAIR[3])
+
 #In case you need to print the above list. This is good for printing list of list in anyways:
 # mylist <- pottees; file <- paste0("myfile_ok",date,".txt"); conn <- file(description=file, open="w")
 # newlist <- lapply(seq_len(length(mylist)), function(i){
@@ -2152,12 +2153,12 @@ pottees=c(  all_all[3],female_all[3],male_all[3],
 #     temp <- c(i, j, mylist[[i]][[j]])
 #     writeLines(text=paste(temp, collapse=","), con=conn, sep="\r\n")  
 #   }) }); close(conn)
-#So this will give the most common steroids in all cases compared to all cases in all the subjects (all, female, male)
+
+# So this will give the most common steroids in all cases compared to all cases in all the subjects (all, female, male)
 table(unlist(pottees))[rev(order(table(unlist(pottees))))]
 
-
-#For comparing the PFAS/steroid/BA (or lipid) in healthy and sick mediation:
-#Load all the variables in the folder:
+# For comparing the PFAS/steroid/BA (or lipid) in healthy and sick mediation:
+# Load all the variables in the folder:
 setwd("C:/Users/patati/Desktop/TurkuOW/RWork/hypo4/Tiedostot/") #check this if needed...
 files <- list.files(pattern="*.RData")
 ldf <- lapply(files, load)
@@ -2168,6 +2169,7 @@ names(list_of_files) <- files #ht
 #https://www.reddit.com/r/Rlanguage/comments/nq773b/reading_multiple_rdata_files_into_a_list/
 #https://stackoverflow.com/questions/38643000/naming-list-elements-in-r
 
+comp_med_two=function(list_of_files) { #I made this a function, since this kind of cross comparison could be handy also in other contexts
 health=c();sickness=c()
 for (i in 1:length(names(list_of_files))) if (str_detect(names(list_of_files)[i],'healthy')) {health=append(health,list_of_files[i])} else if (str_detect(names(list_of_files)[i],'sick')) {sickness=append(sickness,list_of_files[i])} 
 health2=c();sickness2=c()
@@ -2186,6 +2188,9 @@ colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids','Desig.'); hoi_
 hoi=c(); hoi=scan(text=sickness2[,1], what=""); hoi=as.data.frame(matrix(hoi, ncol = 4,  byrow = TRUE), stringsAsFactors = FALSE)
 colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids','Desig.');
 hoi_sick=hoi[,c('Contaminants','Steroids','Bile Acids or Lipids')] ## https://stats.stackexchange.com/questions/282155/causal-mediation-analysis-negative-indirect-and-total-effect-positive-direct
+return(c(hoi_sick,hoi_healthy))}
+
+cmt=comp_med_two(list_of_files);cmt[1]=hoi_sick;cmt[2]=hoi_healthy
 
 # So the differences between contaminants (in the sick vs. healthy 'mediation') are:
 table(hoi_sick[,1])[rev(order(table(hoi_sick[,1])))];table(hoi_healthy[,1])[rev(order(table(hoi_healthy[,1])))]
@@ -2209,7 +2214,7 @@ table(hoi_sick[,3])[rev(order(table(hoi_sick[,3])))];table(hoi_healthy[,3])[rev(
 
 # About R Setups
 ```{r, warning=FALSE,message=FALSE}
-# As per this date (16.9.24), all the above codes work to produce results with the data files given.
+# As per this date (17.9.24), all the above codes work to produce results with the data files given.
 # All the packages have been copied to local drive (12.9.24), i.e. the content of '.libPaths()'
 # R is 'R version 4.3.1 (2023-06-16 ucrt)' (with 'version'/'getRversion()' command)
 # And RStudio is '2024.4.0.735' (with 'RStudio.Version()' command)
@@ -2277,9 +2282,10 @@ sessionInfo()
 # https://stackoverflow.com/questions/71745719/how-to-control-stripe-transparency-using-ggforestplot-geom-stripes
 # https://stackoverflow.com/questions/10547487/remove-facet-wrap-labels-completely
 # https://stackoverflow.com/questions/24169675/multiple-colors-in-a-facet-strip-background-in-ggplot
-# http://www.sthda.com/english/wiki/ggplot2-axis-scales-and-transformations https://www.statology.org/geom_point-fill/
+# http://www.sthda.com/english/wiki/ggplot2-axis-scales-and-transformations 
+# https://www.statology.org/geom_point-fill/
 # https://stackoverflow.com/questions/62093084/set-geom-vline-line-types-and-sizes-with-aes-mapping-in-ggplot2
-# https://www.google.com/search?q=calculate+standard+error&sca_esv=564912168&rlz=1C1GCEA_enFI1072FI1072&ei=qjsBZYbOL-WMxc8PjumCkAg&ved=0ahUKEwiGy8qF4aaBAxVlRvEDHY60AIIQ4dUDCBA&uact=5&oq=calculate+standard+error&gs_lp=Egxnd3Mtd2l6LXNlcnAiGGNhbGN1bGF0ZSBzdGFuZGFyZCBlcnJvcjIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYRxjWBBiwAzIKEAAYigUYsAMYQzIKEAAYigUYsAMYQ0jVRFDZEFjXIHACeAGQAQCYAUSgAZMEqgEBObgBA8gBAPgBAcICBhAAGAcYHsICCBAAGAcYHhgKwgIIEAAYBxgeGBPCAgoQABgHGB4YExgK4gMEGAAgQeIDBRIBMSBAiAYBkAYK&sclient=gws-wiz-serp
+# https://en.wikipedia.org/wiki/Standard_error
 # https://stackoverflow.com/questions/45271448/r-finding-intersection-between-two-vectors
 # https://www.reddit.com/r/Rlanguage/comments/nq773b/reading_multiple_rdata_files_into_a_list/
 # https://stackoverflow.com/questions/38643000/naming-list-elements-in-r
