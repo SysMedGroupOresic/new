@@ -261,9 +261,9 @@ title = paste(Out,"'s Effect to Concentrations of Steroids", ' in ',Group,sep=""
 if (Group=='Male') {lep=theme(legend.position = "none")} else if (Group=='Female') 
 {lep=theme(legend.position = "none")} else if (Group=='All') {lep=theme_classic2()+theme(axis.text.x=element_text(angle=90,hjust=0.95,vjust=0.2,size = 14))}
 # lep=theme(legend.position = "none")
-if (num==1.5) {e1=paste('Case (>',num,')',sep="");e2=paste('Control (=',num,')',sep=""); e3=paste('****<0.001', '***<0.01', '**<0.05', '*<0.1')} else {e1=paste('Case (>',0,')',sep="");e2=paste('Control (=',0,')',sep="");e3=paste('****<0.001', '***<0.01', '**<0.5', '*<0.1')}
+if (num==1.5) {e1=paste('Case (>',num,')',sep="");e2=paste('Control (=',num,')',sep=""); e3=paste('****<0.001', '***<0.01', '**<0.05', '*<0.1')} else {e1=paste('Case (>',0,')',sep="");e2=paste('Control (=',0,')',sep="");e3=paste('****<0.001', '***<0.01', '**<0.05', '*<0.1')}
 
-e3=paste('****<0.001', '***<0.01', '**<0.5', '*<0.1')
+e3=paste('****<0.001', '***<0.01', '**<0.05', '*<0.1')
 
 data=data[!is.na(data$Concentration),]
 # grouped boxplot: https://stackoverflow.com/questions/32539222/group-boxplot-data-while-keeping-their-individual-x-axis-labels-in-ggplot2-in-r
@@ -291,7 +291,7 @@ theme(text=element_text(size=10.5,family="Calibri"), #change font size of all te
   #+annotate(geom="text",family="Broadway",size=20) # add_pval(plot, pairs = list(c(1, 2)), test='wilcox.test');plot
   #https://datavizpyr.com/horizontal-boxplots-with-ggplot2-in-r/
 # https://stackoverflow.com/questions/72564551/a-custom-legend-unrelated-to-data-in-ggplot
-# p #+ annotation_custom( grid::textGrob(x =3, y = 5, label = "'****<0.001', '***<0.01', '**<0.5', '*<0.1'")).. adding a custom label (unrelated to data) to ggplot is again one of these not so easy but should be easy things... :)
+# p #+ annotation_custom( grid::textGrob(x =3, y = 5, label = "'****<0.001', '***<0.01', '**<0.05', '*<0.1'")).. adding a custom label (unrelated to data) to ggplot is again one of these not so easy but should be easy things... :)
 
 library(ragg)
 path="C:/Users/patati/Documents/GitHub/new/" #oh, classical: https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
@@ -308,7 +308,7 @@ tv_half_log22[,'11-KA4'][tv_half_log22[,'11-KA4']==min(tv_half_log22[,'11-KA4'])
 other='23824e';ie=tv_half_log22## 'Steatosis Grade','Fibrosis Stage','Necroinflammation','HOMA-IR'
 windowsFonts(A = windowsFont("Calibri (Body)"))
 
-# The significance levels are: '****<0.001', '***<0.01', '**<0.5', '*<0.1'
+# The significance levels are: '****<0.001', '***<0.01', '**<0.05', '*<0.1'
 Outcome='Steatosis Grade';Out='Steatosis'; oute='Steatosis';num=0;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
 Outcome='Fibrosis Stage';Out='Fibrosis'; oute='Fibrosis Stage';num=0;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other) 
 Outcome='Necroinflammation';Out='Necroinflammation'; oute='Level';num=0;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
@@ -1895,9 +1895,9 @@ windowsFonts(A = windowsFont("Calibri (Body)"))
 
 p=ggplot(df2, aes(x = x,  next_x = next_x, node = node,  next_node = next_node,fill = factor(node),label = node)) +
           geom_sankey(flow.alpha = 1, node.color = 1) +
-          geom_sankey_label(size = 3.0, color = 1, fill = "white") +
-          # scale_fill_viridis_d(option = "D", alpha = 0.95) +
-          theme_sankey(base_size = 24) +
+          geom_sankey_label(size = 4.0, color = 1, fill = "white") + #geom_sankey_label(size = 8.0, color = 1, fill = "white")
+          # scale_fill_viridis_d(option = "H", alpha = 0.75) +
+          theme_sankey(base_size = 23) + #theme_sankey(base_size = 28) 
           # scale_fill_grey(start = 0.5, end = 0.5)+
           theme(axis.text.x = element_text(hjust = 0.5, vjust=7,colour = 'black'))+ #https://stackoverflow.com/questions/38862303/customize-ggplot2-axis-labels-with-different-colors
           theme(legend.position = "none") +
@@ -1913,7 +1913,7 @@ library(ragg)
 
 path="C:/Users/patati/Documents/GitHub/new/" #oh, classical: https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
 pngfile <- fs::path(path,paste0(Group,'e',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
-agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300,scaling = 2)
+agg_png(pngfile, width = 30, height = 40, units = "cm", res = 300,scaling = 2) #agg_png(pngfile, width = 60, height = 80, units = "cm", res = 600,scaling = 2)
 plot(p)
 invisible(dev.off())
 knitr::include_graphics(pngfile)
