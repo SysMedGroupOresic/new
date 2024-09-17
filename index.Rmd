@@ -46,7 +46,8 @@ library(extrafont)
 
 # Setting Global Variables
 ```{r, warning=FALSE,message=FALSE}
-date='tikka17924' #Change this...
+thedate <- strftime(Sys.Date(),"%d%m%y")
+date=paste0('tikka',thedate) #Change this...
 # install.packages("ppcor") just in case the 'install' function here...
 # font_import() # This is important if you have not loaded them before
 # loadfonts(device = "win") #Same applies here.
@@ -1918,7 +1919,6 @@ invisible(dev.off())
 knitr::include_graphics(pngfile)
 }
 
-
 library(readxl)
 setwd("C:/Users/patati/Desktop/TurkuOW/RWork/tests6/tests_basic/") #check this if needed...
 
@@ -2188,9 +2188,10 @@ colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids','Desig.'); hoi_
 hoi=c(); hoi=scan(text=sickness2[,1], what=""); hoi=as.data.frame(matrix(hoi, ncol = 4,  byrow = TRUE), stringsAsFactors = FALSE)
 colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids','Desig.');
 hoi_sick=hoi[,c('Contaminants','Steroids','Bile Acids or Lipids')] ## https://stats.stackexchange.com/questions/282155/causal-mediation-analysis-negative-indirect-and-total-effect-positive-direct
-return(c(hoi_sick,hoi_healthy))}
+return(list(hoi_sick,hoi_healthy))}
 
-cmt=comp_med_two(list_of_files);cmt[1]=hoi_sick;cmt[2]=hoi_healthy
+cmt=comp_med_two(list_of_files);
+hoi_sick=cmt[[1]];hoi_healthy=cmt[[2]]
 
 # So the differences between contaminants (in the sick vs. healthy 'mediation') are:
 table(hoi_sick[,1])[rev(order(table(hoi_sick[,1])))];table(hoi_healthy[,1])[rev(order(table(hoi_healthy[,1])))]
@@ -2214,7 +2215,9 @@ table(hoi_sick[,3])[rev(order(table(hoi_sick[,3])))];table(hoi_healthy[,3])[rev(
 
 # About R Setups
 ```{r, warning=FALSE,message=FALSE}
-# As per this date (17.9.24), all the above codes work to produce results with the data files given.
+# As per this date, see above or below, 
+thedate 
+# all the above codes work to produce results with the data files given.
 # All the packages have been copied to local drive (12.9.24), i.e. the content of '.libPaths()'
 # R is 'R version 4.3.1 (2023-06-16 ucrt)' (with 'version'/'getRversion()' command)
 # And RStudio is '2024.4.0.735' (with 'RStudio.Version()' command)
