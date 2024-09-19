@@ -47,7 +47,7 @@ library(extrafont)
 # Setting Global Variables
 ```{r, warning=FALSE,message=FALSE}
 thedate <- strftime(Sys.Date(),"%d%m%y")
-date=paste0('tikka',thedate) #Change this...
+date=paste0('tikka',thedate) # Change this...
 # install.packages("ppcor") just in case the 'install' function here...
 # font_import() # This is important if you have not loaded them before
 # loadfonts(device = "win") #Same applies here.
@@ -496,24 +496,27 @@ path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(pat
 ```{r,echo=FALSE, out.width="25%",fig.cap=name6,fig.align="left"}
 path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(path,paste(name6 ,"divi.jpg")))
 ```
-```{r,echo=FALSE, out.width="25%",fig.cap=name7,fig.align="left"}
+
+
+```{r,echo=FALSE, out.width="25%",fig.cap=name7,fig.align="left",echo=FALSE,eval = FALSE }
 path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(path,paste(name7 ,"divi.jpg")))
 ```
-```{r,echo=FALSE, out.width="25%",fig.cap=name8,fig.align="left"}
+```{r,echo=FALSE, out.width="25%",fig.cap=name8,fig.align="left",echo=FALSE,eval = FALSE }
 path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(path,paste(name8 ,"divi.jpg")))
 ```
-```{r,echo=FALSE, out.width="25%",fig.cap=name9,fig.align="left"}
+```{r,echo=FALSE, out.width="25%",fig.cap=name9,fig.align="left",echo=FALSE,eval = FALSE }
 path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(path,paste(name9 ,"divi.jpg")))
 ```
-```{r,echo=FALSE, out.width="25%",fig.cap=name10,fig.align="left"}
+```{r,echo=FALSE, out.width="25%",fig.cap=name10,fig.align="left",echo=FALSE,eval = FALSE }
 path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(path,paste(name10 ,"divi.jpg")))
 ```
-```{r,echo=FALSE, out.width="25%",fig.cap=name11,fig.align="left"}
+```{r,echo=FALSE, out.width="25%",fig.cap=name11,fig.align="left",echo=FALSE,eval = FALSE }
 path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(path,paste(name11 ,"divi.jpg")))
 ```
-```{r,echo=FALSE, out.width="25%",fig.cap=name12,fig.align="left"}
+```{r,echo=FALSE, out.width="25%",fig.cap=name12,fig.align="left",echo=FALSE,eval = FALSE }
 path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(path,paste(name12 ,"divi.jpg")))
 ```
+
 
 # Making Chord Diagrams 
 ```{r, warning=FALSE,message=FALSE,fig.width=9.0,fig.align="left"}
@@ -685,14 +688,20 @@ sce=SingleCellExperiment(tv2)
 logcounts(sce)=tv2
 sce@colData=DataFrame(hep[,2:8]) #it is DataFrame with big Ds and Fs
 names(colData(sce))=colnames(tv_all)[2:8]
-vars <- getVarianceExplained(sce,variables=names(colData(sce))[1:7])
+names(colData(sce))[1]='The Gender'
+vars <- getVarianceExplained(sce,variables=names(colData(sce))[1:7]);colVars(vars)
 windowsFonts(A = windowsFont("Calibri (Body)"))
-p=plotExplanatoryVariables(vars) 
+mypalette <- scales::hue_pal()(ncol(colData(sce)))
+names(mypalette) <- colnames(tv_all)[2:8]
+if (Group!='All') {vars=vars[,2:7]}
+p=plotExplanatoryVariables(vars)
+# Nans and the levels are problems for consistent colors in the plot:
+p[[1]]=p[[1]][!is.na(p[[1]][,1]),]; p[[1]][,1]=as.vector(unlist(p[[1]][,1])) #uh huh... # p[[1]][,'Expl_Var']=droplevels(p[[1]][,'Expl_Var'])
+p[[1]]=p[[1]][order(p[[1]][,1]),]
 
 library(ragg)
 # Oh! https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/
 # https://r4ds.had.co.nz/graphics-for-communication.html#figure-sizing
-
 path="C:/Users/patati/Documents/GitHub/new/" #oh, classical: https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
 pngfile <- fs::path(path,paste0(Group,'vex',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
 agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300,scaling = 2)
@@ -1857,26 +1866,27 @@ knitr::include_graphics('Square Correlation Plot of_korkeatACME PFAS vs. steroid
 ```{r, warning=FALSE,message=FALSE,fig.width=10.0,fig.align="left"}
 
 #To do these diagrams, you need to have a reduced dataset as well as a function that acounts the group (male/female)
-reduced2=function(u3,Group,name,lkm) {
+reduced2=function(u3,Group,name,lkm,d) {
   c1=c()
   ACMEMedian=c();ACMEpval=c();ACMEVar=c()
   ADEMedian=c();ADEpval=c();ADEVar=c()
   c1= u3 #[u3[,'ADE'] < ADEMedian  & DV<ADEVar,] #& u3[,'z0.p']<ADEpval
   ACMEMedian=0#median(c1[,'ACME'][c1[,'ACME']>0])
+  c1=c1[rev(order(c1[,'ACME'])),];  
   c1=c1[c1[,'ACME']>ACMEMedian & ((c1[,'ACME']-c1[,'ADE']) > 0), ] 
-  c1=c1[rev(order(c1[,'ACME'])),];       
   c1=tryCatch({c1[1:lkm,]}, error = function(msg){return(c1)})
   
   write.xlsx(c1, file = paste(name,Group,date,'.xlsx'), append = FALSE, row.names = TRUE)
   
   return(c1)}
 
-plottings_sf=function(uh7ma,date,sick,Group) {
+plottings_sf=function(uh7ma,date,sick,Group,d) {
   rt2=uh7ma #[,1:17]# rtot=rtot[,1:17]# rtot=data.frame(rtot) # name=paste(simss,'basic hypothesis',take)# https://stat.ethz.ch/R-manual/R-devel/library/stats/html/p.adjust.html# https://www.middleprofessor.com/files/applied-biostatistics_bookdown/_book/adding-covariates-to-a-linear-model# https://github.com/MarioniLab/miloR# https://www.nature.com/articles/s41467-023-40458-9/figures/4
   name=paste('Contaminants_Steroids_BAs_or_Lipids_sims',date) # rtot=rtot_2000_mrct # rtot=uh5
   
   hoi=c(); 
-  hoi=scan(text=rt2[,1] , what=" ")#rownames(rt2)# names(rt2[,1]) rownames(rt2)
+  if (d=='t') {hoi=scan(text=rt2[,1] , what=" ")} else {hoi=scan(text=rownames(rt2) , what=" ")} #rownames(rt2)# names(rt2[,1]) rownames(rt2)
+  # hoi=scan(text=rownames(rt2) , what=" ")#rownames(rt2)# names(rt2[,1]) rownames(rt2)
   hoi=as.data.frame(matrix(hoi, ncol = 3,  byrow = TRUE), stringsAsFactors = FALSE) #Check this number (ncol) 3/4
 hoi=hoi[,1:3]
   colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ## https://stats.stackexchange.com/questions/282155/causal-mediation-analysis-negative-indirect-and-total-effect-positive-direct# https://www.researchgate.net/post/How_can_I_interpret_a_negative_indirect_effect_for_significant_mediation# https://stackoverflow.com/questions/31518150/gsub-in-r-is-not-replacing-dot replacing dot
@@ -1895,15 +1905,16 @@ windowsFonts(A = windowsFont("Calibri (Body)"))
 
 p=ggplot(df2, aes(x = x,  next_x = next_x, node = node,  next_node = next_node,fill = factor(node),label = node)) +
           geom_sankey(flow.alpha = 1, node.color = 1) +
-          geom_sankey_label(size = 4.0, color = 1, fill = "white") + #geom_sankey_label(size = 8.0, color = 1, fill = "white")
-          # scale_fill_viridis_d(option = "H", alpha = 0.75) +
-          theme_sankey(base_size = 23) + #theme_sankey(base_size = 28) 
+          # geom_sankey_label(size = 4.0, color = 1, fill = "white") + #
+          geom_sankey_label(size = 8.0, color = 1, fill = "white")+
+          scale_fill_viridis_d(option = "H", alpha = 0.75) +
+          # theme_sankey(base_size = 23) + #
+          theme_sankey(base_size = 28) + theme(legend.position = "none") +
           # scale_fill_grey(start = 0.5, end = 0.5)+
-          theme(axis.text.x = element_text(hjust = 0.5, vjust=7,colour = 'black'))+ #https://stackoverflow.com/questions/38862303/customize-ggplot2-axis-labels-with-different-colors
-          theme(legend.position = "none") +
+          theme(axis.text.x = element_text(hjust = 0.5, vjust=7,colour = 'black') )+ #https://stackoverflow.com/questions/38862303/customize-ggplot2-axis-labels-with-different-colors
           theme(axis.title.x = element_blank())
 
-#Nicer colors than grey:
+# Nicer colors than grey:
 # p=ggplot(df2, aes(x = x,  next_x = next_x, node = node,  next_node = next_node,fill = factor(node),label = node)) +geom_sankey(flow.alpha = 0.5, node.color = 1) + geom_sankey_label(size = 3.5, color = 1, fill = "white") +
 # scale_fill_viridis_d() + theme_sankey(base_size = 16) + theme(legend.position = "none")+theme(axis.title.x = element_blank());
 
@@ -1912,50 +1923,72 @@ library(ragg)
 # https://r4ds.had.co.nz/graphics-for-communication.html#figure-sizing
 
 path="C:/Users/patati/Documents/GitHub/new/" #oh, classical: https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
-pngfile <- fs::path(path,paste0(Group,'e',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
-agg_png(pngfile, width = 30, height = 40, units = "cm", res = 300,scaling = 2) #agg_png(pngfile, width = 60, height = 80, units = "cm", res = 600,scaling = 2)
+pngfile <- fs::path(path,paste0(Group,'e',d,".png"))#fs::path(knitr::fig_path(),  "theming2.png")
+# agg_png(pngfile, width = 30, height = 40, units = "cm", res = 300,scaling = 2) #
+agg_png(pngfile, width = 60, height = 80, units = "cm", res = 600,scaling = 2)
 plot(p)
 invisible(dev.off())
-knitr::include_graphics(pngfile)
-}
+knitr::include_graphics(pngfile)}
 
 library(readxl)
 setwd("C:/Users/patati/Desktop/TurkuOW/RWork/tests6/tests_basic/") #check this if needed...
-
 all_all=read_xlsx(path = "100basic All tikka3624 .xlsx") #total Male tikka76524 hyp4b_oki.xlsx") #
 all_all=as.data.frame(all_all); all_all=all_all[!is.na(all_all$ACME),]; all_all=na.omit(all_all); all_all1=all_all
-
 all_Female=read_xlsx(path = "100basic Female tikka3624 .xlsx") #total Male tikka76524 hyp4b_oki.xlsx") #
 all_Female=as.data.frame(all_Female); all_Female=all_Female[!is.na(all_Female$ACME),]; all_Female=na.omit(all_Female);
-
 all_Male=read_xlsx(path = "100basic Male tikka3624 .xlsx") #total Male tikka76524 hyp4b_oki.xlsx") #
 all_Male=as.data.frame(all_Male); all_Male=all_Male[!is.na(all_Male$ACME),]; all_Male=na.omit(all_Male);
 
-sick='all samples'
+setwd("C:/Users/patati/Documents/GitHub/new/")
+sick='all samples';d='t'
 lkm=30;Group='All'; name='just all';date='tikka6924_alla'
 alma=reduced2(all_all1,Group,name,lkm);
-plottings_sf(alma,date,sick,Group)
+plottings_sf(alma,date,sick,Group,d)
 
 date='tikka6924_femala';name='just all';Group='female';
 almaf=reduced2(all_Female,Group,name,lkm); #all_Female
 almaf = na.omit(almaf)
-plottings_sf(almaf,date,sick,Group)
+plottings_sf(almaf,date,sick,Group,d)
 
 date='tikka6924_mala';name='just all';Group='male';
 almam=reduced2(all_Male,Group,name,lkm);
 almam = na.omit(almam) #https://www.tutorialspoint.com/how-to-remove-rows-from-data-frame-in-r-that-contains-nan
-plottings_sf(almam,date,sick,Group)
+plottings_sf(almam,date,sick,Group,d)
 
 # In case you need something else from somewhere else...
 # setwd("C:/Users/patati/Desktop/TurkuOW/RWork/hypo4/HOMAIR/perus_ok")
 # all_all=read_xlsx(path = "100 hypo4_yes_sick All tikka76524 hyp4a_oki.xlsx") #total Male tikka76524 hyp4b_oki.xlsx") #
 # all_all=as.data.frame(all_all); all_all=all_all[!is.na(all_all$ACME),]; all_all=na.omit(all_all); all_all1=all_all
-# 
 # all_Female=read_xlsx(path = "100 hypo4_yes_sick Female tikka76524 hyp4a_oki.xlsx") #total Male tikka76524 hyp4b_oki.xlsx") #
-# all_Female=as.data.frame(all_Female); all_Female=all_Female[!is.na(all_Female$ACME),]; all_Female=na.omit(all_Female); 
-# 
+# all_Female=as.data.frame(all_Female); all_Female=all_Female[!is.na(all_Female$ACME),]; all_Female=na.omit(all_Female);
 # all_Male=read_xlsx(path = "100 hypo4_yes_sick Male tikka76524 hyp4a_oki.xlsx") #total Male tikka76524 hyp4b_oki.xlsx") #
-# all_Male=as.data.frame(all_Male); all_Male=all_Male[!is.na(all_Male$ACME),]; all_Male=na.omit(all_Male); 
+# all_Male=as.data.frame(all_Male); all_Male=all_Male[!is.na(all_Male$ACME),]; all_Male=na.omit(all_Male);
+
+# path="C:/Users/patati/Desktop/TurkuOW/RWork/basic_cova/All"
+# # setwd("C:/Users/patati/Desktop/TurkuOW/RWork/basic_cova/All")
+# files=list.files(path=path, pattern=".RData", all.files=TRUE, full.names=TRUE) #https://www.geeksforgeeks.org/read-all-files-in-directory-using-r/
+# list_of_files <- list() 
+# for (i in files) {list_of_files[[i]] <- get(load(paste0("", i)))}  #add files to list position
+# names(list_of_files) <- str_remove(list.files(path=path, pattern=".RData", all.files=TRUE, full.names=FALSE),'.RData')  #https://stringr.tidyverse.org/reference/str_remove.html
+# 
+# # names(list_of_files)[1:3]
+# setwd("C:/Users/patati/Documents/GitHub/new/")
+# all_all1=list_of_files[[1]] #all_all=as.data.frame(all_all); all_all=all_all[!is.na(all_all$ACME),]; all_all=na.omit(all_all); all_all1=all_all
+# all_Female=list_of_files[[2]] #all_Female=as.data.frame(all_Female); all_Female=all_Female[!is.na(all_Female$ACME),]; all_Female=na.omit(all_Female);
+# all_Male=list_of_files[[3]] #all_Male=as.data.frame(all_Male); all_Male=all_Male[!is.na(all_Male$ACME),]; all_Male=na.omit(all_Male);
+# 
+# d='nt';lkm=30;Group='All'; name='just all'
+# alma=reduced2(all_all1,Group,name,lkm);alma = na.omit(alma)
+# plottings_sf(alma,date,sick,Group,d)
+# 
+# name='just all';Group='female';
+# almaf=reduced2(all_Female,Group,name,lkm); almaf = na.omit(almaf)
+# plottings_sf(almaf,date,sick,Group,d)
+# 
+# name='just all';Group='male';
+# almam=reduced2(all_Male,Group,name,lkm); almam = na.omit(almam) #https://www.tutorialspoint.com/how-to-remove-rows-from-data-frame-in-r-that-contains-nan
+# plottings_sf(almam,date,sick,Group,d)
+
 
 ```
 
@@ -2025,14 +2058,14 @@ matrix(unlist(jappend),ncol=8) #rows are all female and male and columns case vs
 # Group='Female';jappend=c(jappend,sample_size2(NAFLD,Outcome,Group,sick_groupe))
 # Group='Male'; jappend=c(jappend,sample_size2(NAFLD,Outcome,Group,sick_groupe))
 # 
-# For 'masld'
+# For 'MASLD'
 # ccova=tv[,c("Steatosis.Grade.0.To.3" , "Fibrosis.Stage.0.to.4" ,"Necroinflammation" ,  "HOMA-IR")] 
 # fn='MASLD';sick_groupe=rowSums(ccova)>4 #toth#
 # Group='All';jappend=c(jappend,sample_size2(NAFLD,Outcome,Group,sick_groupe)) #not the very first though...# xlim=c(0.1,1.7)
 # Group='Female';jappend=c(jappend,sample_size2(NAFLD,Outcome,Group,sick_groupe))
 # Group='Male'; jappend=c(jappend,sample_size2(NAFLD,Outcome,Group,sick_groupe))
 
-#Determining the mean (+-Q) in all, female and male
+# Determining the mean (+-Q) in all, female and male
 mean_q1q3=function(Group) {
 cM=c();csd=c();tot=c();tot2=c();tot3=c()
 if (Group=='Female') {cond=tv_all[,'Gender']==min(tv_all[,'Gender'])} else if (Group=='Male') {cond=tv_all[,'Gender']==max(tv_all[,'Gender'])} else if (Group=='All') {cond=rep(TRUE,dim(tv_all)[1])}
@@ -2050,7 +2083,6 @@ return(tot2)}
 totQ=mean_q1q3('All');femQ=mean_q1q3('Female');menQ=mean_q1q3('Male')
 tot3=cbind(t(totQ),t(femQ),t(menQ)); print(tot3)
 # write.xlsx(tot3, file ='steroid_mean_std.xlsx', append = FALSE, row.names = TRUE)  #https://stackoverflow.com/questions/21847830/handling-java-lang-outofmemoryerror-when-writing-to-excel-from-r
-
 # I wanted to check the steroids with highest ACMEs between healthy (all, all) and sick (all, all).
 # I needed to have the cutoffs and ways to see the overlaps. For that, I developed a function called 'the_combos'
 #Some data is needed... :)
@@ -2058,9 +2090,9 @@ setwd("C:/Users/patati/Desktop/TurkuOW/RWork/hypo_basic/Tiedostot/") #check this
 files <- list.files(pattern="*.RData")
 ldf <- lapply(files, load)
 list_of_files <- list() #create empty list
-#loop through the files
+# Loop through the files
 for (i in files) {list_of_files[[i]] <- get(load(paste0("", i)))}  #add files to list position
-#https://www.reddit.com/r/Rlanguage/comments/nq773b/reading_multiple_rdata_files_into_a_list/
+# https://www.reddit.com/r/Rlanguage/comments/nq773b/reading_multiple_rdata_files_into_a_list/
 names(list_of_files) <- files #https://stackoverflow.com/questions/38643000/naming-list-elements-in-r
 library(stringr)
 
@@ -2126,7 +2158,6 @@ return(list(steroid_sick,tbe,totaali_sh_all)) } #"17a-OHP4" "DHT"      "DOC"    
 Group = ' all'; cond='';all_all=the_combos(list_of_files,Group,cond) #ekat allit ('All...') oli deletoitu, yes, ja käytetty vain spesifisiä alleja...
 Group = ' female'; cond='';female_all=the_combos(list_of_files,Group,cond) 
 Group = ' male'; cond='';male_all=the_combos(list_of_files,Group,cond) 
-
 Group = ' all'; cond='Steatosis';all_steatosis=the_combos(list_of_files,Group,cond) 
 Group = ' female'; cond='Steatosis';female_steatosis=the_combos(list_of_files,Group,cond) 
 Group = ' male'; cond='Steatosis';male_steatosis=the_combos(list_of_files,Group,cond) 
@@ -2140,13 +2171,13 @@ Group = ' all'; cond='HOMAIR'; all_HOMAIR=the_combos(list_of_files,Group,cond)
 Group = ' female'; cond='HOMAIR'; female_HOMAIR=the_combos(list_of_files,Group,cond) 
 Group = ' male'; cond='HOMAIR'; male_HOMAIR=the_combos(list_of_files,Group,cond) 
 
-pottees=c(  all_all[3],female_all[3],male_all[3],
+pottees=c(all_all[3],female_all[3],male_all[3],
             all_steatosis[3],female_steatosis[3],male_steatosis[3],
             all_Fibrosis[3],female_Fibrosis[3],male_Fibrosis[3],
             all_Necroinflammation[3],female_Necroinflammation[3],male_Necroinflammation[3],
             all_HOMAIR[3],female_HOMAIR[3],male_HOMAIR[3])
 
-#In case you need to print the above list. This is good for printing list of list in anyways:
+# In case you need to print the above list. This is good for printing list of list in anyways:
 # mylist <- pottees; file <- paste0("myfile_ok",date,".txt"); conn <- file(description=file, open="w")
 # newlist <- lapply(seq_len(length(mylist)), function(i){
 #   lapply(seq_len(length(mylist[[i]])), function(j) {
@@ -2163,11 +2194,11 @@ setwd("C:/Users/patati/Desktop/TurkuOW/RWork/hypo4/Tiedostot/") #check this if n
 files <- list.files(pattern="*.RData")
 ldf <- lapply(files, load)
 list_of_files <- list() #create empty list
-#loop through the files
+# Loop through the files:
 for (i in files) {list_of_files[[i]] <- get(load(paste0("", i)))}  #add files to list position
 names(list_of_files) <- files #ht
-#https://www.reddit.com/r/Rlanguage/comments/nq773b/reading_multiple_rdata_files_into_a_list/
-#https://stackoverflow.com/questions/38643000/naming-list-elements-in-r
+# https://www.reddit.com/r/Rlanguage/comments/nq773b/reading_multiple_rdata_files_into_a_list/
+# https://stackoverflow.com/questions/38643000/naming-list-elements-in-r
 
 comp_med_two=function(list_of_files) { #I made this a function, since this kind of cross comparison could be handy also in other contexts
 health=c();sickness=c()
