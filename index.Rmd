@@ -1995,6 +1995,50 @@ plottings_sf(almam,date,sick,Group,d)
 # Other Handy Functions 
 ```{r, warning=FALSE,message=FALSE,fig.width=10.0,fig.align="left"}
 
+# Demographics:
+# This is for nonscaled (or not-logged or the like 'raw') data only!
+
+Demographics=function(tv_all,Clini,Group) {
+  # The gender (and all) groups (could be something else as well... you can expand... like the 'sick' groups)
+  if (Group=='female') {cond=tv_all[,'SEX.1F.2M']==min(tv_all[,'SEX.1F.2M'])} else if 
+  (Group=='male') {cond=tv_all[,'SEX.1F.2M']==max(tv_all[,'SEX.1F.2M'])} else if (Group=='All') {cond=rep(TRUE,dim(tv_all)[1])}
+  tv_red=c(); tv_red=tv_all[cond,]; Clini2=Clini[rownames(tv_red),]
+  
+  # The demographics. Depending what is the aim of your study, you may need more here...:
+  N=dim(tv_red)[1]
+  AGE=median(tv_red[,'AGE']);AGEq1=quantile(tv_red[,'AGE'],0.25);AGEq3=quantile(tv_red[,'AGE'],0.75);
+  BMI=median(tv_red[,'BMI']);BMIq1=quantile(tv_red[,'BMI'],0.25);BMIq3=quantile(tv_red[,'BMI'],0.75)
+  PFAS=median(tv_red[,'PFAS']);PFASq1=quantile(tv_red[,'PFAS'],0.25);PFASq3=quantile(tv_red[,'PFAS'],0.75)
+  HDL=median(Clini2[,'HDL']);HDLq1=quantile(Clini2[,'HDL'],0.25);HDLq3=quantile(Clini2[,'HDL'],0.75)
+  #Sometimes the numbers are 'characters' in the table...:
+  LDL=median(as.numeric(Clini2[,'LDL']));LDLq1=quantile(as.numeric(Clini2[,'LDL'],0.25))[2];LDLq3=quantile(as.numeric(Clini2[,'LDL'],0.75))[4] 
+  
+  SGmin=min(tv_red[,'Steatosis.Grade.0.To.3']);SGmax=max(tv_red[,'Steatosis.Grade.0.To.3'])
+  FSmin=min(tv_red[,'Fibrosis.Stage.0.to.4']);FSmax=max(tv_red[,'Fibrosis.Stage.0.to.4'])
+  NFmin=min(tv_red[,'Necroinflammation']);NFmax=max(tv_red[,'Necroinflammation'])
+  HImin=min(tv_red[,'HOMA-IR']);HImax=max(tv_red[,'HOMA-IR']);
+  HI=median(tv_red[,'HOMA-IR']);HIq1=quantile(tv_red[,'HOMA-IR'],0.25);HIq3=quantile(tv_red[,'HOMA-IR'],0.75)
+  
+  return(c(N,AGE,AGEq1,AGEq3,BMI,BMIq1,BMIq3,PFAS,PFASq1,PFASq3,HDL,HDLq1,HDLq3,LDL,LDLq1,LDLq3,
+           SGmin,SGmax,FSmin,FSmax,NFmin,NFmax,HImin,HImax,HI,HIq1,HIq3))
+  }
+
+Group='All';    d_all=Demographics(tv,Clini,Group);
+Group='female'; d_female=Demographics(tv,Clini,Group);
+Group='male';   d_male=Demographics(tv,Clini,Group)
+
+d_totaali=t(rbind(d_all,d_female,d_male)); 
+# For the rownames, I selected the outcome variables of Demographics and added '' t to them:
+rownames(d_totaali)=c('N','AGE','AGEq1','AGEq3','BMI','BMIq1','BMIq3','PFAS','PFASq1','PFASq3','HDL','HDLq1','HDLq3','LDL','LDLq1','LDLq3',
+           'SGmin','SGmax','FSmin','FSmax','NFmin','NFmax','HImin','HImax','HI','HIq1','HIq3')
+
+d_totaali
+
+# The rest is better to do in Excel (perhaps manually via keeping the cells as 'text'):
+# setwd("C:/Users/patati/Desktop/TurkuOW/RWork") 
+# write.xlsx(d_totaali, file ='Demographics_steroid data_5.xlsx', append = FALSE, row.names = TRUE)  
+#https://stackoverflow.com/questions/21847830/handling-java-lang-outofmemoryerror-when-writing-to-excel-from-r
+
 # For determining the sample sizes in each case:
 #If you have case/control as >0/0 (homa.ir was converted as per 1.5), or then see the other function if you have the division
 sample_size=function(NAFLD,Outcome,Group) { 
@@ -2083,6 +2127,7 @@ return(tot2)}
 totQ=mean_q1q3('All');femQ=mean_q1q3('Female');menQ=mean_q1q3('Male')
 tot3=cbind(t(totQ),t(femQ),t(menQ)); print(tot3)
 # write.xlsx(tot3, file ='steroid_mean_std.xlsx', append = FALSE, row.names = TRUE)  #https://stackoverflow.com/questions/21847830/handling-java-lang-outofmemoryerror-when-writing-to-excel-from-r
+
 # I wanted to check the steroids with highest ACMEs between healthy (all, all) and sick (all, all).
 # I needed to have the cutoffs and ways to see the overlaps. For that, I developed a function called 'the_combos'
 #Some data is needed... :)
@@ -2377,6 +2422,7 @@ sessionInfo()
 # https://stackoverflow.com/questions/31518150/gsub-in-r-is-not-replacing-dot replacing dot
 # https://stackoverflow.com/questions/38862303/customize-ggplot2-axis-labels-with-different-colors
 # https://www.tutorialspoint.com/how-to-remove-rows-from-data-frame-in-r-that-contains-nan
+# https://stackoverflow.com/questions/21847830/handling-java-lang-outofmemoryerror-when-writing-to-excel-from-r
 # https://www.tutorialspoint.com/how-to-extract-strings-that-contains-a-particular-substring-in-an-r-vector
 # https://stackoverflow.com/questions/13602170/how-do-i-find-the-difference-between-two-values-without-knowing-which-is-larger
 # https://www.geeksforgeeks.org/difference-between-two-vectors-in-r/ 
