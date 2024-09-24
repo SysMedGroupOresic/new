@@ -694,7 +694,7 @@ windowsFonts(A = windowsFont("Calibri (Body)"))
 mypalette <- scales::hue_pal()(ncol(colData(sce)))
 names(mypalette) <- colnames(tv_all)[2:8]
 if (Group!='All') {vars=vars[,2:7]}
-p=plotExplanatoryVariables(vars)
+p=plotExplanatoryVariables(vars)+theme(text=element_text(size=25,family="Calibri"))+theme(axis.text=element_text(size=20,family="Calibri"))#https://scales.arabpsychology.com/stats/how-to-change-font-size-in-ggplot2/
 # Nans and the levels are problems for consistent colors in the plot:
 p[[1]]=p[[1]][!is.na(p[[1]][,1]),]; p[[1]][,1]=as.vector(unlist(p[[1]][,1])) #uh huh... # p[[1]][,'Expl_Var']=droplevels(p[[1]][,'Expl_Var'])
 p[[1]]=p[[1]][order(p[[1]][,1]),]
