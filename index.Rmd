@@ -2428,3 +2428,15 @@ sessionInfo()
 # https://www.geeksforgeeks.org/difference-between-two-vectors-in-r/ 
 
 ```
+
+
+```{r echo=2:4} 
+# Adding HTML is straightforward in knit... you just add it and it works! :)
+# https://stackoverflow.com/questions/74785107/can-we-comment-out-rmarkdown-so-that-its-not-included-in-the-exported-html
+```
+
+<div id="sfcl75p3txn9pqr845xuy88gkar9rxwdsal"></div>
+<script type="text/javascript" src="https://counter6.optistats.ovh/private/counter.js?c=l75p3txn9pqr845xuy88gkar9rxwdsal&down=async" async></script>
+<noscript><a href="https://www.freecounterstat.com" title="free website visitor counter"><img src="https://counter6.optistats.ovh/private/freecounterstat.php?c=l75p3txn9pqr845xuy88gkar9rxwdsal" border="0" title="free website visitor counter" alt="free website visitor counter"></a></noscript>
+  
+     
