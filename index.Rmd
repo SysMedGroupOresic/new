@@ -52,6 +52,8 @@ date=paste0('tikka',thedate) # Change this...
 # font_import() # This is important if you have not loaded them before
 # loadfonts(device = "win") #Same applies here.
 ```
+
+
 # Importing Data and Metadata
 ```{r, warning=FALSE,message=FALSE}
 
