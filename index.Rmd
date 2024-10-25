@@ -260,7 +260,7 @@ Treatment=Treatment[!Treatment %in% c('Perfluorodecyl.ethanoic.acid')]
 # hupo=match(   colnames(tv_LOG_covscl)[colnames(tv_LOG_covscl) %in% groups2[,3]], groups2[,3] ) 
 # colnames(tv_LOG_covscl)[colnames(tv_LOG_covscl) %in% groups2[,3]]=groups2[hupo,2]
 
-# save.image('tot.RData')
+save.image('tot.RData')
 
 ```
 
