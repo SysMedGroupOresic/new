@@ -1,0 +1,112 @@
+all_all=read_xlsx(path = "C:/Users/patati/Desktop/TurkuOW/RWork/tests6/tests_basic/100basic All tikka3624 .xlsx") # #_2 
+all_all=as.data.frame(all_all); all_all=all_all[!is.na(all_all[,1]),];rownames(all_all)=all_all[,1]; all_all=all_all[,2:dim(all_all)[2]]; all_all=all_all[rev(order(all_all[,1])),]
+all_all=all_all; all_all=all_all[all_all[,1]>0,]
+#https://stats.stackexchange.com/questions/282155/causal-mediation-analysis-negative-indirect-and-total-effect-positive-direct
+#https://www.researchgate.net/post/How_can_I_interpret_a_negative_indirect_effect_for_significant_mediation
+#https://stackoverflow.com/questions/31518150/gsub-in-r-is-not-replacing-dot replacing dot
+
+rt2=all_all
+rt2=rt2[rt2[,1]>0,]
+hoi=c(); hoi=scan(text=rownames(rt2), what="")
+hoi=matrix(hoi, ncol = 3,  byrow = TRUE) #or 3
+colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ,'Desig.')
+hoi[,c(2)]  <- gsub("\\.", "-",  hoi[,c(2)]  ) #:)
+hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH-P4']='17a-OHP4'
+
+houdees=function(hoi, Outcome, Mediator,switch) {
+  indir=c(); dir=c(); ip=c();rn=c();rn2=c()
+  Outcome=colnames(tv_half_log22)[c(29:51,78:90)]; #The final dataframe is shorter or the like so there were less variables here...
+  ##https://sparkbyexamples.com/r-programming/r-remove-from-vector-with-examples/
+
+  #direct...
+  if (switch==1) {
+    Mediator_ok=Outcome[Outcome %in% names(table(hoi[1:dim(hoi)[1],c(3)]))]
+    for (i in 1:7) {for (j in 1:length(Mediator_ok)) {
+      indir=append(indir,rt2[which(hoi[,1]==Treatment[i] & hoi[,3]==Mediator_ok[j])[1],c(5)]) #or c(1) hoi 1
+      ip=append(ip,rt2[which(hoi[,1]==Treatment[i] & hoi[,3]==Mediator_ok[j])[1],c(6)])
+      rn=append(rn,hoi[,3][which(hoi[,1]==Treatment[i] & hoi[,3]==Mediator_ok[j])[1]]) #change this...
+      rn2=append(rn2,hoi[,1][which(hoi[,1]==Treatment[i] & hoi[,3]==Mediator_ok[j])[1]])
+    }}} else if (switch==0) {
+      
+      # indir:
+      Mediator_ok=Mediator[Mediator %in% names(table(hoi[1:dim(hoi)[1],c(2)]))]
+      for (i in 1:7) {for (j in 1:length(Mediator_ok)) {
+        indir=append(indir,rt2[which(hoi[,1]==Treatment[i] & hoi[,2]==Mediator_ok[j])[1],c(1)]) #or c(1) hoi 1
+        ip=append(ip,rt2[which(hoi[,1]==Treatment[i] & hoi[,2]==Mediator_ok[j])[1],c(2)])
+        rn=append(rn,hoi[,2][which(hoi[,1]==Treatment[i] & hoi[,2]==Mediator_ok[j])[1]]) #change this...
+        rn2=append(rn2,hoi[,1][which(hoi[,1]==Treatment[i] & hoi[,2]==Mediator_ok[j])[1]])
+      }}
+    } 
+  
+  tot=cbind(rn2,rn,indir) #or indir or dir
+  tot=tot[!is.na(tot[,1]),]
+  tot=as.data.frame(tot)# 
+  library(reshape2)
+  jops=dcast(tot, rn2~rn, value.var='indir')
+  jops[is.na(jops)]=0
+  rownames(jops)=jops[,1]
+  jops=jops[,2:dim(jops)[2]]
+  jops=as.data.frame(jops)
+  jopsr=matrix(as.numeric(unlist(jops)),nrow=dim(jops)[1],ncol=dim(jops)[2])
+  colnames(jopsr)=colnames(jops);rownames(jopsr)=rownames(jops)
+ 
+  
+  if (switch==1) {
+    #for direct:
+    jopsr=jopsr[,Outcome[Outcome %in% colnames(jopsr)]] #c
+  } else if (switch==0) {
+    #for indirect:
+    ums=groups[order(groups[,'Group']),'Abbreviation']
+    jopsr=jopsr[,ums[ums %in% colnames(jopsr)]] 
+  }
+
+  tot=cbind(rn2,rn,ip)
+  tot=tot[!is.na(tot[,1]),]
+  tot=as.data.frame(tot)
+  library(reshape2)
+  jopsa=dcast(tot, rn2~rn, value.var='ip')
+  jopsa[is.na(jopsa)]=0
+  rownames(jopsa)=jopsa[,1]
+  jopsa=jopsa[,2:dim(jopsa)[2]]
+  jopsra=matrix(as.numeric(unlist(jopsa)),nrow=dim(jopsa)[1],ncol=dim(jopsa)[2])
+  colnames(jopsra)=colnames(jopsa);rownames(jopsra)=rownames(jopsa)
+  colnames(jopsra)=colnames(jopsa);rownames(jopsra)=rownames(jopsa)
+
+  
+  if (switch==1) {
+    #for direct:
+    jopsra=jopsra[,Outcome[Outcome %in% colnames(jopsra)]]
+  } else if (switch==0) {
+    #for indirect
+    jopsra=jopsra[,groups[,'Abbreviation'][groups[,'Abbreviation'] %in% colnames(jopsra)]]#groups[,'Abbreviation'][groups[,'Abbreviation'] %in% colnames(jopsra)]
+    jopsra=jopsra[,ums[ums %in% colnames(jopsr)]] 
+  }
+  
+  setwd("C:/Users/patati/Desktop/TurkuOW/RWork/") #check this if needed...
+  hip1='transpose';width = 8000;height=2800;pch.cex=1.2;
+  ho=paste('PFAS vs. steroids_ for the hypo4_colors_stea', switch)
+  resulta1=jopsr
+  p.mat.a1=jopsra
+  #https://www.rdocumentation.org/packages/corrplot/versions/0.92/topics/corrplot
+  #https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html
+  #https://statisticsglobe.com/change-font-size-corrplot-r
+  #order can be: alphabet, hclust, original #https://stackoverflow.com/questions/51115495/how-to-keep-order-of-the-correlation-plot-labels-as-same-in-the-datafile
+  order="original"; range='orig';corre='no_renorm'; type='full'; method='color';ga='All';gf='Female';gm='Male' #color square
+  cl.offset=1.0;cl.length=5;cl.cex = 1.3;pch.cex=3.2;pch=20;cl.pos = 'r';
+  
+  if (switch==1) {rbo=rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]) } else if (switch==0) {rbo=rev(COL2('RdBu')[25:100]) } 
+  # This has been driven:
+  path="C:/Users/patati/Documents/GitHub/new/"; setwd(path) #check this if needed...
+  jpeg(paste("Square Correlation Plot of_171024_3_korkeatACME",ho,ga,hip1,".jpg"), width = width, height = height, quality = 100,pointsize = 30, res=300);# par( ps=ps)# par(cex.lab=90)
+  col = brewer.pal(n = 9, name = "YlOrRd")
+  corrplot(resulta1, type = type, order = order,method=method, p.mat=p.mat.a1, tl.col = "black", #sum(COL2('RdBu')=="#FF7417")
+           cl.cex = cl.cex, pch.cex=pch.cex, pch.col='black',pch=pch,#pitikö vain pch lisätä pch väriin väriin... mystistä...'#FEE12B'
+           sig.level = c(.05),cl.pos = cl.pos, insig = "label_sig", cl.offset=cl.offset,cl.length=cl.length,
+           tl.srt = 90, diag = TRUE,col=rbo,is.corr = FALSE) #only in age...0.001, #rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)])
+  dev.off()
+  return(resulta1)
+}
+
+# If you need to drive this, do it separately...
+uliulie=houdees(hoi, Outcome, Mediator,switch=0)  # Indirect effect
+uliulie1=houdees(hoi, Outcome, Mediator,switch=1) # Direct effect
