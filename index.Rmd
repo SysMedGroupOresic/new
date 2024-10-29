@@ -706,27 +706,27 @@ group_chords=function(vars,n_level,fig_name, big,rem,modi,colt,gend,colors,a,b,c
   ccu2=df[,3] < -0.25
   cx=ccu | ccu2}
 
-  lgd_group = Legend(at = gend, type = "points", legend_gp = gpar(col = colors),  title_position = "topleft", title = title)
-
-  lgd_points = Legend(at = namesh, type = "points", legend_gp = gpar(col = cola), title_position = "topleft", title = "Class")
-  lgd_lines = Legend(at = c("Positive", "Negative"), type = "points", legend_gp = gpar(col = c('orange','blue')), title_position = "topleft", title = "Correlation")
-  lgd_edges= Legend(at = c(-1,1), col_fun = col_fun,  title_position = "topleft", title = "Edges") #lgd_edges= Legend(at = c(round(min(df$V3),1), round(max(df$V3),1)), col_fun = col_fun,  title_position = "topleft", title = "Edges") 
-  lgd_list_vertical = packLegend(lgd_group,lgd_points,  lgd_lines,lgd_edges) #lgd_lines,
-  # circos.par(gap.after = grid.col)
-    chordDiagram(df, annotationTrack = c("grid"),  grid.col=grid.col, directional = FALSE,symmetric = TRUE, scale=FALSE, #link.decreasing = FALSE,
-                 link.lwd = 0.3, link.border = "white",
-                 # link.arr.width=abs(df[,3])*rango(df[,3])*50, #this is for arrows
-                 order = rownames(tes_t), preAllocateTracks = 1, col = col_fun,transparency = 0.25,big.gap = 10, small.gap = 1, #link.zindex = rank(df[,3]),
-                 link.visible = cx)
-    circos.trackPlotRegion(track.index = 1, panel.fun = function(x, y) {
-      xlim = get.cell.meta.data("xlim"); ylim = get.cell.meta.data("ylim")
-      sector.name = get.cell.meta.data("sector.index")
-      circos.text(mean(xlim), ylim[1] + .1, sector.name, facing = "clockwise", niceFacing = TRUE, adj = c(0, 0.5))
-      circos.axis(h = "top", labels.cex = 0.000001, major.tick.length = 0.2, sector.index = sector.name, track.index = 2)}, bg.border = NA) #https://stackoverflow.com/questions/31943102/rotate-labels-in-a-chorddiagram-r-circlize
-    windowsFonts(A = windowsFont("Calibri (Body)"))
-    draw(lgd_list_vertical, x = unit(5, "mm"), y = unit(5, "mm"), just = c("left", "bottom"))#}
-    # These ten above lines have been already done, and now just show separately
-    dev.copy(jpeg,paste0(gend,'hie_0.01.jpg'),width=9, height=12, units="in", res=1000);dev.off() # This is already done
+  # lgd_group = Legend(at = gend, type = "points", legend_gp = gpar(col = colors),  title_position = "topleft", title = title)
+  # 
+  # lgd_points = Legend(at = namesh, type = "points", legend_gp = gpar(col = cola), title_position = "topleft", title = "Class")
+  # lgd_lines = Legend(at = c("Positive", "Negative"), type = "points", legend_gp = gpar(col = c('orange','blue')), title_position = "topleft", title = "Correlation")
+  # lgd_edges= Legend(at = c(-1,1), col_fun = col_fun,  title_position = "topleft", title = "Edges") #lgd_edges= Legend(at = c(round(min(df$V3),1), round(max(df$V3),1)), col_fun = col_fun,  title_position = "topleft", title = "Edges") 
+  # lgd_list_vertical = packLegend(lgd_group,lgd_points,  lgd_lines,lgd_edges) #lgd_lines,
+  # # circos.par(gap.after = grid.col)
+  #   chordDiagram(df, annotationTrack = c("grid"),  grid.col=grid.col, directional = FALSE,symmetric = TRUE, scale=FALSE, #link.decreasing = FALSE,
+  #                link.lwd = 0.3, link.border = "white",
+  #                # link.arr.width=abs(df[,3])*rango(df[,3])*50, #this is for arrows
+  #                order = rownames(tes_t), preAllocateTracks = 1, col = col_fun,transparency = 0.25,big.gap = 10, small.gap = 1, #link.zindex = rank(df[,3]),
+  #                link.visible = cx)
+  #   circos.trackPlotRegion(track.index = 1, panel.fun = function(x, y) {
+  #     xlim = get.cell.meta.data("xlim"); ylim = get.cell.meta.data("ylim")
+  #     sector.name = get.cell.meta.data("sector.index")
+  #     circos.text(mean(xlim), ylim[1] + .1, sector.name, facing = "clockwise", niceFacing = TRUE, adj = c(0, 0.5))
+  #     circos.axis(h = "top", labels.cex = 0.000001, major.tick.length = 0.2, sector.index = sector.name, track.index = 2)}, bg.border = NA) #https://stackoverflow.com/questions/31943102/rotate-labels-in-a-chorddiagram-r-circlize
+  #   windowsFonts(A = windowsFont("Calibri (Body)"))
+  #   draw(lgd_list_vertical, x = unit(5, "mm"), y = unit(5, "mm"), just = c("left", "bottom"))#}
+  #   # These ten above lines have been already done, and now just show separately
+  #   dev.copy(jpeg,paste0(gend,'hie_0.01.jpg'),width=9, height=12, units="in", res=1000);dev.off() # This is already done
 
 knitr::include_graphics(paste0(gend,'hie_0.01.jpg'))
 }
@@ -874,18 +874,18 @@ brks_heatmap <- function(mat, color_palette){
                seq(rng[2]/dim(mat)[1], rng[2], length.out=floor(lpal/2)))
  }
 # #I do this in my computer and then load the figure, see below:
-color_palette=brewer.pal(n = 11, name = 'RdBu')
-color_palette=rev(color_palette)
-color_palette=colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(150)
-# library(grid)
-# jpeg("cohensd_tikka.jpg", width=9, height=12, units="in", res=1000 );
-setHook("grid.newpage", function() pushViewport(viewport(x=1,y=1,width=0.9, height=0.9, name="vp", just=c("right","top"))), action="prepend")
-pheatmap(x,cluster_cols=FALSE,cluster_rows=FALSE,breaks = brks_heatmap(x, color_palette),color=color_palette,column_names_side = c("bottom"), angle_col = c("90"))
-setHook("grid.newpage", NULL, "replace")
-grid.text("Steatosis, Fibrosis, Necroinflammation, HOMA-IR", y=-0.07, x=0.4,gp=gpar(fontsize=16))
-grid.text("Steroids (Androgens, Estrogens, Gluc., Mineraloc., Progestogens)", x=-0.07, rot=90, gp=gpar(fontsize=16))
-#For quality/pltowise reasons I need to do this:
-dev.copy(jpeg,"cohensd_tikka_OK251024.jpg",width=9, height=12, units="in", res=1000);dev.off()
+# color_palette=brewer.pal(n = 11, name = 'RdBu')
+# color_palette=rev(color_palette)
+# color_palette=colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(150)
+# # library(grid)
+# # jpeg("cohensd_tikka.jpg", width=9, height=12, units="in", res=1000 );
+# setHook("grid.newpage", function() pushViewport(viewport(x=1,y=1,width=0.9, height=0.9, name="vp", just=c("right","top"))), action="prepend")
+# pheatmap(x,cluster_cols=FALSE,cluster_rows=FALSE,breaks = brks_heatmap(x, color_palette),color=color_palette,column_names_side = c("bottom"), angle_col = c("90"))
+# setHook("grid.newpage", NULL, "replace")
+# grid.text("Steatosis, Fibrosis, Necroinflammation, HOMA-IR", y=-0.07, x=0.4,gp=gpar(fontsize=16))
+# grid.text("Steroids (Androgens, Estrogens, Gluc., Mineraloc., Progestogens)", x=-0.07, rot=90, gp=gpar(fontsize=16))
+# #For quality/pltowise reasons I need to do this:
+# dev.copy(jpeg,"cohensd_tikka_OK251024.jpg",width=9, height=12, units="in", res=1000);dev.off()
 
 knitr::include_graphics("cohensd_tikka_OK251024.jpg")
 
@@ -1596,7 +1596,7 @@ knitr::include_graphics("Linear Model Estimate Plot ofe BAs_lipids_as_y vs. ster
 knitr::include_graphics("Linear Model Estimate Plot of_s Steroids_y vs. PFAS_as_x All .jpg")
 ```
 ```{r, echo=FALSE, out.width="50%", fig.cap="Heatmap of LMEs from Steroids vs. PFAS & Covariates with Female Subjects",fig.align="left"}
-knitr::include_graphics("Linear Model Estimate Plot of Steroids_y vs. PFAS_as_x female .jpg")
+knitr::include_graphics("Linear Model Estimate Plot of_s Steroids_y vs. PFAS_as_x female .jpg")
 ```
 ```{r, echo=FALSE, out.width="50%", fig.cap="Heatmap of LMEs from Steroids vs. PFAS & Covariates with Male Subjects",fig.align="left"}
 #fig.cap="Linear Model Estimates between Steroids and Variables"
@@ -2439,7 +2439,7 @@ houdees=function(hoi, Outcome, Mediator,switch,mn) {
 
   
   # resulta1 <- as.matrix(m1);p.mat.a1 <- as.matrix(m4)
-  resulta1 <- as.matrix(the_real);p.mat.a1 <- as.matrix(the_real2)
+  # resulta1 <- as.matrix(the_real);p.mat.a1 <- as.matrix(the_real2)
   # rbo=rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)])
 
   # With the neg. you do not put these:
@@ -2468,9 +2468,9 @@ houdees=function(hoi, Outcome, Mediator,switch,mn) {
 
 # If you need to drive this, do it separately...
 # uliulie=houdees(hoi, Outcome, Mediator,switch=0)  # Indirect effect
-uliulie1=houdees(hoi, Outcome, Mediator,switch=1,mn='direep') # Direct effect
-uliulie2=houdees(hoi, Outcome, Mediator,switch=2,mn='posa') # Indirect v2 effect
-uliulie3=houdees(hoi, Outcome, Mediator,switch=0,mn='possa') # Direct effect
+# uliulie1=houdees(hoi, Outcome, Mediator,switch=1,mn='direep') # Direct effect
+uliulie2=houdees(hoi, Outcome, Mediator,switch=2,mn='posa') # Indirect v1 effect
+uliulie3=houdees(hoi, Outcome, Mediator,switch=0,mn='possa') # Indirect v2 effect
 
 #Let's get this comparable done:
 # First the 'matrisse'
