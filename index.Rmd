@@ -2635,115 +2635,115 @@ houdees=function(hoi, Outcome, Mediator,switch,mn,z,corr,date) {
 
 #Let's get this comparable done:
 # First the 'matrisse'
-u3=all_all; c1=c(); mn='basicae' #
-c1= u3 #[u3[,'ADE'] < ADEMedian  & DV<ADEVar,] #& u3[,'z0.p']<ADEpval
-# c1 = c1[ ((c1[,'ACME']-c1[,'ADE']) > 0), ] #
-# c1 = c1[c1[,'d0.p']<0.49, ]; 
-c1= c1[sample(1:nrow(c1)), ]; rt2=c1[complete.cases(c1), ] #0.49 is optimal p value cutoff to get dim(mat[[2]])[2] as 36
-hoi = c(); hoi=scan(text=rownames(rt2), what="")#scan(text=rownames(rt2), what="")
-hoi = matrix(hoi, ncol = 3,  byrow = TRUE); colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ,'Desig.')
-hoi[,c(2)]  <- gsub("\\.", "-",  hoi[,c(2)]  ); hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH-P4']='17a-OHP4'
-
-corr=FALSE;z='idire'
-mat=houdees(hoi, Outcome, Mediator,switch=2,mn='ind_pnba',z,corr,date);dim(mat[[2]])[2] # Indirect effect, kasvata... dim(mat[[2]])[2] == 36
-
-u3=all_all; c1=c(); mn='posae' 
-c1= u3 #[u3[,'ADE'] < ADEMedian  & DV<ADEVar,] #& u3[,'z0.p']<ADEpval
-c1=c1[rev(order(c1[,'ACME'])),];
-# c1=c1[ ((c1[,'ACME']-c1[,'ADE']) > 0), ] #
-c1=c1[c1[,'d0.p']<0.49, ] # Let me uset the same optimal value as above
-c2=c1[rev(order(c1[,'ACME'])),]; #350 is optimal as per hand driven optimization 280
-c2=c2[c1[,'ACME']>0,] #c2[c1[,'ACME']>0.01,]#quantile(c1[,'ACME'])[3]
-c1=c2; 
-# c1= c1[sample(1:nrow(c1)), ]; 
-rt2=c1[complete.cases(c1), ]
-hoi=c(); hoi=scan(text=rownames(rt2), what="")#scan(text=rownames(rt2), what="")
-hoi=matrix(hoi, ncol = 3,  byrow = TRUE); colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ,'Desig.')
-hoi[,c(2)]  <- gsub("\\.", "-",  hoi[,c(2)]  ); hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH-P4']='17a-OHP4'
-
-mat_pos=houdees(hoi, Outcome, Mediator,switch=2,mn='ind_pnb_posa',z,corr,date);dim(mat_pos[[2]])[2] #kasvata n, jotta dim(mat_pos[[2]])[2] yhtäkuin kuin length(c(x3,x6)), i.e. 36
-
-u3=all_all;  mn='opiuisae' 
-c1=c() #
-c1= u3 #[u3[,'ADE'] < ADEMedian  & DV<ADEVar,] #& u3[,'z0.p']<ADEpval
+# u3=all_all; c1=c(); mn='basicae' #
+# c1= u3 #[u3[,'ADE'] < ADEMedian  & DV<ADEVar,] #& u3[,'z0.p']<ADEpval
+# # c1 = c1[ ((c1[,'ACME']-c1[,'ADE']) > 0), ] #
+# # c1 = c1[c1[,'d0.p']<0.49, ]; 
+# c1= c1[sample(1:nrow(c1)), ]; rt2=c1[complete.cases(c1), ] #0.49 is optimal p value cutoff to get dim(mat[[2]])[2] as 36
+# hoi = c(); hoi=scan(text=rownames(rt2), what="")#scan(text=rownames(rt2), what="")
+# hoi = matrix(hoi, ncol = 3,  byrow = TRUE); colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ,'Desig.')
+# hoi[,c(2)]  <- gsub("\\.", "-",  hoi[,c(2)]  ); hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH-P4']='17a-OHP4'
+# 
+# corr=FALSE;z='idire'
+# mat=houdees(hoi, Outcome, Mediator,switch=2,mn='ind_pnba',z,corr,date);dim(mat[[2]])[2] # Indirect effect, kasvata... dim(mat[[2]])[2] == 36
+# 
+# u3=all_all; c1=c(); mn='posae' 
+# c1= u3 #[u3[,'ADE'] < ADEMedian  & DV<ADEVar,] #& u3[,'z0.p']<ADEpval
 # c1=c1[rev(order(c1[,'ACME'])),];
-# c1= c1[sample(1:nrow(c1)), ];
-# c1=c1[ ((c1[,'ADE']-c1[,'ACME']) > 0), ] #
-# c1=c1[c1[,'d0.p'] < 0.98, ] #0.98/0.81/0.45... but gives 33 columns so use the other then..
-c3=c1[order(c1[,'ACME']),]; #let us start with the above optima... 643/or similar is dim(c1)[1] so need higher p to get all; (dim(c1)[1]-1)
-c3=c1[c1[,'ACME'] < -0,] # -0.01,]#quantile(c1[,'ACME'])[2]
-c3= c3[sample(1:nrow(c3)), ];
-c1=c3;
-rt2=c1[complete.cases(c1), ]
-hoi=c(); hoi=scan(text=rownames(rt2), what="")#scan(text=rownames(rt2), what="")
-hoi=matrix(hoi, ncol = 3,  byrow = TRUE); colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ,'Desig.')
-hoi[,c(2)]  <- gsub("\\.", "-",  hoi[,c(2)]  ); hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH-P4']='17a-OHP4'
-
-# mat_neg=list(c(1,2),c(3,4))
-mat_neg=houdees(hoi, Outcome, Mediator,switch=2,mn='ind_pnb_nega',z,corr,date);dim(mat_neg[[2]])[2]  #kasvata n, jotta dim(mat_pos[[2]])[2] yhtäkuin kuin length(c(x3,x6)), i.e. 36
-
-the_real=c();the_real <- matrix(0, nrow = dim(mat[[1]])[1], ncol = dim(mat[[1]])[2]); the_real <- data.frame( the_real)
-colnames(the_real) <- colnames(mat[[1]]); rownames(the_real) <- rownames(mat[[1]]) 
-
-the_real2=c();the_real2 <- matrix(0, nrow = dim(mat[[1]])[1], ncol = dim(mat[[1]])[2]); the_real2 <- data.frame(the_real2)
-colnames(the_real2) <- colnames(mat[[1]]); rownames(the_real2) <- rownames(mat[[1]]) 
-
-m1=mat[[1]]
-m2=mat_pos[[1]]
-m3=mat_neg[[1]]
-m4=mat[[2]]
-m5=mat_pos[[2]]
-m6=mat_neg[[2]]
-
-for (i in rownames(m2)) {for (j in colnames(m2)) {if (m2[i,j]==0) {the_real[i,j]=m1[i,j];the_real2[i,j]=m4[i,j]}}}
-for (i in rownames(m3)) {for (j in colnames(m3)) {if (m3[i,j]==0) {the_real[i,j]=m1[i,j];the_real2[i,j]=m4[i,j]}}}
-
-for (i in rownames(m2)) {for (j in colnames(m2)) {if (m5[i,j]<0.1) {the_real[i,j]=m2[i,j];the_real2[i,j]=m5[i,j]}}}
-for (i in rownames(m3)) {for (j in colnames(m3)) {if (m6[i,j]<0.1) {the_real[i,j]=m3[i,j];the_real2[i,j]=m6[i,j]}}}
-
-
- 
-  resulta1 <- as.matrix(the_real);p.mat.a1 <- as.matrix(the_real2)
-
-  # With the neg. you do not put these:
-  if (dim(resulta1)[2]==36) {
-  Outcome=colnames(tv_covNS)[c(29:51,59:71)];
-  Outcome=Outcome[c(1,23,2:22,24:length(Outcome))]
-  resulta1=resulta1[,Outcome[Outcome %in% colnames(resulta1) ]];p.mat.a1=p.mat.a1[,Outcome[Outcome %in% colnames(p.mat.a1) ]] }
-  
-  for (i in 1:dim(resulta1)[1]) {for (j in 1:dim(resulta1)[2]) {if (resulta1[i,j]==0) {p.mat.a1[i,j]=0.5}}}
-  
-  # resulta1 <- t(resulta1);
-  # p.mat.a1 <- t(p.mat.a1)
- 
-  path="C:/Users/patati/Documents/GitHub/new/"; setwd(path) #check this if needed...
-  if (dim(resulta1)[1]==7) {width = 4000;height=1500} else if (dim(resulta1)[1]==20) {width = 4000;height=2500} else if (dim(resulta1)[1]==36) {width = 2500;height=5000}
-
-  jpeg(paste("Heatmap of high ACMEs_thusa_real_v7_thereal_reva",date, mn,ho,ga,hip1,".jpg"), width = width, height = height, quality = 100,pointsize = 14, res=300);# par( ps=ps)# par(cex.lab=90) 22 18
-  # col = brewer.pal(n = 9, name = "YlOrRd")
-  col=colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(150)
-
-   # col=colorRampPalette(c( 'white','orange'), alpha = TRUE)(150)
-  # resulta1=rango(resulta1,-1,1)
-  # if (min(as.matrix(resulta1))< -1  | max(as.matrix(resulta1))> 1) {resulta1=rango(resulta1,-1,1)}
-  
-  corrplot(as.matrix(resulta1), type = type, order = order,method=method, p.mat=as.matrix(p.mat.a1), tl.col = "black", #sum(COL2('RdBu')=="#FF7417")
-           cl.cex = cl.cex, pch.cex=pch.cex, pch.col='black',pch=pch,#pitikö vain pch lisätä pch väriin väriin... mystistä...'#FEE12B'
-           sig.level = c(.05),cl.pos = cl.pos, insig = "label_sig", cl.offset=cl.offset,cl.length=cl.length,
-           tl.srt = 90, diag = TRUE,col=col,is.corr = corr) #only in age...0.001, #rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)])
-  #non were significant in neg... but after mody yes!
-
-  dev.off()
+# # c1=c1[ ((c1[,'ACME']-c1[,'ADE']) > 0), ] #
+# c1=c1[c1[,'d0.p']<0.49, ] # Let me uset the same optimal value as above
+# c2=c1[rev(order(c1[,'ACME'])),]; #350 is optimal as per hand driven optimization 280
+# c2=c2[c1[,'ACME']>0,] #c2[c1[,'ACME']>0.01,]#quantile(c1[,'ACME'])[3]
+# c1=c2; 
+# # c1= c1[sample(1:nrow(c1)), ]; 
+# rt2=c1[complete.cases(c1), ]
+# hoi=c(); hoi=scan(text=rownames(rt2), what="")#scan(text=rownames(rt2), what="")
+# hoi=matrix(hoi, ncol = 3,  byrow = TRUE); colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ,'Desig.')
+# hoi[,c(2)]  <- gsub("\\.", "-",  hoi[,c(2)]  ); hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH-P4']='17a-OHP4'
+# 
+# mat_pos=houdees(hoi, Outcome, Mediator,switch=2,mn='ind_pnb_posa',z,corr,date);dim(mat_pos[[2]])[2] #kasvata n, jotta dim(mat_pos[[2]])[2] yhtäkuin kuin length(c(x3,x6)), i.e. 36
+# 
+# u3=all_all;  mn='opiuisae' 
+# c1=c() #
+# c1= u3 #[u3[,'ADE'] < ADEMedian  & DV<ADEVar,] #& u3[,'z0.p']<ADEpval
+# # c1=c1[rev(order(c1[,'ACME'])),];
+# # c1= c1[sample(1:nrow(c1)), ];
+# # c1=c1[ ((c1[,'ADE']-c1[,'ACME']) > 0), ] #
+# # c1=c1[c1[,'d0.p'] < 0.98, ] #0.98/0.81/0.45... but gives 33 columns so use the other then..
+# c3=c1[order(c1[,'ACME']),]; #let us start with the above optima... 643/or similar is dim(c1)[1] so need higher p to get all; (dim(c1)[1]-1)
+# c3=c1[c1[,'ACME'] < -0,] # -0.01,]#quantile(c1[,'ACME'])[2]
+# c3= c3[sample(1:nrow(c3)), ];
+# c1=c3;
+# rt2=c1[complete.cases(c1), ]
+# hoi=c(); hoi=scan(text=rownames(rt2), what="")#scan(text=rownames(rt2), what="")
+# hoi=matrix(hoi, ncol = 3,  byrow = TRUE); colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ,'Desig.')
+# hoi[,c(2)]  <- gsub("\\.", "-",  hoi[,c(2)]  ); hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH-P4']='17a-OHP4'
+# 
+# # mat_neg=list(c(1,2),c(3,4))
+# mat_neg=houdees(hoi, Outcome, Mediator,switch=2,mn='ind_pnb_nega',z,corr,date);dim(mat_neg[[2]])[2]  #kasvata n, jotta dim(mat_pos[[2]])[2] yhtäkuin kuin length(c(x3,x6)), i.e. 36
+# 
+# the_real=c();the_real <- matrix(0, nrow = dim(mat[[1]])[1], ncol = dim(mat[[1]])[2]); the_real <- data.frame( the_real)
+# colnames(the_real) <- colnames(mat[[1]]); rownames(the_real) <- rownames(mat[[1]]) 
+# 
+# the_real2=c();the_real2 <- matrix(0, nrow = dim(mat[[1]])[1], ncol = dim(mat[[1]])[2]); the_real2 <- data.frame(the_real2)
+# colnames(the_real2) <- colnames(mat[[1]]); rownames(the_real2) <- rownames(mat[[1]]) 
+# 
+# m1=mat[[1]]
+# m2=mat_pos[[1]]
+# m3=mat_neg[[1]]
+# m4=mat[[2]]
+# m5=mat_pos[[2]]
+# m6=mat_neg[[2]]
+# 
+# for (i in rownames(m2)) {for (j in colnames(m2)) {if (m2[i,j]==0) {the_real[i,j]=m1[i,j];the_real2[i,j]=m4[i,j]}}}
+# for (i in rownames(m3)) {for (j in colnames(m3)) {if (m3[i,j]==0) {the_real[i,j]=m1[i,j];the_real2[i,j]=m4[i,j]}}}
+# 
+# for (i in rownames(m2)) {for (j in colnames(m2)) {if (m5[i,j]<0.1) {the_real[i,j]=m2[i,j];the_real2[i,j]=m5[i,j]}}}
+# for (i in rownames(m3)) {for (j in colnames(m3)) {if (m6[i,j]<0.1) {the_real[i,j]=m3[i,j];the_real2[i,j]=m6[i,j]}}}
+# 
+# 
+#  
+#   resulta1 <- as.matrix(the_real);p.mat.a1 <- as.matrix(the_real2)
+# 
+#   # With the neg. you do not put these:
+#   if (dim(resulta1)[2]==36) {
+#   Outcome=colnames(tv_covNS)[c(29:51,59:71)];
+#   Outcome=Outcome[c(1,23,2:22,24:length(Outcome))]
+#   resulta1=resulta1[,Outcome[Outcome %in% colnames(resulta1) ]];p.mat.a1=p.mat.a1[,Outcome[Outcome %in% colnames(p.mat.a1) ]] }
+#   
+#   for (i in 1:dim(resulta1)[1]) {for (j in 1:dim(resulta1)[2]) {if (resulta1[i,j]==0) {p.mat.a1[i,j]=0.5}}}
+#   
+#   # resulta1 <- t(resulta1);
+#   # p.mat.a1 <- t(p.mat.a1)
+#  
+#   path="C:/Users/patati/Documents/GitHub/new/"; setwd(path) #check this if needed...
+#   if (dim(resulta1)[1]==7) {width = 4000;height=1500} else if (dim(resulta1)[1]==20) {width = 4000;height=2500} else if (dim(resulta1)[1]==36) {width = 2500;height=5000}
+# 
+#   jpeg(paste("Heatmap of high ACMEs_thusa_real_v7_thereal_reva",date, mn,ho,ga,hip1,".jpg"), width = width, height = height, quality = 100,pointsize = 14, res=300);# par( ps=ps)# par(cex.lab=90) 22 18
+#   # col = brewer.pal(n = 9, name = "YlOrRd")
+#   col=colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(150)
+# 
+#    # col=colorRampPalette(c( 'white','orange'), alpha = TRUE)(150)
+#   # resulta1=rango(resulta1,-1,1)
+#   # if (min(as.matrix(resulta1))< -1  | max(as.matrix(resulta1))> 1) {resulta1=rango(resulta1,-1,1)}
+#   
+#   corrplot(as.matrix(resulta1), type = type, order = order,method=method, p.mat=as.matrix(p.mat.a1), tl.col = "black", #sum(COL2('RdBu')=="#FF7417")
+#            cl.cex = cl.cex, pch.cex=pch.cex, pch.col='black',pch=pch,#pitikö vain pch lisätä pch väriin väriin... mystistä...'#FEE12B'
+#            sig.level = c(.05),cl.pos = cl.pos, insig = "label_sig", cl.offset=cl.offset,cl.length=cl.length,
+#            tl.srt = 90, diag = TRUE,col=col,is.corr = corr) #only in age...0.001, #rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)])
+#   #non were significant in neg... but after mody yes!
+# 
+#   dev.off()
 
 
 ```
-```{r, warning=FALSE,message=FALSE,fig.width=8.0,fig.align="left",fig.cap="Heatmap of Indirect Effects PFAS vs. Steroids with All Subjects"}
+```{r, warning=FALSE,message=FALSE,fig.width=8.0,fig.align="left",fig.cap="Heatmap of 'Indirect' Effects PFAS vs. Steroids with All Subjects"}
 knitr::include_graphics('Square Correlation Plot of_korkeatACME PFAS vs. steroids_ for the hypos_colors_stea 0 All transpose .jpg')
 ```
-```{r, warning=FALSE,message=FALSE,fig.width=8.0,fig.align="left",fig.cap="Heatmap of Direct Effects PFAS vs. Steroids with All Subjects"}
+```{r, warning=FALSE,message=FALSE,fig.width=8.0,fig.align="left",fig.cap="Heatmap of 'Direct' Effects PFAS vs. Lipids and Bile Acids with All Subjects"}
 knitr::include_graphics('Square Correlation Plot of_korkeatACME PFAS vs. steroids_ for the hypos_colors_stea 1 All transpose .jpg')
 ```
-```{r, warning=FALSE,message=FALSE,fig.width=8.0,fig.align="left",fig.cap="Heatmap of Direct Effects PFAS vs. Steroids with All Subjects"}
+```{r, warning=FALSE,message=FALSE,fig.width=8.0,fig.align="left",fig.cap="Heatmap of 'Indirect' Effects Steroids vs. Bile Acids and Lipids with All Subjects"}
 knitr::include_graphics('Heatmap of high ACMEs_thusa_real_v7_thereal_reva tikka251024_malads opiuisae PFAS vs. bas and lipids_ for the hypo_basic_colors_stea 1 All transpose .jpg')
 ```
 
