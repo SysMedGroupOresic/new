@@ -44,8 +44,6 @@ library(rmdformats);library(prettydoc);library(hrbrthemes);library(tint);library
 library(extrafont);library(scatterplot3d); library(rgl);library(ggsankey);library(ggsankeyfier)
 # https://require.predictiveecology.org/
 
-
-
 ```
 
 
@@ -270,7 +268,7 @@ Treatment=Treatment[!Treatment %in% c('Perfluorodecyl.ethanoic.acid')]
 # hupo=match(   colnames(tv_LOG_covscl)[colnames(tv_LOG_covscl) %in% groups2[,3]], groups2[,3] ) 
 # colnames(tv_LOG_covscl)[colnames(tv_LOG_covscl) %in% groups2[,3]]=groups2[hupo,2]
 
-# save.image('tot.RData')
+# save.image('forACMES_thereal.RData')
 
 ```
 
@@ -360,8 +358,6 @@ Outcome='Necroinflammation';Out='Necroinflammation'; oute='Necroinflammation Gra
 Outcome='HOMA-IR';Out='HOMA-IR'; oute='HOMA-IR';num=1.5 ;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
 
 ```
-
-
 
 
 
@@ -563,9 +559,6 @@ path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(pat
 
 
 
-
-
-
 # Making Chord Diagrams 
 ```{r, warning=FALSE,message=FALSE,fig.width=9.0,fig.align="left"}
 # First the correlations for the chord diagrams (both male and female as well as total subjects):
@@ -764,12 +757,6 @@ gend=c('Male');colors=c('black');group_chords(vars[[2]],n_level,fig_name,big,rem
 
 
 
-
-
-
-
-
-
 # Making Variance Explained Plots
 ```{r, warning=FALSE,message=FALSE,fig.width=6.0,fig.align="left"}
 # This is it! https://bioconductor.org/packages/release/bioc/vignettes/scater/inst/doc/overview.html
@@ -835,9 +822,6 @@ varex_groups_plot(tv_all,Group='male')
 ```
 
 
-
-
-
 # Making Heatmap with Effect Sizes
 ```{r, warning=FALSE,message=FALSE,fig.width=9.0,fig.align="left"}
 #For calculating the effect sizes, I'll use the Cohen's d
@@ -900,8 +884,6 @@ brks_heatmap <- function(mat, color_palette){
 knitr::include_graphics("cohensd_tikka_OK251024.jpg")
 
 ```
-
-
 
 
 
@@ -1003,6 +985,12 @@ resulta1=t(resulta1);resulta2=t(resulta2);resulta3=t(resulta3)
 p.mat.a1=t(p.mat.a1);p.mat.f1=t(p.mat.f1);p.mat.m1=t(p.mat.m1)
 width = 9000;height=2800;
 
+resulta1[resulta1 > 0.26] = 0.4
+resulta1[resulta1 < -0.26] = -0.4
+hist(as.numeric(unlist(resulta1)),breaks=30,ylim=c(0.0,40))  #xlim=c(0.04,0.4),
+# resulta1[resulta1 > 1]  = 1
+# resulta1[resulta1 < -1] = -1 #col.lim=c(-0.4,0.4)) 
+
 #https://www.rdocumentation.org/packages/corrplot/versions/0.92/topics/corrplot
 #https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html
 #https://statisticsglobe.com/change-font-size-corrplot-r
@@ -1011,11 +999,11 @@ width = 9000;height=2800;
 order="original"; range='orig';corre='no_rendorm'; type='full'; method='color';ga='All';gf='Female';gm='Male' #color square
 col = colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(100)
 cl.offset=1.0;cl.length=5;cl.cex = 1.3;pch.cex=1.3;pch=20;cl.pos = 'r';#cl.pos = 'b' ;#pch.cex=0.95,1.3; height=6300; pos 'b' cl.pos = 'b' 
-jpeg(paste("Square Correlation Plot ofd",ho,ga,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 30, res=300);# par( ps=ps)# par(cex.lab=90)
+jpeg(paste("Square Correlation Plot ofdd",ho,ga,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 30, res=300);# par( ps=ps)# par(cex.lab=90)
 corrplot(resulta1, type = type, order = order,method=method, p.mat=p.mat.a1, tl.col = "black", #sum(COL2('RdBu')=="#FF7417")
          cl.cex = cl.cex, pch.cex=pch.cex, pch.col='black',pch=pch,#pitikö vain pch lisätä pch väriin väriin... mystistä...'#FEE12B'
 sig.level = c(.001,.05, .2),cl.pos = cl.pos, insig = "label_sig", cl.offset=cl.offset,cl.length=cl.length,
-tl.srt = 90, diag = TRUE,col = col,is.corr = TRUE) #only in age...0.001,
+tl.srt = 90, diag = TRUE,col = col,is.corr = FALSE, col.lim=c(-0.4,0.4) ) #only in age...0.001,
 dev.off()
 pch.cex=1.3;
 jpeg(paste("Square Correlation Plot ofd",ho,gf,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 30, res=300);  
@@ -1046,6 +1034,11 @@ resulta2=resultaf[c(x3,x6),x2]; p.mat.f1=p.mat.ff[c(x3,x6),x2]
 resulta3=resultam[c(x3,x6),x2]; p.mat.m1=p.mat.mm[c(x3,x6),x2]
 # tv_ah=rango(resulta3,(min(resulta2)),max(resulta2)); resulta3=tv_ah;#
 resulta1=t(resulta1);resulta2=t(resulta2);resulta3=t(resulta3);p.mat.a1=t(p.mat.a1);p.mat.f1=t(p.mat.f1);p.mat.m1=t(p.mat.m1);
+
+resulta1[resulta1 > 0.25] = 0.4
+resulta1[resulta1 < -0.25] = -0.4
+hist(as.numeric(unlist(resulta1)),breaks=30,ylim=c(0.0,40))  #xlim=c(0.04,0.4),
+
 hip1='transpose'; width = 3200;height=2000;ho='steroids vs. all others except PFAS';ps=12 #pch=10;
 min(c(resulta2)); max(c(resulta2)) #These are around -0.4 and 0.4
 col = colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(150)
@@ -1054,11 +1047,11 @@ col = colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(150)
 
 order="original"; range='orig';corre='no_renorm'; type='full'; method='color';ga='All';gf='Female';gm='Male' #color square
 cl.offset=1.0;cl.length=5;cl.cex = 1.0;pch.cex=1.0;pch=20;cl.pos = 'r';#cl.pos = 'b' ;#pch.cex=0.95,1.3; height=6300; pos 'b' cl.pos = 'b' 
-jpeg(paste("Square Correlation Plot of",ho,ga,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 14, res=300);# par( ps=ps)# par(cex.lab=90)
+jpeg(paste("Square Correlation Plot ofrr",ho,ga,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 14, res=300);# par( ps=ps)# par(cex.lab=90)
 corrplot(resulta1, type = type, order = order,method=method, p.mat=p.mat.a1, tl.col = "black", #sum(COL2('RdBu')=="#FF7417")
          cl.cex = cl.cex, pch.cex=pch.cex, pch.col='black',pch=pch,#pitikö vain pch lisätä pch väriin väriin... mystistä...'#FEE12B'
 sig.level = c(.001,.05, .2),cl.pos = cl.pos, insig = "label_sig", cl.offset=cl.offset,cl.length=cl.length,
-tl.srt = 90, diag = TRUE,col = col,is.corr = TRUE) #only in age...0.001, is.corr = TRUE/FALSE rev(COL2('RdBu')[1:(length(COL2('RdBu'))-0)])
+tl.srt = 90, diag = TRUE,col = col,is.corr = FALSE,col.lim=c(-0.4,0.4)) #only in age...0.001, is.corr = TRUE/FALSE rev(COL2('RdBu')[1:(length(COL2('RdBu'))-0)])
 dev.off()
 pch.cex=1.3;
 jpeg(paste("Square Correlation Plot of",ho,gf,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 16, res=300);  
@@ -1077,8 +1070,6 @@ dev.off()
 
 
 ```
-
-
 
 
 # Making Heatmaps with Linear Model Estimates
@@ -1380,9 +1371,12 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
     rs1=as.matrix(rs1)
     rs2=as.matrix(rs2)
     
+        rs1[rs1>0.5]=0.5;rs1[rs1 < -0.5]=-0.5;
+
+    
     width=2500; height=4400
     order="original"; range='orig';corre='no_renorm'; type='full'; method='color';#ga='All';gf='Female';gm='Male' #color square
-    cl.offset=1.0;cl.length=5;cl.cex = 1.09;pch.cex=1.09;pch=11;cl.pos = 'n';#cl.pos = 'b' ;#pch.cex=0.95,1.3; height=6300; pos 'b' cl.pos = 'b'
+    cl.offset=1.0;cl.length=15;cl.cex = 1.09;pch.cex=1.09;pch=11;cl.pos = 'r';#cl.pos = 'b' ;#pch.cex=0.95,1.3; height=6300; pos 'b' cl.pos = 'b'
     ho=Group;hip1='BAs_lipids_as_y vs. steroids_as_x'
 
     # https://www.rdocumentation.org/packages/corrplot/versions/0.94/topics/corrplot
@@ -1391,13 +1385,15 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
 
 #I have driven these separately for html: 
     # for that you need:     
-    jpeg(paste("Linear Model Estimate Plot ofe",hip1,Group,".jpg"), width = width, height = height, quality = 100,pointsize = 16, res=300);
+    jpeg(paste("Linear Model Estimate Plot ofees4",hip1,Group,".jpg"), width = width, height = height, quality = 100,pointsize = 16, res=300);
 
     hepio=colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(150) #rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)])
     
-    corrplot(rs1, type = type, order = order,method=method, p.mat=rs2, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,pch.col='black',pch=pch, ,sig.level = c(.001, .01, .05),cl.pos = 'n', 
+    
+    
+    corrplot(rs1, type = type, order = order,method=method, p.mat=rs2, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,pch.col='black',pch=pch, ,sig.level = c(.001, .01, .05),cl.pos = cl.pos, 
              insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length,tl.cex=0.5, tl.srt = 90, diag = TRUE,#tl.pos='n'
-             col = colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(100) ,is.corr = TRUE); #https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html#change-color-spectra-color-legend-and-text-legend
+             col = colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(100) ,is.corr = FALSE,col.lim=c(-0.5,0.5));   #https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html#change-color-spectra-color-legend-and-text-legend
     
     dev.off()  #,is.corr = FALSE
 
@@ -1457,37 +1453,37 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
     rs1a=rsa[1:7,];
     rs2a=rsa[8:14,]
     rs1=rs1a;rs2=rs2a
-    width=5500; height=2300
     
-    order="original"; range='orig';corre='no_renorm'; type='full'; method='color'; #ga='All';gf='Female';gm='Male' #color square
-    cl.offset=1.0;cl.length=5;cl.cex = 1.05;pch.cex=1.05;pch=20;cl.pos = 'r';#cl.pos = 'b' ;#pch.cex=0.95,1.3; height=6300; pos 'b' cl.pos = 'b'
-    ho=Group; hip1='Steroids_y vs. PFAS_as_x'
+    
+
     rs1 <- mutate_all(rs1, function(x) as.numeric(as.character(x)))
     rs2 <- mutate_all(rs2, function(x) as.numeric(as.character(x)))
     # rs1=rango(rs1,-0.5,0.5) #check if needed
 
     rs1=as.matrix(rs1)
     rs2=as.matrix(rs2)
+    
+    rs1[rs1>0.4]=0.4;rs1[rs1 < -0.4]=-0.4;
 
   order="original"; range='orig';corre='no_renorm'; type='full'; method='color'; #ga='All';gf='Female';gm='Male' #color square
-  cl.offset=1.0;cl.length=5;cl.cex = 1.4;pch.cex=1.5;pch=20;cl.pos = 'r';#cl.pos = 'b' ;#pch.cex=0.95,1.3; height=6300; pos 'b' cl.pos = 'b'
+  cl.offset=1.0;cl.length=11;cl.cex = 1.4;pch.cex=1.5;pch=20;cl.pos = 'r';#cl.pos = 'b' ;#pch.cex=0.95,1.3; height=6300; pos 'b' cl.pos = 'b'
   ho=Group;hip1='Steroids_y vs. PFAS_as_x'
-
+  width=5500; height=1800
 #I have driven these separately for html: 
 
-jpeg(paste("Linear Model Estimate Plot of_s",hip1,Group,".jpg"), width = width, height = height, quality = 100,pointsize = 16, res=300);
   
-corrplot(rs1, type = type, order = order,method=method, p.mat=rs2, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,pch.col='black',pch=pch,
-sig.level = c(.001, .01, .05),cl.pos =  'n', insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length, tl.cex=0.8, #tl.pos='n',
-tl.srt = 90, diag = TRUE,col = colorRampPalette(c('blue','white', 'orange'), alpha = TRUE)(100),is.corr = TRUE); 
+  
+  
+jpeg(paste("Linear Model Estimate Plot of_sa4",hip1,Group,".jpg"), width = width, height = height, quality = 100,pointsize = 16, res=300);
+  corrplot(rs1, type = type, order = order,method=method, p.mat=rs2, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,pch.col='black',pch=pch,
+sig.level = c(.001, .01, .05),cl.pos =  cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length, tl.cex=0.8, #tl.pos='n',
+tl.srt = 90, diag = TRUE,col = colorRampPalette(c('blue','white', 'orange'), alpha = TRUE)(100),is.corr = FALSE,col.lim=c(-0.4,0.4)); 
 
 # https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html#change-color-spectra-color-legend-and-text-legend
 dev.off()
-
-    
   } 
   
-#       
+
 # #     #,is.corr = FALSE
 #   hoi=hopiu
 #     rsa=c();rs1=c();rs2=c()
@@ -1577,15 +1573,21 @@ dev.off()
 #   col=colorRampPalette(c('blue','white','orange'), alpha = TRUE)(150)
 # #I have driven these separately for html:
 # 
+#   hist(as.numeric(unlist(rs1)),breaks=30,ylim=c(0.0,40))  #xlim=c(0.04,0.4),
+# resulta1[rs1 >= 0.24] = 0.3 #max(rs1)
+# resulta1[rs1 < -0.24] = -0.3 #min(rs1)
+# # resulta1[resulta1 > 1]  = 1
+# # resulta1[resulta1 < -1] = -1 #col.lim=c(-0.4,0.4)) 
+#   
 # jpeg(paste("Linear Model Estimate Plot of_s",hip1,Group,".jpg"), width = width, height = height, quality = 100,pointsize = 16, res=300);
 # 
 # corrplot(rs1, type = type, order = order,method=method, p.mat=rs2, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,pch.col='black',pch=pch,
 # sig.level = c(.001, .01, .05),cl.pos =  'r', insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length, tl.cex=1.0, #tl.pos='n',
-# tl.srt = 90, diag = TRUE,col =col ,is.corr = FALSE); #colorRampPalette(c('blue','white', 'orange'), alpha = TRUE)(100) is.corr = TRUE or false
+# tl.srt = 90, diag = TRUE,col =col ,is.corr = FALSE,col.lim=c(-0.3,0.3)); #colorRampPalette(c('blue','white', 'orange'), alpha = TRUE)(100) is.corr = TRUE or false
 # 
 # # https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html#change-color-spectra-color-legend-and-text-legend
 # dev.off()
-#   
+# 
 #   hoi=hopiu
 #     rsa=c();rs1=c();rs2=c()
 # 
@@ -1600,7 +1602,7 @@ dev.off()
 # 
 # # #
 #     x2[x2=="17aOH-P4"]="17a-OHP4"
-#     c1=hoi[,1] %in% x2
+#     c1=hoi[,1] %in% x5
 #     hoi2=hoi[c1,] # This gives you the PFAS (x5) ok. Tää tulee suoraan tällä PFAS 7:lle ekalle
 #     c2=hoi2[,2] %in% c(x3,x6)#names(table(hoi[,1]))[!names(table(hoi[,1])) %in% c(x3,x5,x6)] #vaikeemman kautta
 # #     # hyy=c1 & c2
@@ -1674,11 +1676,19 @@ dev.off()
 #   col=colorRampPalette(c('blue','white','orange'), alpha = TRUE)(150)
 # #I have driven these separately for html:
 # 
-# jpeg(paste("Linear Model Estimate Plot of_ss",hip1,Group,".jpg"), width = width, height = height, quality = 100,pointsize = 14, res=300);
+#   
+# hist(as.numeric(unlist(rs1)),breaks=30,ylim=c(0.0,40))  #xlim=c(0.04,0.4),
+# 
+# resulta1[rs1 >= 0.26] = 0.3 #max(rs1)
+# resulta1[rs1 < -0.26] = -0.3 #min(rs1)
+# # resulta1[resulta1 > 1]  = 1
+# # resulta1[resulta1 < -1] = -1 #col.lim=c(-0.4,0.4))   
+#   
+# jpeg(paste("Linear Model Estimate Plot of_sss",hip1,Group,".jpg"), width = width, height = height, quality = 100,pointsize = 14, res=300);
 # 
 # corrplot(rs1, type = type, order = order,method=method, p.mat=rs2, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,pch.col='black',pch=pch,
 # sig.level = c(.001, .01, .05),cl.pos =  'r', insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length, tl.cex=1.0, #tl.pos='n',
-# tl.srt = 90, diag = TRUE,col =col ,is.corr = TRUE); #colorRampPalette(c('blue','white', 'orange'), alpha = TRUE)(100) is.corr = TRUE or false
+# tl.srt = 90, diag = TRUE,col =col ,is.corr = FALSE,col.lim=c(-0.3,0.3) ); #colorRampPalette(c('blue','white', 'orange'), alpha = TRUE)(100) is.corr = TRUE or false
 # 
 # # https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html#change-color-spectra-color-legend-and-text-legend
 # dev.off()
@@ -1707,7 +1717,6 @@ adj='nook'; sig.level=c(.001,0.01, 0.05); sick='no'; joo='joo' #sickGroup..
 metanorm_S_non_fdr=huus(tv_all,adj,sig.level,sick,sick_group,joo)
 
 ```
-
 ```{r, echo=FALSE, out.width="50%", fig.cap="Heatmap of LMEs (linear model estimates) from Steroids vs. BAs & Lipids & Covariates with All Subjects",fig.align="left"}
 knitr::include_graphics("Linear Model Estimate Plot ofe BAs_lipids_as_y vs. steroids_as_x All .jpg")
 ```
@@ -1733,6 +1742,8 @@ knitr::include_graphics("Linear Model Estimate Plot of_s Steroids_y vs. PFAS_as_
 # [5] "Linear Model Estimate Plot of Steroids_y vs. PFAS_as_x female .jpg"         
 # [6] "Linear Model Estimate Plot of Steroids_y vs. PFAS_as_x male .jpg"  
 ```
+
+
 
 
 # Making Scatter Plots with Models 
@@ -2150,8 +2161,6 @@ segments(orig$x, orig$y, plane$x, plane$y,
          col = c("blue", "red")[i.negpos], lty = (2:1)[i.negpos])
 
 ```
-
-
 ```{r, echo=FALSE, out.width="50%", fig.cap="Correlations Scatter Plotted_All_Hexcer S",fig.align="left"}
 knitr::include_graphics('Correlations plotted All Hexcer S .jpg')
 ```
@@ -2170,7 +2179,6 @@ knitr::include_graphics('Correlations plotted female C4_L P5 .jpg')
 ```{r, echo=FALSE, out.width="50%", fig.cap="Correlations Scatter Plotted_Male_C4_L P5",fig.align="left"}
 knitr::include_graphics('Correlations plotted male C4_L P5 .jpg')
 ```
-
 
 
 # Making Network Plot
@@ -2249,7 +2257,6 @@ dev.off()
 # And now just showing the figure separately:
 knitr::include_graphics('network.jpg')
 ```
-
 
 
 # Making Causal Mediation Analysis
@@ -2362,6 +2369,9 @@ fn='All'; sick_group=rowSums(ccova)>4 #toth#
 
 
 
+
+
+
 # Making Heatmaps for Indirect and Direct Effects
 ```{r, warning=FALSE,message=FALSE,fig.width=10.0,fig.align="left"}
 # setwd("C:/Users/patati/Desktop/TurkuOW/RWork/tests6/tests_basic/") #check this if needed...
@@ -2382,11 +2392,11 @@ ADEMedian=c();ADEpval=c();ADEVar=c()
 c1= u3 #[u3[,'ADE'] < ADEMedian  & DV<ADEVar,] #& u3[,'z0.p']<ADEpval
 # ACMEMedian=min(c1[,'ACME'])
 c1=c1[rev(order(c1[,'ACME'])),];
-c1=c1[ ((c1[,'ACME']-c1[,'ADE']) > 0), ] #
+# c1=c1[ ((c1[,'ACME']-c1[,'ADE']) > 0), ] #
 c1=c1[c1[,'d0.p']<0.49, ] #0.35 (but not 0.3) ok for steroids vs ends, with 0.3 I get less columns than needed... biggersets more maybe needed
-c1=c1[c1[,1]>0.0,]
+# c1a=c1[c1[,1]>0.0,]
 dim(c1)
-# c1= c1[sample(1:nrow(c1)), ]
+c1= c1[sample(1:nrow(c1)), ]
 rt2=c1[complete.cases(c1), ]
 # rt2=all_all
 # rt2=rt2[complete.cases(rt2), ]
@@ -2399,7 +2409,7 @@ hoi[,c(2)]  <- gsub("\\.", "-",  hoi[,c(2)]  ) #:)
 hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH-P4']='17a-OHP4'
 
 #Switch = 0: PFAS vs steroids; switch=1: PFAS vs BAs and lipids, switch=2: steroids vs BAs and lipids (0-2 with both ACME and ADE (z='dir'))
-houdees=function(hoi, Outcome, Mediator,switch,mn,z,corr,date) {
+houdees=function(hoi, rt2, switch,mn,z,corr,date) {
   indir=c(); dir=c(); ip=c();rn=c();rn2=c()
   Outcome=colnames(tv_covNS)[c(29:51,59:71)]; #The final dataframe is shorter or the like so there were less variables here...
   Treatment=colnames(tv_covNS)[52:58];
@@ -2425,7 +2435,7 @@ houdees=function(hoi, Outcome, Mediator,switch,mn,z,corr,date) {
     }}} else if (switch==0) {
       
       # indir:
-      Mediator_ok=Mediator[Mediator %in% names(table(hoi[1:dim(hoi)[1],c(2)]))]
+      Mediator_ok=colnames(tv_all)[9:28][colnames(tv_all)[9:28] %in% names(table(hoi[1:dim(hoi)[1],c(2)]))]
       for (i in 1:7) {for (j in 1:length(Mediator_ok)) {
         if (z=='dir') {indir=append(indir,rt2[which(hoi[,1]==Treatment[i] & hoi[,2]==Mediator_ok[j])[1],c(5)]) #or c(1) hoi 1
         ip=append(ip,rt2[which(hoi[,1]==Treatment[i] & hoi[,2]==Mediator_ok[j])[1],c(6)])} else {
@@ -2561,10 +2571,8 @@ houdees=function(hoi, Outcome, Mediator,switch,mn,z,corr,date) {
   #https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html
   #https://statisticsglobe.com/change-font-size-corrplot-r
   #order can be: alphabet, hclust, original #https://stackoverflow.com/questions/51115495/how-to-keep-order-of-the-correlation-plot-labels-as-same-in-the-datafile
-  order="original"; range='orig';corre='no_renormaa'; type='full'; method='color';ga='All';gf='Female';gm='Male' #color square
-  cl.offset=20;cl.length=5;cl.cex = 1.3;pch.cex=1.95;pch=3;cl.pos = 'r'; #cl.offset=2;cl.length=5;cl.cex = 1.3;pch.cex=1.95;pch=14;
-  
-  if (switch==1) {rbo=rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]) } else if (switch==0  | switch==2) {rbo=rev(COL2('RdBu')[25:100]) } 
+
+  # if (switch==1) {rbo=rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]) } else if (switch==0  | switch==2) {rbo=rev(COL2('RdBu')[25:100]) } 
   # This has been driven:
   
   # resulta1=resulta1[,colnames(resulta2)] #In case you need the column names elsewhere
@@ -2592,16 +2600,19 @@ houdees=function(hoi, Outcome, Mediator,switch,mn,z,corr,date) {
   # p.mat.a1 <- t(p.mat.a1)
  
   path="C:/Users/patati/Documents/GitHub/new/"; setwd(path) #check this if needed...
-  jpeg(paste("Heatmap of high ACMEs_thusa_real_v7ssaa",date, mn,ho,ga,hip1,".jpg"), width = width, height = height, quality = 100,pointsize = 14, res=300);# par( ps=ps)# par(cex.lab=90) 22 18
+  jpeg(paste("Heatmap of high ACMEs_mm",date, mn,ho,ga,".jpg"), width = width, height = height, quality = 100,pointsize = 14, res=300);# par( ps=ps)# par(cex.lab=90) 22 18
   # col = brewer.pal(n = 9, name = "YlOrRd")
+  order="original"; range='orig';corre='no_renormaa'; type='full'; method='color';ga='All';gf='Female';gm='Male' #color square
+  cl.offset=20;cl.length=20;cl.cex = 1.3;pch.cex=1.95;pch=3;cl.pos = 'r'; #cl.offset=2;cl.length=5;cl.cex = 1.3;pch.cex=1.95;pch=14;
+  
   col=colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(150)
    # col=colorRampPalette(c( 'white','orange'), alpha = TRUE)(150)
-    
 
-  if (corr==TRUE) {if (min(as.matrix(resulta1))< -1  | max(as.matrix(resulta1))> 1) {resulta1=rango(resulta1,-1,1)}} else if (min(as.matrix(resulta1)) >= 0)  {resulta1=rango(resulta1,-1,1)} #
+
+  # if (corr==TRUE) {if (min(as.matrix(resulta1))< -1  | max(as.matrix(resulta1))> 1) {resulta1=rango(resulta1,-1,1)}} else if (min(as.matrix(resulta1)) >= 0)  {resulta1=rango(resulta1,-1,1)} #
   # resulta1=rango(resulta1,-1,1)
   # if (min(as.matrix(resulta1)) >= 0  | max(as.matrix(resulta1)) <= 0) {resulta1=rango(resulta1,-1,1)}
-  
+
   corrplot(as.matrix(resulta1), type = type, order = order,method=method, p.mat=as.matrix(p.mat.a1), tl.col = "black", #sum(COL2('RdBu')=="#FF7417")
            cl.cex = cl.cex, pch.cex=pch.cex, pch.col='black',pch=pch,#pitikö vain pch lisätä pch väriin väriin... mystistä...'#FEE12B'
            sig.level = c(.05),cl.pos = cl.pos, insig = "label_sig", cl.offset=cl.offset,cl.length=cl.length,
@@ -2614,127 +2625,167 @@ houdees=function(hoi, Outcome, Mediator,switch,mn,z,corr,date) {
   }
 
 # If you need to drive this, do it separately...
-# uliulie=houdees(hoi, Outcome, Mediator,switch=0)  # Indirect effect
-# uliulie1=houdees(hoi, Outcome, Mediator,switch=1,mn='direep') # Direct effect
-# corr=TRUE;z='idir'
-# uliulie2=houdees(hoi, Outcome, Mediator,switch=2,mn='indiruus',z,corr,date); dim(uliulie2[[1]]) # Indirect v1 effect
-# uliulie2=houdees(hoi, Outcome, Mediator,switch=1,mn='diruus',z,corr,date); dim(uliulie2[[1]]) # Indirect v1 effect
-# z='idir'
-# uliulie2=houdees(hoi, Outcome, Mediator,switch=1,mn='indir_big',z,corr,date); dim(uliulie2[[1]]) # Indirect v1 effect
+# uliulie=houdees(hoi, switch=0)  # Indirect effect
+# uliulie1=houdees(hoi, switch=1,mn='direep') # Direct effect
+
+corr=FALSE;z='idir'
+# uliulie2=houdees(hoi, switch=2,mn='indiruus',z,corr,date); dim(uliulie2[[1]]) # Indirect v1 effect
+# uliulie2=houdees(hoi, switch=1,mn='diruus',z,corr,date); dim(uliulie2[[1]]) # Indirect v1 effect
+z='idir'
+uliulie2=houdees(hoi, switch=2,mn='indir_smalla',z,corr,date); dim(uliulie2[[1]]) # Indirect v1 effect
 # 
-# z='dir'
-# uliulie2=houdees(hoi, Outcome, Mediator,switch=2,mn='dir_big',z,corr,date); dim(uliulie2[[1]]) # Indirect v1 effect
+z='dir'
+uliulie2=houdees(hoi, switch=0,mn='dir_small',z,corr,date); dim(uliulie2[[1]]) # Indirect v1 effect
 # 
-# uliulie2=houdees(hoi, Outcome, Mediator,switch=2,mn='dir_big_upper ok',z,corr,date); dim(uliulie2[[1]]) # Indirect v1 effect
+# uliulie2=houdees(hoi, switch=2,mn='dir_big_upper ok',z,corr,date); dim(uliulie2[[1]]) # Indirect v1 effect
 # 
-# uliulie2=houdees(hoi, Outcome, Mediator,switch=1,mn='dir_small_upper ok',z,corr,date); dim(uliulie2[[1]]) # Indirect v1 effect
-# 
+# uliulie2=houdees(hoi, switch=1,mn='dir_small_upper ok',z,corr,date); dim(uliulie2[[1]]) # Indirect v1 effect
+
+
+
+
+
 # #Switch = 0: PFAS vs steroids; switch=1: PFAS vs BAs and lipids, switch=2: steroids vs BAs and lipids (0-2 with both ACME and ADE (z='dir'))
 # corr=TRUE;z='idir'
-# uliulie2=houdees(hoi, Outcome, Mediator,switch=1,mn='indiruush',z,corr,date); dim(uliulie2[[1]]) # Indirect v1 effect
+# uliulie2=houdees(hoi, switch=1,mn='indiruush',z,corr,date); dim(uliulie2[[1]]) # Indirect v1 effect
 
 #Let's get this comparable done:
 # First the 'matrisse'
-# u3=all_all; c1=c(); mn='basicae' #
-# c1= u3 #[u3[,'ADE'] < ADEMedian  & DV<ADEVar,] #& u3[,'z0.p']<ADEpval
-# # c1 = c1[ ((c1[,'ACME']-c1[,'ADE']) > 0), ] #
-# # c1 = c1[c1[,'d0.p']<0.49, ]; 
-# c1= c1[sample(1:nrow(c1)), ]; rt2=c1[complete.cases(c1), ] #0.49 is optimal p value cutoff to get dim(mat[[2]])[2] as 36
-# hoi = c(); hoi=scan(text=rownames(rt2), what="")#scan(text=rownames(rt2), what="")
-# hoi = matrix(hoi, ncol = 3,  byrow = TRUE); colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ,'Desig.')
-# hoi[,c(2)]  <- gsub("\\.", "-",  hoi[,c(2)]  ); hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH-P4']='17a-OHP4'
-# 
-# corr=FALSE;z='idire'
-# mat=houdees(hoi, Outcome, Mediator,switch=2,mn='ind_pnba',z,corr,date);dim(mat[[2]])[2] # Indirect effect, kasvata... dim(mat[[2]])[2] == 36
-# 
-# u3=all_all; c1=c(); mn='posae' 
-# c1= u3 #[u3[,'ADE'] < ADEMedian  & DV<ADEVar,] #& u3[,'z0.p']<ADEpval
-# c1=c1[rev(order(c1[,'ACME'])),];
-# # c1=c1[ ((c1[,'ACME']-c1[,'ADE']) > 0), ] #
-# c1=c1[c1[,'d0.p']<0.49, ] # Let me uset the same optimal value as above
-# c2=c1[rev(order(c1[,'ACME'])),]; #350 is optimal as per hand driven optimization 280
-# c2=c2[c1[,'ACME']>0,] #c2[c1[,'ACME']>0.01,]#quantile(c1[,'ACME'])[3]
-# c1=c2; 
-# # c1= c1[sample(1:nrow(c1)), ]; 
-# rt2=c1[complete.cases(c1), ]
-# hoi=c(); hoi=scan(text=rownames(rt2), what="")#scan(text=rownames(rt2), what="")
-# hoi=matrix(hoi, ncol = 3,  byrow = TRUE); colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ,'Desig.')
-# hoi[,c(2)]  <- gsub("\\.", "-",  hoi[,c(2)]  ); hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH-P4']='17a-OHP4'
-# 
-# mat_pos=houdees(hoi, Outcome, Mediator,switch=2,mn='ind_pnb_posa',z,corr,date);dim(mat_pos[[2]])[2] #kasvata n, jotta dim(mat_pos[[2]])[2] yhtäkuin kuin length(c(x3,x6)), i.e. 36
-# 
-# u3=all_all;  mn='opiuisae' 
-# c1=c() #
-# c1= u3 #[u3[,'ADE'] < ADEMedian  & DV<ADEVar,] #& u3[,'z0.p']<ADEpval
-# # c1=c1[rev(order(c1[,'ACME'])),];
-# # c1= c1[sample(1:nrow(c1)), ];
-# # c1=c1[ ((c1[,'ADE']-c1[,'ACME']) > 0), ] #
-# # c1=c1[c1[,'d0.p'] < 0.98, ] #0.98/0.81/0.45... but gives 33 columns so use the other then..
-# c3=c1[order(c1[,'ACME']),]; #let us start with the above optima... 643/or similar is dim(c1)[1] so need higher p to get all; (dim(c1)[1]-1)
-# c3=c1[c1[,'ACME'] < -0,] # -0.01,]#quantile(c1[,'ACME'])[2]
-# c3= c3[sample(1:nrow(c3)), ];
-# c1=c3;
-# rt2=c1[complete.cases(c1), ]
-# hoi=c(); hoi=scan(text=rownames(rt2), what="")#scan(text=rownames(rt2), what="")
-# hoi=matrix(hoi, ncol = 3,  byrow = TRUE); colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ,'Desig.')
-# hoi[,c(2)]  <- gsub("\\.", "-",  hoi[,c(2)]  ); hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH-P4']='17a-OHP4'
-# 
-# # mat_neg=list(c(1,2),c(3,4))
-# mat_neg=houdees(hoi, Outcome, Mediator,switch=2,mn='ind_pnb_nega',z,corr,date);dim(mat_neg[[2]])[2]  #kasvata n, jotta dim(mat_pos[[2]])[2] yhtäkuin kuin length(c(x3,x6)), i.e. 36
-# 
-# the_real=c();the_real <- matrix(0, nrow = dim(mat[[1]])[1], ncol = dim(mat[[1]])[2]); the_real <- data.frame( the_real)
-# colnames(the_real) <- colnames(mat[[1]]); rownames(the_real) <- rownames(mat[[1]]) 
-# 
-# the_real2=c();the_real2 <- matrix(0, nrow = dim(mat[[1]])[1], ncol = dim(mat[[1]])[2]); the_real2 <- data.frame(the_real2)
-# colnames(the_real2) <- colnames(mat[[1]]); rownames(the_real2) <- rownames(mat[[1]]) 
-# 
-# m1=mat[[1]]
-# m2=mat_pos[[1]]
-# m3=mat_neg[[1]]
-# m4=mat[[2]]
-# m5=mat_pos[[2]]
-# m6=mat_neg[[2]]
-# 
-# for (i in rownames(m2)) {for (j in colnames(m2)) {if (m2[i,j]==0) {the_real[i,j]=m1[i,j];the_real2[i,j]=m4[i,j]}}}
-# for (i in rownames(m3)) {for (j in colnames(m3)) {if (m3[i,j]==0) {the_real[i,j]=m1[i,j];the_real2[i,j]=m4[i,j]}}}
-# 
-# for (i in rownames(m2)) {for (j in colnames(m2)) {if (m5[i,j]<0.1) {the_real[i,j]=m2[i,j];the_real2[i,j]=m5[i,j]}}}
-# for (i in rownames(m3)) {for (j in colnames(m3)) {if (m6[i,j]<0.1) {the_real[i,j]=m3[i,j];the_real2[i,j]=m6[i,j]}}}
-# 
-# 
-#  
-#   resulta1 <- as.matrix(the_real);p.mat.a1 <- as.matrix(the_real2)
-# 
-#   # With the neg. you do not put these:
-#   if (dim(resulta1)[2]==36) {
-#   Outcome=colnames(tv_covNS)[c(29:51,59:71)];
-#   Outcome=Outcome[c(1,23,2:22,24:length(Outcome))]
-#   resulta1=resulta1[,Outcome[Outcome %in% colnames(resulta1) ]];p.mat.a1=p.mat.a1[,Outcome[Outcome %in% colnames(p.mat.a1) ]] }
-#   
-#   for (i in 1:dim(resulta1)[1]) {for (j in 1:dim(resulta1)[2]) {if (resulta1[i,j]==0) {p.mat.a1[i,j]=0.5}}}
-#   
-#   # resulta1 <- t(resulta1);
-#   # p.mat.a1 <- t(p.mat.a1)
-#  
-#   path="C:/Users/patati/Documents/GitHub/new/"; setwd(path) #check this if needed...
-#   if (dim(resulta1)[1]==7) {width = 4000;height=1500} else if (dim(resulta1)[1]==20) {width = 4000;height=2500} else if (dim(resulta1)[1]==36) {width = 2500;height=5000}
-# 
-#   jpeg(paste("Heatmap of high ACMEs_thusa_real_v7_thereal_reva",date, mn,ho,ga,hip1,".jpg"), width = width, height = height, quality = 100,pointsize = 14, res=300);# par( ps=ps)# par(cex.lab=90) 22 18
-#   # col = brewer.pal(n = 9, name = "YlOrRd")
-#   col=colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(150)
-# 
-#    # col=colorRampPalette(c( 'white','orange'), alpha = TRUE)(150)
-#   # resulta1=rango(resulta1,-1,1)
-#   # if (min(as.matrix(resulta1))< -1  | max(as.matrix(resulta1))> 1) {resulta1=rango(resulta1,-1,1)}
-#   
-#   corrplot(as.matrix(resulta1), type = type, order = order,method=method, p.mat=as.matrix(p.mat.a1), tl.col = "black", #sum(COL2('RdBu')=="#FF7417")
-#            cl.cex = cl.cex, pch.cex=pch.cex, pch.col='black',pch=pch,#pitikö vain pch lisätä pch väriin väriin... mystistä...'#FEE12B'
-#            sig.level = c(.05),cl.pos = cl.pos, insig = "label_sig", cl.offset=cl.offset,cl.length=cl.length,
-#            tl.srt = 90, diag = TRUE,col=col,is.corr = corr) #only in age...0.001, #rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)])
-#   #non were significant in neg... but after mody yes!
-# 
-#   dev.off()
+u3=all_all; c1=c(); mn='basicas' #
+c1= u3 #[u3[,'ADE'] < ADEMedian  & DV<ADEVar,] #& u3[,'z0.p']<ADEpval
+# c1 = c1[ ((c1[,'ACME']-c1[,'ADE']) > 0), ] #
+# rt2=rt2[rev(order(rt2[,'ACME'])),];
 
+c1 = c1[c1[,'d0.p']<0.49, ];
+c1= c1[sample(1:nrow(c1)), ];
+rt2=c1[complete.cases(c1), ] #0.49 is optimal p value cutoff to get dim(mat[[2]])[2] as 36
+rt2[1,]=rt2[1,]
+rt2=rt2[rev(order(rt2[,'ACME'])),];
+
+hoi = c(); hoi=scan(text=rownames(rt2), what="")#scan(text=rownames(rt2), what="")
+hoi = matrix(hoi, ncol = 3,  byrow = TRUE); colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ,'Desig.')
+hoi[,c(2)]  <- gsub("\\.", "-",  hoi[,c(2)]  ); hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH-P4']='17a-OHP4'
+
+corr=FALSE;z='idir'; switch=2; mn=paste0(c(z,'yleis'))
+mat=houdees(hoi, rt2, switch,mn,z,corr,date);dim(mat[[2]])[2] # Indirect effect, kasvata... dim(mat[[2]])[2] == 36
+
+u3=all_all; c1=c(); #mn='posae'
+c1= u3 #[u3[,'ADE'] < ADEMedian  & DV<ADEVar,] #& u3[,'z0.p']<ADEpval
+c1=c1[rev(order(c1[,'ACME'])),];
+# c1=c1[ ((c1[,'ACME']-c1[,'ADE']) > 0), ] #
+c1=c1[c1[,'d0.p']<0.49, ] # Let me uset the same optimal value as above
+c2=c1[rev(order(c1[,'ACME'])),]; #350 is optimal as per hand driven optimization 280
+c2=c2[c1[,'ACME']>0,] #c2[c1[,'ACME']>0.01,]#quantile(c1[,'ACME'])[3]
+c1=c2;
+# c1= c1[sample(1:nrow(c1)), ];
+rt2=c1[complete.cases(c1), ]
+rt2[1,]=rt2[1,]
+hoi=c(); hoi=scan(text=rownames(rt2), what="")#scan(text=rownames(rt2), what="")
+hoi=matrix(hoi, ncol = 3,  byrow = TRUE); colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ,'Desig.')
+hoi[,c(2)]  <- gsub("\\.", "-",  hoi[,c(2)]  ); hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH-P4']='17a-OHP4'
+
+mn=paste0(c(z,'pos'))
+mat_pos=houdees(hoi, rt2, switch,mn,z,corr,date);dim(mat_pos[[2]])[2] #kasvata n, jotta dim(mat_pos[[2]])[2] yhtäkuin kuin length(c(x3,x6)), i.e. 36
+
+u3=all_all;  #mn='opiuisae'
+c1=c() #
+c1= u3 #[u3[,'ADE'] < ADEMedian  & DV<ADEVar,] #& u3[,'z0.p']<ADEpval
+# c1=c1[rev(order(c1[,'ACME'])),];
+# c1= c1[sample(1:nrow(c1)), ];
+# c1=c1[ ((c1[,'ADE']-c1[,'ACME']) > 0), ] #
+# c1=c1[c1[,'d0.p'] < 0.98, ] #0.98/0.81/0.45... but gives 33 columns so use the other then..
+c3=c1[order(c1[,'ACME']),]; #let us start with the above optima... 643/or similar is dim(c1)[1] so need higher p to get all; (dim(c1)[1]-1)
+c3=c1[c1[,'ACME'] < 0,] # -0.01,]#quantile(c1[,'ACME'])[2]
+# c3= c3[sample(1:nrow(c3)), ];
+c1=c3;
+rt2=c1[complete.cases(c1), ]
+rt2[1,]=rt2[1,]
+hoi=c(); hoi=scan(text=rownames(rt2), what="")#scan(text=rownames(rt2), what="")
+hoi=matrix(hoi, ncol = 3,  byrow = TRUE); colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ,'Desig.')
+hoi[,c(2)]  <- gsub("\\.", "-",  hoi[,c(2)]  ); hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH-P4']='17a-OHP4'
+
+# mat_neg=list(c(1,2),c(3,4))
+mn=paste0(c(z,'neg'))
+mat_neg=houdees(hoi, rt2, switch,mn,z,corr,date);dim(mat_neg[[2]])[2]  #kasvata n, jotta dim(mat_pos[[2]])[2] yhtäkuin kuin length(c(x3,x6)), i.e. 36
+
+the_real=c();the_real <- matrix(0, nrow = dim(mat[[1]])[1], ncol = dim(mat[[1]])[2]); the_real <- data.frame( the_real)
+colnames(the_real) <- colnames(mat[[1]]); rownames(the_real) <- rownames(mat[[1]])
+
+the_real2=c();the_real2 <- matrix(0, nrow = dim(mat[[1]])[1], ncol = dim(mat[[1]])[2]); the_real2 <- data.frame(the_real2)
+colnames(the_real2) <- colnames(mat[[1]]); rownames(the_real2) <- rownames(mat[[1]])
+
+m1=mat[[1]]
+m2=mat_pos[[1]]
+m3=mat_neg[[1]]
+m4=mat[[2]]
+m5=mat_pos[[2]]
+m6=mat_neg[[2]]
+# m3=m3[,Outcome[Outcome %in% colnames(m3) ]]; m6=m6[,Outcome[Outcome %in% colnames(m6) ]] 
+
+for (i in rownames(m2)) {for (j in colnames(m2)) {if (m2[i,j]==0) {the_real[i,j]=m1[i,j];the_real2[i,j]=m4[i,j]}}}
+for (i in rownames(m3)) {for (j in colnames(m3)) {if (m3[i,j]==0) {the_real[i,j]=m1[i,j];the_real2[i,j]=m4[i,j]}}}
+
+for (i in rownames(m2)) {for (j in colnames(m2)) {if (m5[i,j]<0.1) {the_real[i,j]=m2[i,j];the_real2[i,j]=m5[i,j]}}}
+for (i in rownames(m3)) {for (j in colnames(m3)) {if (m6[i,j]<0.1) {the_real[i,j]=m3[i,j];the_real2[i,j]=m6[i,j]}}}
+
+
+resulta1_big_id=resulta1
+p.mat.a1_big_id=p.mat.a1
+
+# resulta1_ade1=the_real
+# p.mat.a1_ade1=the_real2
+
+# resulta1_ade2=the_real
+# p.mat.a1_ade2=the_real2
+
+
+
+
+resulta1 <- as.matrix(resulta1_big_id);p.mat.a1 <- as.matrix(p.mat.a1_big_id)
+
+resulta1=resulta1*10
+
+# With the neg. you do not put these:
+if (dim(resulta1)[2]==36) {
+Outcome=colnames(tv_covNS)[c(29:51,59:71)];
+Outcome=Outcome[c(1,23,2:22,24:length(Outcome))]
+resulta1=resulta1[,Outcome[Outcome %in% colnames(resulta1) ]];p.mat.a1=p.mat.a1[,Outcome[Outcome %in% colnames(p.mat.a1) ]] }
+
+for (i in 1:dim(resulta1)[1]) {for (j in 1:dim(resulta1)[2]) {if (resulta1[i,j]==0) {p.mat.a1[i,j]=0.5}}}
+
+# resulta1 <- t(resulta1);
+# p.mat.a1 <- t(p.mat.a1)
+
+path="C:/Users/patati/Documents/GitHub/new/"; setwd(path) #check this if needed...
+if (dim(resulta1)[1]==7) {width = 4000;height=1500} else if (dim(resulta1)[1]==20) {width = 4000;height=2500} else if (dim(resulta1)[1]==36) {width = 2500;height=5000}
+
+jpeg(paste("Heatmap of high ACMEs_v4",date, mn,ga,".jpg"), width = width, height = height, quality = 100,pointsize = 14, res=300);# par( ps=ps)# par(cex.lab=90) 22 18
+
+# col = brewer.pal(n = 9, name = "YlOrRd")
+col=colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(150)
+
+  order="original"; range='orig';corre='no_renormaa'; type='full'; method='color';ga='All';gf='Female';gm='Male' #color square
+cl.offset=25;cl.length=18;cl.cex = 1.1;pch.cex=1.95;pch=3;cl.pos = 'r'; #cl.offset=2;cl.length=5;cl.cex = 1.3;pch.cex=1.95;pch=14;
+
+# if (switch==1) {rbo=rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]) } else if (switch==0  | switch==2) {rbo=rev(COL2('RdBu')[25:100])}
+
+ # col=colorRampPalette(c( 'white','orange'), alpha = TRUE)(150)
+# resulta1=rango(resulta1,-1,1)
+# if (min(as.matrix(resulta1))< -1  | max(as.matrix(resulta1))> 1) {resulta1=rango(resulta1,-1,1)}
+
+corrplot(resulta1, type = type, order = order,method=method, p.mat=p.mat.a1, tl.col = "black", #sum(COL2('RdBu')=="#FF7417")
+         cl.cex = cl.cex, pch.cex=pch.cex, pch.col='black',pch=pch,#pitikö vain pch lisätä pch väriin väriin... mystistä...'#FEE12B'
+         sig.level = c(.05),cl.pos = cl.pos, insig = "label_sig", cl.offset=cl.offset,cl.length=cl.length,
+         tl.srt = 90, diag = TRUE,col=col,is.corr = FALSE) #only in age...0.001, #rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]) col.lim=c(min(resulta1),max(resulta1))
+#non were significant in neg... but after mody yes!
+
+dev.off()
+
+# save.image('forACMES_thereal.RData')
+  
+  
+
+  
 
 ```
 ```{r, warning=FALSE,message=FALSE,fig.width=8.0,fig.align="left",fig.cap="Heatmap of 'Indirect' Effects PFAS vs. Steroids with All Subjects"}
@@ -2746,6 +2797,7 @@ knitr::include_graphics('Square Correlation Plot of_korkeatACME PFAS vs. steroid
 ```{r, warning=FALSE,message=FALSE,fig.width=8.0,fig.align="left",fig.cap="Heatmap of 'Indirect' Effects Steroids vs. Bile Acids and Lipids with All Subjects"}
 knitr::include_graphics('Heatmap of high ACMEs_thusa_real_v7_thereal_reva tikka251024_malads opiuisae PFAS vs. bas and lipids_ for the hypo_basic_colors_stea 1 All transpose .jpg')
 ```
+
 
 
 # Making Sankey Diagrams
@@ -2939,6 +2991,7 @@ p + geom_sankeyedge(aes(fill = Weight), position = pos) +
 
 
 ```
+
 
 
 
@@ -3229,6 +3282,7 @@ table(hoi_sick[,3])[rev(order(table(hoi_sick[,3])))];table(hoi_healthy[,3])[rev(
 ```
 
 
+
 # Disclaimer
 ```{r, warning=FALSE,message=FALSE}
 # This is a part of on-going research work that has not been published yet and I cannot take a responsibility if something above is not working/ok in your system/research/etc. in 100% accuracy. 
@@ -3239,6 +3293,7 @@ table(hoi_sick[,3])[rev(order(table(hoi_sick[,3])))];table(hoi_healthy[,3])[rev(
 # Thanks and sorry for possible inconveniences in advance! :)
 
 ```
+
 
 # About R Setups
 ```{r, warning=FALSE,message=FALSE}
@@ -3252,6 +3307,7 @@ thedate
 sessionInfo()
 
 ```
+
 
 # References
 ```{r, warning=FALSE,message=FALSE}
