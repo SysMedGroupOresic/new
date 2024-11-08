@@ -504,16 +504,25 @@ houdees=function(hoi, rt2, switch,mn,z,corr,date) {
   
   # resulta1 <- t(resulta1);
   # p.mat.a1 <- t(p.mat.a1)
+  
+  # ou=round(min(c(abs(max(resulta1)),abs(min(resulta1)))),2)
+  # op=ou-0.01
+  
+  # resulta1[resulta1 > 0.4] = 0.4
+  # resulta1[resulta1 < -0.4] = - 0.4
+  hist(as.numeric(unlist(resulta1)),breaks=30,ylim=c(0.0,40))  #xlim=c(0.04,0.4),
+  resulta1[resulta1 > 1]  = 1
+  resulta1[resulta1 < -1] = -1 #col.lim=c(-0.4,0.4))
  
   path="C:/Users/patati/Documents/GitHub/new/"; setwd(path) #check this if needed...
-  jpeg(paste("Heatmap of high ACMEs_mmaa",date, mn,".jpg"), width = width, height = height, quality = 100,pointsize = 14, res=300);# par( ps=ps)# par(cex.lab=90) 22 18
+  jpeg(paste("Heatmap of high ACMEs_mmaaa",date, mn,".jpg"), width = width, height = height, quality = 100,pointsize = 14, res=300);# par( ps=ps)# par(cex.lab=90) 22 18
   # col = brewer.pal(n = 9, name = "YlOrRd")
   order="original"; range='orig';corre='no_renormaa'; type='full'; method='color';ga='All';gf='Female';gm='Male' #color square
-  cl.offset=20;cl.length=20;cl.cex = 1.05;pch.cex=1.05;pch=2;cl.pos = 'r'; #cl.offset=2;cl.length=5;cl.cex = 1.3;pch.cex=1.95;pch=14;
+  cl.offset=20;cl.length=12;cl.cex = 1.25;pch.cex=1.25;pch=2;cl.pos = 'r'; #cl.offset=2;cl.length=5;cl.cex = 1.3;pch.cex=1.95;pch=14;
   
   col=colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(150)
   if (mn=='idirpos') {col=colorRampPalette(c( 'white','orange'), alpha = TRUE)(150)} else if (mn=='idirneg') 
-    {col=colorRampPalette(c('blue', 'white'), alpha = TRUE)(150)}
+    {col=colorRampPalette(c('blue', 'white'), alpha = TRUE)(150)} else {col=col}
 
   
 
@@ -523,7 +532,7 @@ houdees=function(hoi, rt2, switch,mn,z,corr,date) {
 
   corrplot(as.matrix(resulta1), type = type, order = order,method=method, p.mat=as.matrix(p.mat.a1), tl.col = "black", #sum(COL2('RdBu')=="#FF7417")
            cl.cex = cl.cex, pch.cex=pch.cex, pch.col='black',pch=pch,#pitikö vain pch lisätä pch väriin väriin... mystistä...'#FEE12B'
-           sig.level = c(.001, .05, .2),cl.pos = cl.pos, insig = "label_sig", cl.offset=cl.offset,cl.length=cl.length,
+           sig.level = c(.05),cl.pos = cl.pos, insig = "label_sig", cl.offset=cl.offset,cl.length=cl.length, #.001, .05, .2
            tl.srt = 90, diag = TRUE,col=col,is.corr = corr) #only in age...0.001, #rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)])
   #non were significant in neg... but after mody yes!
 
@@ -541,27 +550,35 @@ houdees=function(hoi, rt2, switch,mn,z,corr,date) {
 
 # #Let's get this comparable done:
 # # First the 'matrisse'
-# u3=all_all; c1=c(); mn='basicas' #
-# c1= u3 #[u3[,'ADE'] < ADEMedian  & DV<ADEVar,] #& u3[,'z0.p']<ADEpval
-# # c1 = c1[ ((c1[,'ACME']-c1[,'ADE']) > 0), ] #
-# # c1 = c1[c1[,'d0.p']<0.49, ];
-# c1= c1[sample(1:nrow(c1)), ]; 
-# rt2=c1[complete.cases(c1), ] #0.49 is optimal p value cutoff to get dim(mat[[2]])[2] as 36
-# rt2[1,]=rt2[1,]
-# hoi = c(); hoi=scan(text=rownames(rt2), what="")#scan(text=rownames(rt2), what="")
-# hoi = matrix(hoi, ncol = 3,  byrow = TRUE); colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ,'Desig.')
-# hoi[,c(2)]  <- gsub("\\.", "-",  hoi[,c(2)]  ); hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH-P4']='17a-OHP4'
-# 
-# corr=FALSE;z='idir'; switch=2; mn=paste0(c(z,'yleis'))
-# mat=houdees(hoi, rt2, switch,mn,z,corr,date);dim(mat[[2]])[2] # Indirect effect, kasvata... dim(mat[[2]])[2] == 36
 
-u3=all_all;  corr=FALSE;z='idir'; switch=1;
+
+u3=all_all; c1=c(); mn='basicas' #
+c1= u3 #[u3[,'ADE'] < ADEMedian  & DV<ADEVar,] #& u3[,'z0.p']<ADEpval
+# c1 = c1[ ((c1[,'ACME']-c1[,'ADE']) > 0), ] #
+c1 = c1[c1[,'d0.p']<0.49, ];
+c1= c1[sample(1:nrow(c1)), ];
+# c1=c1[rev(order(c1[,'ACME'])),];
+# c1=c1[c1[,'ACME'] >= 0,] # -0.01,]#quantile(c1[,'ACME'])[2]
+
+rt2=c1[complete.cases(c1), ] #0.49 is optimal p value cutoff to get dim(mat[[2]])[2] as 36
+# rt2[1,]=rt2[1,]
+hoi = c(); hoi=scan(text=rownames(rt2), what="")#scan(text=rownames(rt2), what="")
+hoi = matrix(hoi, ncol = 3,  byrow = TRUE); colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ,'Desig.')
+hoi[,c(2)]  <- gsub("\\.", "-",  hoi[,c(2)]  ); hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH-P4']='17a-OHP4'
+
+mn=paste0(z,'s&bas')
+mat=houdees(hoi, rt2, switch,mn,z,corr,date);dim(mat[[2]])[2] # Indirect effect, kasvata... dim(mat[[2]])[2] == 36
+
+
+corr=FALSE;z='dir'; switch=0;
+
+u3=all_all;
 c1=c() #
 c1= u3 #[u3[,'ADE'] < ADEMedian  & DV<ADEVar,] #& u3[,'z0.p']<ADEpval
 # c1=c1[rev(order(c1[,'ACME'])),];
 # c1= c1[sample(1:nrow(c1)), ];
 # c1=c1[ ((c1[,'ADE']-c1[,'ACME']) > 0), ] #
-c1=c1[c1[,'d0.p'] < 0.45, ] #0.98/0.81/0.45... but gives 33 columns so use the other then..
+c1=c1[c1[,'d0.p'] < 0.55, ] #0.98/0.81/0.45... but gives 33 columns so use the other then..
 c3=c1[order(c1[,'ACME']),]; #let us start with the above optima... 643/or similar is dim(c1)[1] so need higher p to get all; (dim(c1)[1]-1)
 c3=c1[c1[,'ACME'] < 0,] # -0.01,]#quantile(c1[,'ACME'])[2]
 # c3= c3[sample(1:nrow(c3)), ];
@@ -666,10 +683,17 @@ for (i in 1:dim(resulta1)[1]) {for (j in 1:dim(resulta1)[2]) {if (resulta1[i,j]=
 # resulta1 <- t(resulta1);
 # p.mat.a1 <- t(p.mat.a1)
 
+# resulta1[resulta1 > abs(round((min(resulta1)+0.01),1))] = abs(round((min(resulta1)+0.01),1))
+# resulta1[resulta1 < (min(resulta1)+0.01)] = round((min(resulta1)+0.01),1)
+hist(as.numeric(unlist(resulta1)),breaks=30,ylim=c(0.0,40))  #xlim=c(0.04,0.4),
+resulta1[resulta1 > 1]  = 1
+resulta1[resulta1 < -1] = -1 #col.lim=c(-0.4,0.4))
+
+
 path="C:/Users/patati/Documents/GitHub/new/"; setwd(path) #check this if needed...
 if (dim(resulta1)[1]==7) {width = 4000;height=1500} else if (dim(resulta1)[1]==20) {width = 4000;height=2500} else if (dim(resulta1)[1]==36) {width = 2500;height=5000}
 
-jpeg(paste("Heatmap of high ACMEs_v8_pfas",date, mn,ga,".jpg"), width = width, height = height, quality = 100,pointsize = 14, res=300);# par( ps=ps)# par(cex.lab=90) 22 18
+jpeg(paste("Heatmap of high ADEe_v8_pfasee",date, mn,".jpg"), width = width, height = height, quality = 100,pointsize = 14, res=300);# par( ps=ps)# par(cex.lab=90) 22 18
 # col = brewer.pal(n = 9, name = "YlOrRd")
 col=colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(150)
 
@@ -682,29 +706,25 @@ cl.offset=25;cl.length=13;cl.cex = 1.1;pch.cex=1.95;pch=3;cl.pos = 'r'; #cl.offs
 # resulta1=rango(resulta1,-1,1)
 # if (min(as.matrix(resulta1))< -1  | max(as.matrix(resulta1))> 1) {resulta1=rango(resulta1,-1,1)}
 
-# resulta1[resulta1 > 0.4] = 0.4
-# resulta1[resulta1 < -0.28] = -0.4
-# hist(as.numeric(unlist(resulta1)),breaks=30,ylim=c(0.0,40))  #xlim=c(0.04,0.4),  
-# resulta1[resulta1 > 1]  = 1
-# resulta1[resulta1 < -1] = -1 #col.lim=c(-0.4,0.4)) 
+
 
 corrplot(resulta1, type = type, order = order,method=method, p.mat=p.mat.a1, tl.col = "black", #sum(COL2('RdBu')=="#FF7417")
          cl.cex = cl.cex, pch.cex=pch.cex, pch.col='black',pch=pch,#pitikö vain pch lisätä pch väriin väriin... mystistä...'#FEE12B'
          sig.level = c(.05),cl.pos = cl.pos, insig = "label_sig", cl.offset=cl.offset,cl.length=cl.length,
-         tl.srt = 90, diag = TRUE,col=col,is.corr = FALSE,col.lim=c(-0.4,0.4)) #only in age...0.001, -2,2 #rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]) col.lim=c(min(resulta1),max(resulta1))
+         tl.srt = 90, diag = TRUE,col=col,is.corr = FALSE,col.lim=c(-1,1)) #only in age...0.001, -2,2 #rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]) col.lim=c(min(resulta1),max(resulta1))
 #non were significant in neg... but after mody yes!
 
-dev.off()
+dev.off() #
 
 
-sum(resulta1<0)
+# sum(resulta1<0)
 # [1] 159 (or 85 or 106) / 147 (149) 75
-sum(resulta1>0)
+# sum(resulta1>0)
 # [1] 132 (or 154 or 149) / 185 (179) 93
 
 # save.image('forACMES_thereal.RData')
-hist(as.numeric(unlist(mat_neg[[1]])),breaks=30,ylim=c(0.0,40))  #xlim=c(0.04,0.4),
-hist(as.numeric(unlist(resulta1)),breaks=30,ylim=c(0.0,40))  #xlim=c(0.04,0.4),  
+# hist(as.numeric(unlist(mat_neg[[1]])),breaks=30,ylim=c(0.0,40))  #xlim=c(0.04,0.4),
+# hist(as.numeric(unlist(resulta1)),breaks=30,ylim=c(0.0,40))  #xlim=c(0.04,0.4),  
 
   
 
