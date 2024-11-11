@@ -555,13 +555,11 @@ houdees=function(hoi, rt2, switch,mn,z,corr,date) {
 # c1= c1[sample(1:nrow(c1)), ];
 # # c1=c1[rev(order(c1[,'ACME'])),];
 # # c1=c1[c1[,'ACME'] >= 0,] # -0.01,]#quantile(c1[,'ACME'])[2]
-# 
 # rt2=c1[complete.cases(c1), ] #0.49 is optimal p value cutoff to get dim(mat[[2]])[2] as 36
 # # rt2[1,]=rt2[1,]
 # hoi = c(); hoi=scan(text=rownames(rt2), what="")#scan(text=rownames(rt2), what="")
 # hoi = matrix(hoi, ncol = 3,  byrow = TRUE); colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ,'Desig.')
 # hoi[,c(2)]  <- gsub("\\.", "-",  hoi[,c(2)]  ); hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH-P4']='17a-OHP4'
-# 
 # mn=paste0(z,'s&bas')
 # corr=FALSE;z='dir'; switch=0;
 # mat=houdees(hoi, rt2, switch,mn,z,corr,date);dim(mat[[2]])[2] # Indirect effect, kasvata... dim(mat[[2]])[2] == 36
@@ -609,7 +607,6 @@ mat_pos=houdees(hoi, rt2, switch,mn,z,corr,date);dim(mat_pos[[2]])[2] #kasvata n
 # totu = mg < 0.19 #median(as.numeric(unlist(mat_pos[[1]]))[as.numeric(unlist(mat_pos[[1]]))>0.01])
 # rpl=ma[totu]
 # mg[totu]=rpl
-# 
 # mgg=mat_pos[[2]]
 # maa=mat_neg[[2]]
 # rpl2=maa[totu]
@@ -629,10 +626,8 @@ maa[totu]=rpl2
 
 # the_real=c();the_real <- matrix(0, nrow = dim(mat[[1]])[1], ncol = dim(mat[[1]])[2]); the_real <- data.frame( the_real)
 # colnames(the_real) <- colnames(mat[[1]]); rownames(the_real) <- rownames(mat[[1]])
-# 
 # the_real2=c();the_real2 <- matrix(0, nrow = dim(mat[[1]])[1], ncol = dim(mat[[1]])[2]); the_real2 <- data.frame(the_real2)
 # colnames(the_real2) <- colnames(mat[[1]]); rownames(the_real2) <- rownames(mat[[1]])
-# 
 # m1=mat[[1]]
 # m2=mat_pos[[1]]
 # m3=mat_neg[[1]]
@@ -640,28 +635,19 @@ maa[totu]=rpl2
 # m5=mat_pos[[2]]
 # m6=mat_neg[[2]]
 # # m3=m3[,Outcome[Outcome %in% colnames(m3) ]]; m6=m6[,Outcome[Outcome %in% colnames(m6) ]] 
-# 
 # for (i in rownames(m2)) {for (j in colnames(m2)) {if (m2[i,j]==0) {the_real[i,j]=m1[i,j];the_real2[i,j]=m4[i,j]}}}
 # for (i in rownames(m3)) {for (j in colnames(m3)) {if (m3[i,j]==0) {the_real[i,j]=m1[i,j];the_real2[i,j]=m4[i,j]}}}
-# 
 # for (i in rownames(m2)) {for (j in colnames(m2)) {if (m5[i,j]<0.1) {the_real[i,j]=m2[i,j];the_real2[i,j]=m5[i,j]}}}
 # for (i in rownames(m3)) {for (j in colnames(m3)) {if (m6[i,j]<0.1) {the_real[i,j]=m3[i,j];the_real2[i,j]=m6[i,j]}}}
-
-
 resulta1_big_id=ma
 p.mat.a1_big_id=maa
-
 # resulta1_big_id=mg
 # p.mat.a1_big_id=mgg
-
 # resulta1_ade1=the_real
 # p.mat.a1_ade1=the_real2
-
 # resulta1_ade2=the_real
 # p.mat.a1_ade2=the_real2
-
 resulta1 <- as.matrix(resulta1_big_id);p.mat.a1 <- as.matrix(p.mat.a1_big_id)
-
 # resulta1=resulta1*10
 
 # With the neg. you do not put these:
@@ -669,9 +655,7 @@ if (dim(resulta1)[2]==36) {
 Outcome=colnames(tv_covNS)[c(29:51,59:71)];
 Outcome=Outcome[c(1,23,2:22,24:length(Outcome))]
 resulta1=resulta1[,Outcome[Outcome %in% colnames(resulta1) ]];p.mat.a1=p.mat.a1[,Outcome[Outcome %in% colnames(p.mat.a1) ]] }
-
 for (i in 1:dim(resulta1)[1]) {for (j in 1:dim(resulta1)[2]) {if (resulta1[i,j]==0) {p.mat.a1[i,j]=0.5}}}
-
 # resulta1 <- t(resulta1);
 # p.mat.a1 <- t(p.mat.a1)
 
@@ -687,9 +671,6 @@ heps=abs(round((min(resulta1)),1))
 heps2=abs(round((min(resulta1)+0.01),2))
 resulta1[resulta1 > heps] = heps
 resulta1[resulta1 < -heps2] = -heps #so this extends the minimum value to the (max) min limit so as to get the true blue to be seen, at least once
-
-
-
 # resulta1[resulta1 > 1]  = 1
 # resulta1[resulta1 < -1] = -1 #col.lim=c(-0.4,0.4))
 
