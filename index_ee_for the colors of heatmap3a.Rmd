@@ -678,7 +678,7 @@ resulta1[resulta1 < -heps2] = -heps #so this extends the minimum value to the (m
 path="C:/Users/patati/Documents/GitHub/new/"; setwd(path) #check this if needed...
 if (dim(resulta1)[1]==7) {width = 4000;height=1500} else if (dim(resulta1)[1]==20) {width = 4000;height=2500} else if (dim(resulta1)[1]==36) {width = 2500;height=5000}
 
-jpeg(paste("Heatmap of high ACMEea",date, z,".jpg"), width = width, height = height, quality = 100,pointsize = 14, res=300);# par( ps=ps)# par(cex.lab=90) 22 18
+jpeg(paste("Heatmap of high ACMEeahy",date, z,".jpg"), width = width, height = height, quality = 100,pointsize = 14, res=300);# par( ps=ps)# par(cex.lab=90) 22 18
 # col = brewer.pal(n = 9, name = "YlOrRd")
 col=colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(150)
 
