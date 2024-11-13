@@ -65,6 +65,7 @@ options(scipen = 999);
 ```
 
 
+
 # Importing Data and Metadata
 ```{r, warning=FALSE,message=FALSE}
 
@@ -271,6 +272,11 @@ Treatment=Treatment[!Treatment %in% c('Perfluorodecyl.ethanoic.acid')]
 # save.image('forACMES_thereal.RData')
 
 ```
+
+
+
+
+
 
 
 # Making Heatmaps for Indirect and Direct Effects
