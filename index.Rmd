@@ -2398,10 +2398,11 @@ houdees=function(hoi, rt2, switch,mn,z,corr,date,neg) {
     Mediator_ok=Outcome[Outcome %in% names(table(hoi[1:dim(hoi)[1],c(3)]))]
     for (i in 1:7) {for (j in 1:length(Mediator_ok)) {
       if (z=='dir') {
-      indir=append(indir,rt2[which(hoi[,1]==Treatment[i] & hoi[,3]==Mediator_ok[j])[1],c(5)]) #or c(1) hoi 1 or 5 (5 is orig)
-      ip=append(ip,rt2[which(hoi[,1]==Treatment[i] & hoi[,3]==Mediator_ok[j])[1],c(6)])} else {
-      indir=append(indir,rt2[which(hoi[,1]==Treatment[i] & hoi[,3]==Mediator_ok[j])[1],c(1)]) #or c(1) hoi 1 or 5 (5 is orig)
-      ip=append(ip,rt2[which(hoi[,1]==Treatment[i] & hoi[,3]==Mediator_ok[j])[1],c(2)])}
+        ap=rt2[which(hoi[,1]==Treatment[i] & hoi[,3]==Mediator_ok[j]),]; if (median(ap[,'ADE'])<0) {apa=min(ap[,'ADE']);ape=ap[ap[,'ADE']==min(ap[,'ADE']),'z0.p'];print(ap[,'ADE'])} else {apa=max(ap[,'ADE']);ape=ap[ap[,'ADE']==max(ap[,'ADE']),'z0.p'];print(ap[,'ADE'])}
+      indir=append(indir,apa) #or c(1) hoi 1 or 5 (5 is orig)
+      ip=append(ip,ape)} else {        ap=rt2[which(hoi[,1]==Treatment[i] & hoi[,3]==Mediator_ok[j]),]; if (median(ap[,'ACME'])<0) {apa=min(ap[,'ACME']);ape=ap[ap[,'ACME']==min(ap[,'ACME']),'d0.p']} else {apa=max(ap[,'ACME']);ape=ap[ap[,'ACME']==max(ap[,'ACME']),'d0.p']}
+      indir=append(indir,apa) #or c(1) hoi 1 or 5 (5 is orig)
+      ip=append(ip,ape)}
       rn=append(rn,hoi[,3][which(hoi[,1]==Treatment[i] & hoi[,3]==Mediator_ok[j])[1]]) #change this...
       rn2=append(rn2,hoi[,1][which(hoi[,1]==Treatment[i] & hoi[,3]==Mediator_ok[j])[1]])
       
@@ -2470,6 +2471,15 @@ houdees=function(hoi, rt2, switch,mn,z,corr,date,neg) {
   # Here you would need to have an evaluation for the 'else', if it is negative, it needs to be max negative, and vice versa for the
   # There does not seem to be doubles: table(tot[,1])
   
+
+  # for (i in 1:length(Treatment)) {hou=names( table(tot[tot[,1]==Treatment[i],2])[table(tot[tot[,1]==Treatment[i],2])>0]);#print(hou)
+  # for (j in 1:length(hou)) {uu=rbind(uu, max(tot[tot[,1]==Treatment[i] & tot[,2]==hou[j],3]))}} #
+  # rr=data.frame()
+  # for (i in 1:length(Treatment)) {hou=names( table(tot[tot[,1]==Treatment[i],2])[table(tot[tot[,1]==Treatment[i],2])>0]);#print(hou)
+  # for (j in 1:length(hou)) {rr=rbind(rr, rownames(tot[tot[,3] == max(tot[tot[,1]==Treatment[i] & tot[,2]==hou[j],3]),]))}};
+  # 
+  # uim=cbind(uu,rr);tot=tot[uim[,2],]
+  # 
   tot[,3]=as.numeric(tot[,3])
   
   library(reshape2)
@@ -2503,7 +2513,7 @@ houdees=function(hoi, rt2, switch,mn,z,corr,date,neg) {
   tot=cbind(rn2,rn,ip)
   tot=tot[!is.na(tot[,1]),]
   tot=as.data.frame(tot)
-  if (neg=='no' | neg=='no' ) {tot=tot[uim[,2],]} else {tot=tot}
+  if (neg=='no' | neg=='yes' ) {tot=tot[uim[,2],]} else {tot=tot}
   tot[,3]=as.numeric(tot[,3])
   
   library(reshape2)
@@ -2593,16 +2603,16 @@ houdees=function(hoi, rt2, switch,mn,z,corr,date,neg) {
   # ou=round(min(c(abs(max(resulta1)),abs(min(resulta1)))),2)
   # op=ou-0.01
   
-  # heps=abs(round((min(resulta1)),1))
-  # heps2=abs(round((min(resulta1)+0.01),2))
-  # resulta1[resulta1 > heps] = heps
-  # resulta1[resulta1 < -heps2] = -heps
+  heps=abs(round((min(resulta1)),1))
+  heps2=abs(round((min(resulta1)+0.01),2))
+  resulta1[resulta1 > heps] = heps
+  resulta1[resulta1 < -heps2] = -heps
   # hist(as.numeric(unlist(resulta1)),breaks=30,ylim=c(0.0,40))  #xlim=c(0.04,0.4),
   # resulta1[resulta1 > 1]  = 1
   # resulta1[resulta1 < -1] = -1 #col.lim=c(-0.4,0.4))
  
   path="C:/Users/patati/Documents/GitHub/new/"; setwd(path) #check this if needed...
-  jpeg(paste("Heatmap of high ACMEs_mmaaaeed",date, mn,".jpg"), width = width, height = height, quality = 100,pointsize = 14, res=300);# par( ps=ps)# par(cex.lab=90) 22 18
+  jpeg(paste("Heatmap of high _zzzz",date, mn,".jpg"), width = width, height = height, quality = 100,pointsize = 14, res=300);# par( ps=ps)# par(cex.lab=90) 22 18
   # col = brewer.pal(n = 9, name = "YlOrRd")
   order="original"; range='orig';corre='no_renormaa'; type='full'; method='color';ga='All';gf='Female';gm='Male' #color square
   cl.offset=20;cl.length=7;cl.cex = 1.25;pch.cex=1.25;pch=2;cl.pos = 'r'; #cl.offset=2;cl.length=5;cl.cex = 1.3;pch.cex=1.95;pch=14;
@@ -2620,7 +2630,7 @@ houdees=function(hoi, rt2, switch,mn,z,corr,date,neg) {
   corrplot(as.matrix(resulta1), type = type, order = order,method=method, p.mat=as.matrix(p.mat.a1), tl.col = "black", #sum(COL2('RdBu')=="#FF7417")
            cl.cex = cl.cex, pch.cex=pch.cex, pch.col='black',pch=pch,#pitikö vain pch lisätä pch väriin väriin... mystistä...'#FEE12B'
            sig.level = c(0.05),cl.pos = cl.pos, insig = "label_sig", cl.offset=cl.offset,cl.length=cl.length, #.001, .05, .2
-           tl.srt = 90, diag = TRUE,col=col,is.corr = corr) #only in age...0.001, #rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]) col.lim=c(-1,1) col.lim=c(-heps,heps)
+           tl.srt = 90, diag = TRUE,col=col,is.corr = corr,col.lim=c(-heps,heps)) #only in age...0.001, #rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]) col.lim=c(-1,1) col.lim=c(-heps,heps)
   #non were significant in neg... but after mody yes!
 
   dev.off()
@@ -2650,7 +2660,7 @@ rt2=c1[complete.cases(c1), ] #0.49 is optimal p value cutoff to get dim(mat[[2]]
 hoi = c(); hoi=scan(text=rownames(rt2), what="")#scan(text=rownames(rt2), what="")
 hoi = matrix(hoi, ncol = 3,  byrow = TRUE); colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ,'Desig.')
 hoi[,c(2)]  <- gsub("\\.", "-",  hoi[,c(2)]  ); hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH-P4']='17a-OHP4'
-mn=paste0(z,'posa3aa'); neg='else'
+mn=paste0(z,'posa5aa'); neg='else'
 mat=houdees(hoi, rt2, switch,mn,z,corr,date,neg);dim(mat[[2]])[2] # Indirect effect, kasvata... dim(mat[[2]])[2] == 36
 sum(mat[[1]]==0)
 
