@@ -279,6 +279,9 @@ Treatment=Treatment[!Treatment %in% c('Perfluorodecyl.ethanoic.acid')]
 
 
 
+
+
+
 # Making Heatmaps for Indirect and Direct Effects
 ```{r, warning=FALSE,message=FALSE,fig.width=10.0,fig.align="left"}
 # setwd("C:/Users/patati/Desktop/TurkuOW/RWork/tests6/tests_basic/") #check this if needed...
