@@ -2645,7 +2645,7 @@ u3=all_all; c1=c(); #mn='basicas' #
 c1= u3 #[u3[,'ADE'] < ADEMedian  & DV<ADEVar,] #& u3[,'z0.p']<ADEpval
 # c1 = c1[ ((c1[,'ACME']-c1[,'ADE']) > 0), ] #
 # c1 = c1[c1[,'d0.p']<0.49, ];
-c1= c1[sample(1:nrow(c1)), ];
+# c1= c1[sample(1:nrow(c1)), ];
 # c1=c1[rev(order(c1[,'ACME'])),];
 # c1=c1[rev(order(c1[,'ADE'])),]; #
 # c1=c1[c1[,'z0.p'] < 0.89, ] # 89:llä päästään oikeaan hiiridataan
@@ -2654,7 +2654,7 @@ rt2=c1[complete.cases(c1), ] #0.49 is optimal p value cutoff to get dim(mat[[2]]
 hoi = c(); hoi=scan(text=rownames(rt2), what="")#scan(text=rownames(rt2), what="")
 hoi = matrix(hoi, ncol = 3,  byrow = TRUE); colnames(hoi)=c('Contaminants','Steroids','Bile Acids or Lipids')#,'Gender') ,'Desig.')
 hoi[,c(2)]  <- gsub("\\.", "-",  hoi[,c(2)]  ); hoi[,'Steroids' ][hoi[,'Steroids' ]=='17aOH-P4']='17a-OHP4'
-mn=paste0(z,'ade_s_vs_bal_no order2'); neg='else'
+mn=paste0(z,'ade_s_vs_bal_no order3a'); neg='else'
 mat=houdees(hoi, rt2, switch,mn,z,corr,date,neg);
 dim(mat[[2]])[2] # Indirect effect, kasvata... dim(mat[[2]])[2] == 36
 sum(mat[[1]]==0)
