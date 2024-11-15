@@ -280,7 +280,7 @@ Treatment=Treatment[!Treatment %in% c('Perfluorodecyl.ethanoic.acid')]
 #https://stackoverflow.com/questions/53724834/why-does-the-plot-size-differ-between-docx-and-html-in-rmarkdownrender
 
 boxplots=function(tvt,Group,Outcome,Out,oute,other) {
-
+  # tvt=ie
 if (Group=='Male') {tvt=tvt[tvt[,'Gender']==1,]} else if (Group=='Female') 
 {tvt=tvt[tvt[,'Gender']==0,]} else if (Group=='All') {tvt=tvt}
 Steroid=rep(colnames(tvt[,9:28]), each=dim(tvt)[1])
@@ -292,18 +292,17 @@ Treatment=data2
 note=unlist(tvt[,9:28])
 Concentration=as.vector(note)
 data=data.frame(Steroid, Treatment ,  Concentration)
-data[,'Group'] = 0 # data$Steroid #check the Xs etc out..
+data[,'Group'] = 0
+# data$Steroid #check the Xs etc out..
 data$Steroid [data$Steroid  == '17aOH-P4']='17a-OHP4'
 # groups$Abbreviation[groups$Abbreviation == '17a-OHP4']='17aOH-P4'
-for (i in 1:21) {data[data$Steroid %in% groups$Abbreviation[i],'Group']=groups$Group[i]}
-title = paste(Out,"'s Effect to Concentrations of Steroids", ' in ',Group, ' Subjects',sep="")
+rownames(groups2)=1:20
+for (i in as.numeric(rownames(groups2))) {data[data$Steroid %in% groups2$Abbreviation[i],'Group']=groups2$Group[i]}
+title = paste(Out,"'s Effect to Concentrations of Steroids", ' in ',Group,sep="")
 if (Group=='Male') {lep=theme(legend.position = "none")} else if (Group=='Female') 
 {lep=theme(legend.position = "none")} else if (Group=='All') {lep=theme_classic2()+theme(axis.text.x=element_text(angle=90,hjust=0.95,vjust=0.2,size = 14))}
 # lep=theme(legend.position = "none")
-if (num==1.5) {e1=paste('Case (>=',num,')',sep="");e2=paste('Control (<',num,')',sep=""); 
-e3=paste('****<0.001', '***<0.01', '**<0.05', '*<0.1')} else {e1=paste('Case (>',0,')',sep="");e2=paste('Control (=',0,')',sep="");e3=paste('****<0.001', '***<0.01', '**<0.05', '*<0.1')}
-
-e3=paste('****<0.001', '***<0.01', '**<0.05', '*<0.1')
+if (num==1.5) {e1=paste('Case (>',num,')',sep="");e2=paste('Control (=',num,')',sep="")} else {e1=paste('Case (>',0,')',sep="");e2=paste('Control (=',0,')',sep="")}
 
 data=data[!is.na(data$Concentration),]
 # grouped boxplot: https://stackoverflow.com/questions/32539222/group-boxplot-data-while-keeping-their-individual-x-axis-labels-in-ggplot2-in-r
@@ -316,46 +315,58 @@ theme_classic2()+#https://stackoverflow.com/questions/34522732/changing-fonts-in
 theme(axis.text.x=element_text(angle=90,hjust=0.95,vjust=0.2,size = 14))+#annotate(geom="text",family="Broadway",size=20)+#annotate(geom="text",family="Calibri",size = 14)+
 theme(panel.grid.minor=element_blank())+ #http://www.sthda.com/english/wiki/ggplot2-rotate-a-graph-reverse-and-flip-the-plot
 labs(size= "Type",x = "Steroids",y = "Log2 of Picomolar Concentrations ", title=title,size = 14)+ #log2 Autoscaled
-scale_fill_manual(values=c("orange","blue"),name=c(oute),labels=c(e1,e2))+#abels=c("Case (>5)", "Control (=<5)"))
+scale_fill_manual(values=c("orange","blue"),name=oute,labels=c(e1,e2))+ #abels=c("Case (>5)", "Control (=<5)"))
+#showSignificance( c(1,1), 13.5, 0, "**")+
 facet_grid(~Group, scales = "free_x", space = "free")+lep+
 theme(text=element_text(size=10.5,family="Calibri"), #change font size of all text
         axis.text=element_text(size=14), #change font size of axis text
         axis.title=element_text(size=14), #change font size of axis titles
         plot.title=element_text(size=14), #change font size of plot title
         legend.text=element_text(size=14), #change font size of legend text
-        legend.title=element_text(size=14))+theme(axis.text=element_text(color="black"))+stat_compare_means(hide.ns = TRUE,
-        label= "p.signif",method = "wilcox.test",  symnum.args = list(cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1), 
-                           symbols = c("****", "***", "**", "*", "ns")))#+annotation_custom( grid::textGrob(x =1, y = 0.1, label = "OK"))#+showSignificance( c(1,2), 10, -0.05, "*")  
-# http://www.sthda.com/english/articles/24-ggpubr-publication-ready-plots/76-add-p-values-and-significance-levels-to-ggplots/
-# https://stackoverflow.com/questions/76758153/is-there-a-way-to-change-the-asterisks-to-match-custom-p-values
+        legend.title=element_text(size=14))+theme(axis.text=element_text(color="black"))
   #+annotate(geom="text",family="Broadway",size=20) # add_pval(plot, pairs = list(c(1, 2)), test='wilcox.test');plot
   #https://datavizpyr.com/horizontal-boxplots-with-ggplot2-in-r/
-# https://stackoverflow.com/questions/72564551/a-custom-legend-unrelated-to-data-in-ggplot
-# p #+ annotation_custom( grid::textGrob(x =3, y = 5, label = "'****<0.001', '***<0.01', '**<0.05', '*<0.1'")).. adding a custom label (unrelated to data) to ggplot is again one of these not so easy but should be easy things... :)
-
 library(ragg)
 path="C:/Users/patati/Documents/GitHub/new/" #oh, classical: https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
-pngfile <- fs::path(path,paste0(Group,Out,'box',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
-ragg::agg_png(pngfile, width = 60, height = 46, units = "cm", res = 300,scaling = 2)
+pngfile <- fs::path(path,paste0(Group,Out,'boxi',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
+ragg::agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300,scaling = 2)
+# pdffile <- fs::path(path,paste0(Group,Out,'boxi',".pdf"))#fs::path(knitr::fig_path(),  "theming2.png")
+# library(pdftools)
+# pdftools::pdf_text(pdffile)
+# pdf(file = pdffile,   # The directory you want to save the file in
+    # width = 4, # The width of the plot in inches
+    # height = 4) # The height of the plot in inches
 #https://stackoverflow.com/questions/66429500/how-to-make-raggagg-png-device-work-with-ggsave
+# pdf("plot1.pdf")
 plot(p)
 invisible(dev.off())
-knitr::include_graphics(pngfile)}
+# dev.off()
+
+# knitr::opts_chunk$set(fig.path=path)
+# knitr::opts_chunk$set(dev='pdf') 
+# knitr::opts_chunk$set(dev.args=list(pdf = list(family = "Helvetica", useDingbats = FALSE)))
+# knitr::opts_chunk$set(fig.width=8,fig.height=6)
+
+daiR::image_to_pdf(paste0(Group,Out,'boxi',".png"), pdf_name=paste0(pngfile,'.pdf')) #https://rdrr.io/cran/daiR/man/image_to_pdf.html #this is good!
+
+knitr::include_graphics(pngfile)
+}
 
 tv_half_log22[,'11-KA4'][tv_half_log22[,'11-KA4']==min(tv_half_log22[,'11-KA4'])]=median(tv_half_log22[,'11-KA4'])
 other='241024e';ie=tv_half_log22## 'Steatosis Grade','Fibrosis Stage','Necroinflammation','HOMA-IR'
 hupo=match(   colnames(ie)[colnames(ie) %in% groups2[,3]], groups2[,3] ) 
 colnames(ie)[colnames(ie) %in% groups2[,3]]=groups2[hupo,2]
-
 windowsFonts(A = windowsFont("Calibri (Body)"))
 
 # The significance levels are: '****<0.001', '***<0.01', '**<0.05', '*<0.1'
-Outcome='Steatosis Grade';Out='Steatosis'; oute='Steatosis Grade';num=0;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
+Outcome='Steatosis Grade';Out='Steatosis'; oute='Steatosis Grade';num=0;Group='All';
+boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
 
 Outcome='Fibrosis Stage';Out='Fibrosis'; oute='Fibrosis Stage';num=0;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other) 
 # https://www.elsevier.es/en-revista-annals-hepatology-16-articulo-assessment-hepatic-fibrosis-necroinflammation-among-S1665268119314590 #So it is in grade
 Outcome='Necroinflammation';Out='Necroinflammation'; oute='Necroinflammation Grade';num=0;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
-Outcome='HOMA-IR';Out='HOMA-IR'; oute='HOMA-IR';num=1.5 ;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
+Outcome='HOMA-IR';Out='HOMA-IR'; oute='HOMA-IR';num=1.5 ;Group='All';
+boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
 
 ```
 
