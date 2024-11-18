@@ -331,7 +331,7 @@ theme(text=element_text(size=10.5,family="Calibri"), #change font size of all te
         legend.text=element_text(size=14), #change font size of legend text
         legend.title=element_text(size=14))+theme(axis.text=element_text(color="black"))+stat_compare_means(hide.ns = TRUE,
         label= "p.signif",method = "wilcox.test",  symnum.args = list(cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1), 
-                           symbols = c("****", "***", "**", "*", "ns")),size=3,paired = F, label.y = 15.5) #https://github.com/kassambara/ggpubr/issues/69 
+                           symbols = c("****", "***", "**", "*", "ns")),size=8,paired = F, label.y = 15.5) #https://github.com/kassambara/ggpubr/issues/69 
   #https://datavizpyr.com/horizontal-boxplots-with-ggplot2-in-r/
 library(ragg)
 path="C:/Users/patati/Documents/GitHub/new/" #oh, classical: https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
