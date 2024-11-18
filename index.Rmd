@@ -348,13 +348,13 @@ ragg::agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300,scaling 
 plot(p)
 invisible(dev.off())
 # dev.off()
-knitr::include_graphics(pngfile)
+knitr::include_graphics(paste0(Group,Out,'boxiaa',".png"))
 # knitr::opts_chunk$set(fig.path=path)
 # knitr::opts_chunk$set(dev='pdf') 
 # knitr::opts_chunk$set(dev.args=list(pdf = list(family = "Helvetica", useDingbats = FALSE)))
 # knitr::opts_chunk$set(fig.width=8,fig.height=6)
-daiR::image_to_pdf(paste0(Group,Out,'boxiaa',".png"), pdf_name=paste0(pngfile,'.pdf')) #https://rdrr.io/cran/daiR/man/image_to_pdf.html #this is good!
-sjPlot::save_plot(paste0(Group,Out,'boxiaa','.svg'), fig = p, width=60, height=36,dpi = 300);
+# daiR::image_to_pdf(paste0(Group,Out,'boxiaa',".png"), pdf_name=paste0(pngfile,'.pdf')) #https://rdrr.io/cran/daiR/man/image_to_pdf.html #this is good!
+# sjPlot::save_plot(paste0(Group,Out,'boxiaa','.svg'), fig = p, width=60, height=36,dpi = 300);
 # Customizing the output
 # pdf(paste0(Group,Out,'boxi',"my_plot.pdf"),         # File name
 #     width = 8, height = 7, # Width and height in inches
@@ -372,14 +372,11 @@ colnames(ie)[colnames(ie) %in% groups2[,3]]=groups2[hupo,2]
 windowsFonts(A = windowsFont("Calibri (Body)"))
 
 # The significance levels are: '****<0.001', '***<0.01', '**<0.05', '*<0.1'
-Outcome='Steatosis Grade';Out='Steatosis'; oute='Steatosis Grade';num=0;Group='All'; boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
-
+Outcome='Steatosis Grade';Out='Steatosis'; oute='Steatosis Grade';num=0;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
 Outcome='Fibrosis Stage';Out='Fibrosis'; oute='Fibrosis Stage';num=0;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other) 
 # https://www.elsevier.es/en-revista-annals-hepatology-16-articulo-assessment-hepatic-fibrosis-necroinflammation-among-S1665268119314590 #So it is in grade
 Outcome='Necroinflammation';Out='Necroinflammation'; oute='Necroinflammation Grade';num=0;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
-Outcome='HOMA-IR';Out='HOMA-IR'; oute='HOMA-IR';num=1.5 ;Group='All';
-boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';
-boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
+Outcome='HOMA-IR';Out='HOMA-IR'; oute='HOMA-IR';num=1.5 ;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
 
 
 
@@ -525,28 +522,39 @@ pre_errors_2=function(NAFLD,Outcome,Group,name,ordera,oute,first,e,xlim) { # Gro
 
 
 # This is with first(!!). Use it. 
-Outcome='Steatosis.Grade.0.To.3';Out='Steatosis'; oute='Steatosis';first=TRUE; e='P4';ordera=c();
+# Outcome='Steatosis.Grade.0.To.3';Out='Steatosis'; oute='Steatosis';first=TRUE; e='P4';ordera=c();
 Group='All';name1=paste("Forest plot of",Group, "Steroid Ratios in",Out);
-hel=pre_errors_2(NAFLD,Outcome,Group,name1,ordera,oute,first,e,xlim)
-#Afterwards:
-first=FALSE;
-Group='Female';name2=paste("Forest plot of",Group, "Steroid Ratios in",Out); pre_errors_2(NAFLD,Outcome,Group,name2,ordera=hel,oute,first,e,xlim)
-Group='Male'; name3=paste("Forest plot of",Group, "Steroid Ratios in",Out); pre_errors_2(NAFLD,Outcome,Group,name3,ordera=hel,oute,first,e,xlim)
-
-Outcome='Fibrosis.Stage.0.to.4'; Out='Fibrosis';oute='Fibrosis';
-Group='All'; name4=paste("Forest plot of",Group, "Steroid Ratios in",Out); pre_errors_2(NAFLD,Outcome,Group,name4,ordera=hel,oute,first,e,xlim)
-Group='Female';name5=paste("Forest plot of",Group, "Steroid Ratios in",Out); pre_errors_2(NAFLD,Outcome,Group,name5,ordera=hel,oute,first,e,xlim)
-Group='Male'; name6=paste("Forest plot of",Group, "Steroid Ratios in",Out); pre_errors_2(NAFLD,Outcome,Group,name6,ordera=hel,oute,first,e,xlim)
-
-Outcome='Necroinflammation'; Out='Necroinflammation';oute='Necroinflammation';
-Group='All'; name7=paste("Forest plot of",Group, "Steroid Ratios in",Out); pre_errors_2(NAFLD,Outcome,Group,name7,ordera=hel,oute,first,e,xlim) #not the very first though...
-Group='Female';name8=paste("Forest plot of",Group, "Steroid Ratios in",Out); pre_errors_2(NAFLD,Outcome,Group,name8,ordera=hel,oute,first,e,xlim)
-Group='Male'; name9=paste("Forest plot of",Group, "Steroid Ratios in",Out); pre_errors_2(NAFLD,Outcome,Group,name9,ordera=hel,oute,first,e,xlim)
-
-Outcome='HOMA.IR';Out='HOMA-IR';oute='HOMAIR';
-Group='All';name10=paste("Forest plot of",Group, "Steroid Ratios in",Out);pre_errors_2(NAFLD,Outcome,Group,name10,ordera=hel,oute,first,e,xlim) #not the very first though...
-Group='Female';name11=paste("Forest plot of",Group, "Steroid Ratios in",Out); pre_errors_2(NAFLD,Outcome,Group,name11,ordera=hel,oute,first,e,xlim)
-Group='Male'; name12=paste("Forest plot of",Group, "Steroid Ratios in",Out); pre_errors_2(NAFLD,Outcome,Group,name12,ordera=hel,oute,first,e,xlim)
+# hel=pre_errors_2(NAFLD,Outcome,Group,name1,ordera,oute,first,e,xlim)
+# #Afterwards:
+# first=FALSE;
+Group='Female';name2=paste("Forest plot of",Group, "Steroid Ratios in",Out);
+# pre_errors_2(NAFLD,Outcome,Group,name2,ordera=hel,oute,first,e,xlim)
+Group='Male'; name3=paste("Forest plot of",Group, "Steroid Ratios in",Out);
+# pre_errors_2(NAFLD,Outcome,Group,name3,ordera=hel,oute,first,e,xlim)
+# 
+# Outcome='Fibrosis.Stage.0.to.4'; Out='Fibrosis';oute='Fibrosis';
+Group='All'; name4=paste("Forest plot of",Group, "Steroid Ratios in",Out);
+# pre_errors_2(NAFLD,Outcome,Group,name4,ordera=hel,oute,first,e,xlim)
+Group='Female';name5=paste("Forest plot of",Group, "Steroid Ratios in",Out);
+# pre_errors_2(NAFLD,Outcome,Group,name5,ordera=hel,oute,first,e,xlim)
+Group='Male'; name6=paste("Forest plot of",Group, "Steroid Ratios in",Out);
+# pre_errors_2(NAFLD,Outcome,Group,name6,ordera=hel,oute,first,e,xlim)
+# 
+# Outcome='Necroinflammation'; Out='Necroinflammation';oute='Necroinflammation';
+Group='All'; name7=paste("Forest plot of",Group, "Steroid Ratios in",Out); 
+# pre_errors_2(NAFLD,Outcome,Group,name7,ordera=hel,oute,first,e,xlim) #not the very first though...
+Group='Female';name8=paste("Forest plot of",Group, "Steroid Ratios in",Out);
+# pre_errors_2(NAFLD,Outcome,Group,name8,ordera=hel,oute,first,e,xlim)
+Group='Male'; name9=paste("Forest plot of",Group, "Steroid Ratios in",Out); 
+# pre_errors_2(NAFLD,Outcome,Group,name9,ordera=hel,oute,first,e,xlim)
+# 
+# Outcome='HOMA.IR';Out='HOMA-IR';oute='HOMAIR';
+Group='All';name10=paste("Forest plot of",Group, "Steroid Ratios in",Out);
+# pre_errors_2(NAFLD,Outcome,Group,name10,ordera=hel,oute,first,e,xlim) #not the very first though...
+Group='Female';name11=paste("Forest plot of",Group, "Steroid Ratios in",Out); 
+# pre_errors_2(NAFLD,Outcome,Group,name11,ordera=hel,oute,first,e,xlim)
+Group='Male'; name12=paste("Forest plot of",Group, "Steroid Ratios in",Out); 
+# pre_errors_2(NAFLD,Outcome,Group,name12,ordera=hel,oute,first,e,xlim)
 
 ```
 
@@ -1037,7 +1045,7 @@ width = 9000;height=2800;
 
 resulta1[resulta1 > 0.26] = 0.4
 resulta1[resulta1 < -0.26] = -0.4
-hist(as.numeric(unlist(resulta1)),breaks=30,ylim=c(0.0,40))  #xlim=c(0.04,0.4),
+# hist(as.numeric(unlist(resulta1)),breaks=30,ylim=c(0.0,40))  #xlim=c(0.04,0.4),
 # resulta1[resulta1 > 1]  = 1
 # resulta1[resulta1 < -1] = -1 #col.lim=c(-0.4,0.4)) 
 
@@ -1046,91 +1054,91 @@ hist(as.numeric(unlist(resulta1)),breaks=30,ylim=c(0.0,40))  #xlim=c(0.04,0.4),
 #https://statisticsglobe.com/change-font-size-corrplot-r
 #order can be: alphabet, hclust, original #https://stackoverflow.com/questions/51115495/how-to-keep-order-of-the-correlation-plot-labels-as-same-in-the-datafile
 
-order="original"; range='orig';corre='no_rendorm'; type='full'; method='color';ga='All';gf='Female';gm='Male' #color square
-col = colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(100)
-cl.offset=1.0;cl.length=5;cl.cex = 1.3;pch.cex=1.3;pch=20;cl.pos = 'r';#cl.pos = 'b' ;#pch.cex=0.95,1.3; height=6300; pos 'b' cl.pos = 'b' 
-jpeg(paste("Square Correlation Plot ofdd",ho,ga,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 30, res=300);# par( ps=ps)# par(cex.lab=90)
-corrplot(resulta1, type = type, order = order,method=method, p.mat=p.mat.a1, tl.col = "black", #sum(COL2('RdBu')=="#FF7417")
-         cl.cex = cl.cex, pch.cex=pch.cex, pch.col='black',pch=pch,#pitikö vain pch lisätä pch väriin väriin... mystistä...'#FEE12B'
-sig.level = c(.001,.05, .2),cl.pos = cl.pos, insig = "label_sig", cl.offset=cl.offset,cl.length=cl.length,
-tl.srt = 90, diag = TRUE,col = col,is.corr = FALSE, col.lim=c(-0.4,0.4) ) #only in age...0.001,
-dev.off();eoh=paste("Square Correlation Plot ofdd",ho,ga,hip1,"3.jpg")
-daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
-my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
-pch.cex=1.3;
-jpeg(paste("Square Correlation Plot ofd",ho,gf,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 30, res=300);  
-corrplot(resulta2, type = type, order = order,method=method, p.mat=p.mat.f1,tl.col = "black",
-         cl.cex = cl.cex,  pch.cex=pch.cex,pch.col='black',pch=pch,
-sig.level = c(.001, .05, .2), cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length,
-tl.srt = 90, diag = TRUE,col = col,is.corr = TRUE) #
-dev.off();eoh=paste("Square Correlation Plot ofd",ho,gf,hip1,"3.jpg")
-daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
-my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
-# pch.cex=2.9;
-jpeg(paste("Square Correlation Plot ofd",ho,gm,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 30, res=300); 
-corrplot(resulta3, type = type, order = order,method=method, p.mat=p.mat.m1, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,
-         pch.col='black',pch=pch,
-sig.level = c(.001, .05, .2),cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length,
-tl.srt = 90, diag = TRUE,col = col,is.corr = TRUE) #,is.corr = FALSE
-dev.off();eoh=paste("Square Correlation Plot ofd",ho,gm,hip1,"3.jpg")
-daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
-my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
-
-
-resulta1=resulta[c(x1,x3,x6),x2];  p.mat.a1=p.mat.aa[c(x1,x3,x6),x2]
-resulta2=resultaf[c(x1,x3,x6),x2]; p.mat.f1=p.mat.ff[c(x1,x3,x6),x2]
-resulta3=resultam[c(x1,x3,x6),x2]; p.mat.m1=p.mat.mm[c(x1,x3,x6),x2]
-# tv_ah=rango(resulta3,(min(resulta2)),max(resulta2)); resulta3=tv_ah;#
-hip1='transpose'; width = 3700;height=6300;ho='steroids vs. all others except PFAS';ps=28 #pch=10;
-min(c(resulta2)); max(c(resulta2)) #These are around -0.4 and 0.4
-col = colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(100)
-
-resulta1=resulta[c(x3,x6),x2];  p.mat.a1=p.mat.aa[c(x3,x6),x2]
-resulta2=resultaf[c(x3,x6),x2]; p.mat.f1=p.mat.ff[c(x3,x6),x2]
-resulta3=resultam[c(x3,x6),x2]; p.mat.m1=p.mat.mm[c(x3,x6),x2]
-# tv_ah=rango(resulta3,(min(resulta2)),max(resulta2)); resulta3=tv_ah;#
-resulta1=t(resulta1);resulta2=t(resulta2);resulta3=t(resulta3);p.mat.a1=t(p.mat.a1);p.mat.f1=t(p.mat.f1);p.mat.m1=t(p.mat.m1);
-
-resulta1[resulta1 > 0.25] = 0.4
-resulta1[resulta1 < -0.25] = -0.4
-hist(as.numeric(unlist(resulta1)),breaks=30,ylim=c(0.0,40))  #xlim=c(0.04,0.4),
-
-hip1='transpose'; width = 3200;height=2000;ho='steroids vs. all others except PFAS';ps=12 #pch=10;
-min(c(resulta2)); max(c(resulta2)) #These are around -0.4 and 0.4
-col = colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(150)
-
-# resulta1=resulta1[,groups[,'Abbreviation']];resulta2=resulta2[,groups[,'Abbreviation']];resulta3=resulta3[,groups[,'Abbreviation']]
-
-order="original"; range='orig';corre='no_renorm'; type='full'; method='color';ga='All';gf='Female';gm='Male' #color square
-cl.offset=1.0;cl.length=5;cl.cex = 1.0;pch.cex=1.0;pch=20;cl.pos = 'r';#cl.pos = 'b' ;#pch.cex=0.95,1.3; height=6300; pos 'b' cl.pos = 'b' 
-jpeg(paste("Square Correlation Plot ofrr",ho,ga,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 14, res=300);# par( ps=ps)# par(cex.lab=90)
-corrplot(resulta1, type = type, order = order,method=method, p.mat=p.mat.a1, tl.col = "black", #sum(COL2('RdBu')=="#FF7417")
-         cl.cex = cl.cex, pch.cex=pch.cex, pch.col='black',pch=pch,#pitikö vain pch lisätä pch väriin väriin... mystistä...'#FEE12B'
-sig.level = c(.001,.05, .2),cl.pos = cl.pos, insig = "label_sig", cl.offset=cl.offset,cl.length=cl.length,
-tl.srt = 90, diag = TRUE,col = col,is.corr = FALSE,col.lim=c(-0.4,0.4)) #only in age...0.001, is.corr = TRUE/FALSE rev(COL2('RdBu')[1:(length(COL2('RdBu'))-0)])
-dev.off();eoh=paste("Square Correlation Plot ofrr",ho,ga,hip1,"3.jpg")
-daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
-my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
-
-pch.cex=1.3;
-jpeg(paste("Square Correlation Plot of",ho,gf,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 16, res=300);  
-corrplot(resulta2, type = type, order = order,method=method, p.mat=p.mat.f1,tl.col = "black",
-         cl.cex = cl.cex,  pch.cex=pch.cex,pch.col='black',pch=pch,
-sig.level = c(.001, .05, .2), cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length,
-tl.srt = 90, diag = TRUE,col = col,is.corr = TRUE) #
-dev.off();eoh=paste("Square Correlation Plot of",ho,gf,hip1,"3.jpg")
-daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
-my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
-
-# pch.cex=2.9;
-jpeg(paste("Square Correlation Plot of",ho,gm,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 16, res=300); 
-corrplot(resulta3, type = type, order = order,method=method, p.mat=p.mat.m1, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,
-         pch.col='black',pch=pch,
-sig.level = c(.001, .05, .2),cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length,
-tl.srt = 90, diag = TRUE,col = col,is.corr = TRUE) #,is.corr = FALSE
-dev.off();eoh=paste("Square Correlation Plot of",ho,gm,hip1,"3.jpg")
-daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
-my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
+# order="original"; range='orig';corre='no_rendorm'; type='full'; method='color';ga='All';gf='Female';gm='Male' #color square
+# col = colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(100)
+# cl.offset=1.0;cl.length=5;cl.cex = 1.3;pch.cex=1.3;pch=20;cl.pos = 'r';#cl.pos = 'b' ;#pch.cex=0.95,1.3; height=6300; pos 'b' cl.pos = 'b' 
+# jpeg(paste("Square Correlation Plot ofdd",ho,ga,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 30, res=300);# par( ps=ps)# par(cex.lab=90)
+# corrplot(resulta1, type = type, order = order,method=method, p.mat=p.mat.a1, tl.col = "black", #sum(COL2('RdBu')=="#FF7417")
+#          cl.cex = cl.cex, pch.cex=pch.cex, pch.col='black',pch=pch,#pitikö vain pch lisätä pch väriin väriin... mystistä...'#FEE12B'
+# sig.level = c(.001,.05, .2),cl.pos = cl.pos, insig = "label_sig", cl.offset=cl.offset,cl.length=cl.length,
+# tl.srt = 90, diag = TRUE,col = col,is.corr = FALSE, col.lim=c(-0.4,0.4) ) #only in age...0.001,
+# dev.off();eoh=paste("Square Correlation Plot ofdd",ho,ga,hip1,"3.jpg")
+# daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
+# my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
+# pch.cex=1.3;
+# jpeg(paste("Square Correlation Plot ofd",ho,gf,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 30, res=300);  
+# corrplot(resulta2, type = type, order = order,method=method, p.mat=p.mat.f1,tl.col = "black",
+#          cl.cex = cl.cex,  pch.cex=pch.cex,pch.col='black',pch=pch,
+# sig.level = c(.001, .05, .2), cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length,
+# tl.srt = 90, diag = TRUE,col = col,is.corr = TRUE) #
+# dev.off();eoh=paste("Square Correlation Plot ofd",ho,gf,hip1,"3.jpg")
+# daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
+# my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
+# # pch.cex=2.9;
+# jpeg(paste("Square Correlation Plot ofd",ho,gm,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 30, res=300); 
+# corrplot(resulta3, type = type, order = order,method=method, p.mat=p.mat.m1, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,
+#          pch.col='black',pch=pch,
+# sig.level = c(.001, .05, .2),cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length,
+# tl.srt = 90, diag = TRUE,col = col,is.corr = TRUE) #,is.corr = FALSE
+# dev.off();eoh=paste("Square Correlation Plot ofd",ho,gm,hip1,"3.jpg")
+# daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
+# my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
+# 
+# 
+# resulta1=resulta[c(x1,x3,x6),x2];  p.mat.a1=p.mat.aa[c(x1,x3,x6),x2]
+# resulta2=resultaf[c(x1,x3,x6),x2]; p.mat.f1=p.mat.ff[c(x1,x3,x6),x2]
+# resulta3=resultam[c(x1,x3,x6),x2]; p.mat.m1=p.mat.mm[c(x1,x3,x6),x2]
+# # tv_ah=rango(resulta3,(min(resulta2)),max(resulta2)); resulta3=tv_ah;#
+# hip1='transpose'; width = 3700;height=6300;ho='steroids vs. all others except PFAS';ps=28 #pch=10;
+# min(c(resulta2)); max(c(resulta2)) #These are around -0.4 and 0.4
+# col = colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(100)
+# 
+# resulta1=resulta[c(x3,x6),x2];  p.mat.a1=p.mat.aa[c(x3,x6),x2]
+# resulta2=resultaf[c(x3,x6),x2]; p.mat.f1=p.mat.ff[c(x3,x6),x2]
+# resulta3=resultam[c(x3,x6),x2]; p.mat.m1=p.mat.mm[c(x3,x6),x2]
+# # tv_ah=rango(resulta3,(min(resulta2)),max(resulta2)); resulta3=tv_ah;#
+# resulta1=t(resulta1);resulta2=t(resulta2);resulta3=t(resulta3);p.mat.a1=t(p.mat.a1);p.mat.f1=t(p.mat.f1);p.mat.m1=t(p.mat.m1);
+# 
+# resulta1[resulta1 > 0.25] = 0.4
+# resulta1[resulta1 < -0.25] = -0.4
+# hist(as.numeric(unlist(resulta1)),breaks=30,ylim=c(0.0,40))  #xlim=c(0.04,0.4),
+# 
+# hip1='transpose'; width = 3200;height=2000;ho='steroids vs. all others except PFAS';ps=12 #pch=10;
+# min(c(resulta2)); max(c(resulta2)) #These are around -0.4 and 0.4
+# col = colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(150)
+# 
+# # resulta1=resulta1[,groups[,'Abbreviation']];resulta2=resulta2[,groups[,'Abbreviation']];resulta3=resulta3[,groups[,'Abbreviation']]
+# 
+# order="original"; range='orig';corre='no_renorm'; type='full'; method='color';ga='All';gf='Female';gm='Male' #color square
+# cl.offset=1.0;cl.length=5;cl.cex = 1.0;pch.cex=1.0;pch=20;cl.pos = 'r';#cl.pos = 'b' ;#pch.cex=0.95,1.3; height=6300; pos 'b' cl.pos = 'b' 
+# jpeg(paste("Square Correlation Plot ofrr",ho,ga,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 14, res=300);# par( ps=ps)# par(cex.lab=90)
+# corrplot(resulta1, type = type, order = order,method=method, p.mat=p.mat.a1, tl.col = "black", #sum(COL2('RdBu')=="#FF7417")
+#          cl.cex = cl.cex, pch.cex=pch.cex, pch.col='black',pch=pch,#pitikö vain pch lisätä pch väriin väriin... mystistä...'#FEE12B'
+# sig.level = c(.001,.05, .2),cl.pos = cl.pos, insig = "label_sig", cl.offset=cl.offset,cl.length=cl.length,
+# tl.srt = 90, diag = TRUE,col = col,is.corr = FALSE,col.lim=c(-0.4,0.4)) #only in age...0.001, is.corr = TRUE/FALSE rev(COL2('RdBu')[1:(length(COL2('RdBu'))-0)])
+# dev.off();eoh=paste("Square Correlation Plot ofrr",ho,ga,hip1,"3.jpg")
+# daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
+# my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
+# 
+# pch.cex=1.3;
+# jpeg(paste("Square Correlation Plot of",ho,gf,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 16, res=300);  
+# corrplot(resulta2, type = type, order = order,method=method, p.mat=p.mat.f1,tl.col = "black",
+#          cl.cex = cl.cex,  pch.cex=pch.cex,pch.col='black',pch=pch,
+# sig.level = c(.001, .05, .2), cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length,
+# tl.srt = 90, diag = TRUE,col = col,is.corr = TRUE) #
+# dev.off();eoh=paste("Square Correlation Plot of",ho,gf,hip1,"3.jpg")
+# daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
+# my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
+# 
+# # pch.cex=2.9;
+# jpeg(paste("Square Correlation Plot of",ho,gm,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 16, res=300); 
+# corrplot(resulta3, type = type, order = order,method=method, p.mat=p.mat.m1, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,
+#          pch.col='black',pch=pch,
+# sig.level = c(.001, .05, .2),cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length,
+# tl.srt = 90, diag = TRUE,col = col,is.corr = TRUE) #,is.corr = FALSE
+# dev.off();eoh=paste("Square Correlation Plot of",ho,gm,hip1,"3.jpg")
+# daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
+# my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
 
 
 ```
@@ -2251,6 +2259,7 @@ knitr::include_graphics('Correlations plotted female C4_L P5 .jpg')
 ```{r, echo=FALSE, out.width="50%", fig.cap="Correlations Scatter Plotted_Male_C4_L P5",fig.align="left"}
 knitr::include_graphics('Correlations plotted male C4_L P5 .jpg')
 ```
+
 
 
 # Making Network Plot
