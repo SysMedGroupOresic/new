@@ -40,8 +40,11 @@ library("grid"); library("ggplotify");library(ggpubr);library(rstatix);library(d
 library(chorddiag);library(corrplot);library(scater);library(mdatools);library(car);library(FSA);library(pathviewr);library(glmnet)
 library("lmtest");library(PerformanceAnalytics);library(psych);library("readxl");library(ggforce);library(ComplexHeatmap);library(ragg) 
 library('Hmisc');library(correlation);library(ggcorrplot);library(pheatmap);library(mgcv);library('ppcor');library(superb)
-library(rmdformats);library(prettydoc);library(hrbrthemes);library(tint);library(tufte)
-library(extrafont);library(scatterplot3d); library(rgl);library(ggsankey);library(ggsankeyfier)
+library(rmdformats);library(prettydoc);library(hrbrthemes);library(tint);library(tufte);require(remotes);library(insight);  library(magick)
+library(extrafont);library(scatterplot3d); library(rgl);library(ggsankey);library(ggsankeyfier); library(daiR); library(sjPlot)
+
+
+
 # https://require.predictiveecology.org/
 
 ```
@@ -59,6 +62,8 @@ options(scipen = 999);
 # devtools::install_github("davidsjoberg/ggforestplot") #this you have to know, check google
 ## devtools::install_github("NightingaleHealth/ggforestplot"); devtools::install_github("mattflor/chorddiag")
 # remotes::install_github("MathiasHarrer/dmetar") #this you have to know, check google
+# remotes::install_version("insight", version = "0.20.5", repos = "http://cran.us.r-project.org", force=TRUE)
+
 # https://stackoverflow.com/questions/32771517/package-cannot-be-unloaded-in-r-cannot-install-package
 # font_import() # This is important if you have not loaded them before
 # loadfonts(device = "win") #Same applies here.
@@ -299,10 +304,12 @@ data$Steroid [data$Steroid  == '17aOH-P4']='17a-OHP4'
 rownames(groups2)=1:20
 for (i in as.numeric(rownames(groups2))) {data[data$Steroid %in% groups2$Abbreviation[i],'Group']=groups2$Group[i]}
 title = paste(Out,"'s Effect to Concentrations of Steroids", ' in ',Group,sep="")
-if (Group=='Male') {lep=theme(legend.position = "none")} else if (Group=='Female') 
-{lep=theme(legend.position = "none")} else if (Group=='All') {lep=theme_classic2()+theme(axis.text.x=element_text(angle=90,hjust=0.95,vjust=0.2,size = 14))}
+# if (Group=='Male') {lep=theme(legend.position = "none")} else if (Group=='Female') 
+# {lep=theme(legend.position = "none")} else if (Group=='All') {lep=theme_classic2()+theme(axis.text.x=element_text(angle=90,hjust=0.95,vjust=0.2,size = 14))}
+
+lep=theme_classic2()+theme(axis.text.x=element_text(angle=90,hjust=0.95,vjust=0.2,size = 14))
 # lep=theme(legend.position = "none")
-if (num==1.5) {e1=paste('Case (>',num,')',sep="");e2=paste('Control (=',num,')',sep="")} else {e1=paste('Case (>',0,')',sep="");e2=paste('Control (=',0,')',sep="")}
+if (num==1.5) {e1=paste('Case (>',num,')',sep="");e2=paste('Control (<=',num,')',sep="")} else {e1=paste('Case (>',0,')',sep="");e2=paste('Control (=',0,')',sep="")}
 
 data=data[!is.na(data$Concentration),]
 # grouped boxplot: https://stackoverflow.com/questions/32539222/group-boxplot-data-while-keeping-their-individual-x-axis-labels-in-ggplot2-in-r
@@ -312,23 +319,23 @@ geom_boxplot(notch=F, notchwidth=0.5,outlier.shape=1,outlier.size=2, coef=1.5)+
 theme(axis.text=element_text(color="black"))+
 theme_classic2()+#https://stackoverflow.com/questions/34522732/changing-fonts-in-ggplot2
 # scale_x_discrete(guide = guide_axis(angle = 90))+ https://stackoverflow.com/questions/37488075/align-axis-label-on-the-right-with-ggplot2
-theme(axis.text.x=element_text(angle=90,hjust=0.95,vjust=0.2,size = 14))+#annotate(geom="text",family="Broadway",size=20)+#annotate(geom="text",family="Calibri",size = 14)+
+theme(axis.text.x=element_text(angle=90,hjust=0.95,vjust=0.2,size = 10.5))+#annotate(geom="text",family="Broadway",size=20)+#annotate(geom="text",family="Calibri",size = 14)+
 theme(panel.grid.minor=element_blank())+ #http://www.sthda.com/english/wiki/ggplot2-rotate-a-graph-reverse-and-flip-the-plot
 labs(size= "Type",x = "Steroids",y = "Log2 of Picomolar Concentrations ", title=title,size = 14)+ #log2 Autoscaled
-scale_fill_manual(values=c("orange","blue"),name=oute,labels=c(e1,e2))+ #abels=c("Case (>5)", "Control (=<5)"))
-#showSignificance( c(1,1), 13.5, 0, "**")+
+scale_fill_manual(values=c("orange","blue"),name=c(oute),labels=c(e1,e2))+#abels=c("Case (>5)", "Control (=<5)"))
 facet_grid(~Group, scales = "free_x", space = "free")+lep+
 theme(text=element_text(size=10.5,family="Calibri"), #change font size of all text
         axis.text=element_text(size=14), #change font size of axis text
         axis.title=element_text(size=14), #change font size of axis titles
         plot.title=element_text(size=14), #change font size of plot title
         legend.text=element_text(size=14), #change font size of legend text
-        legend.title=element_text(size=14))+theme(axis.text=element_text(color="black"))
-  #+annotate(geom="text",family="Broadway",size=20) # add_pval(plot, pairs = list(c(1, 2)), test='wilcox.test');plot
+        legend.title=element_text(size=14))+theme(axis.text=element_text(color="black"))+stat_compare_means(hide.ns = TRUE,
+        label= "p.signif",method = "wilcox.test",  symnum.args = list(cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1), 
+                           symbols = c("****", "***", "**", "*", "ns")),size=3,paired = F, label.y = 15.5) #https://github.com/kassambara/ggpubr/issues/69 
   #https://datavizpyr.com/horizontal-boxplots-with-ggplot2-in-r/
 library(ragg)
 path="C:/Users/patati/Documents/GitHub/new/" #oh, classical: https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
-pngfile <- fs::path(path,paste0(Group,Out,'boxi',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
+pngfile <- fs::path(path,paste0(Group,Out,'boxiaa',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
 ragg::agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300,scaling = 2)
 # pdffile <- fs::path(path,paste0(Group,Out,'boxi',".pdf"))#fs::path(knitr::fig_path(),  "theming2.png")
 # library(pdftools)
@@ -341,15 +348,21 @@ ragg::agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300,scaling 
 plot(p)
 invisible(dev.off())
 # dev.off()
-
+knitr::include_graphics(pngfile)
 # knitr::opts_chunk$set(fig.path=path)
 # knitr::opts_chunk$set(dev='pdf') 
 # knitr::opts_chunk$set(dev.args=list(pdf = list(family = "Helvetica", useDingbats = FALSE)))
 # knitr::opts_chunk$set(fig.width=8,fig.height=6)
-
-daiR::image_to_pdf(paste0(Group,Out,'boxi',".png"), pdf_name=paste0(pngfile,'.pdf')) #https://rdrr.io/cran/daiR/man/image_to_pdf.html #this is good!
-
-knitr::include_graphics(pngfile)
+daiR::image_to_pdf(paste0(Group,Out,'boxiaa',".png"), pdf_name=paste0(pngfile,'.pdf')) #https://rdrr.io/cran/daiR/man/image_to_pdf.html #this is good!
+sjPlot::save_plot(paste0(Group,Out,'boxiaa','.svg'), fig = p, width=60, height=36,dpi = 300);
+# Customizing the output
+# pdf(paste0(Group,Out,'boxi',"my_plot.pdf"),         # File name
+#     width = 8, height = 7, # Width and height in inches
+#     bg = "white",          # Background color
+#     colormodel = "cmyk",    # Color model (cmyk is required for most publications)
+#     paper = "A4")          # Paper size
+# plot(p)
+# dev.off()
 }
 
 tv_half_log22[,'11-KA4'][tv_half_log22[,'11-KA4']==min(tv_half_log22[,'11-KA4'])]=median(tv_half_log22[,'11-KA4'])
@@ -359,14 +372,16 @@ colnames(ie)[colnames(ie) %in% groups2[,3]]=groups2[hupo,2]
 windowsFonts(A = windowsFont("Calibri (Body)"))
 
 # The significance levels are: '****<0.001', '***<0.01', '**<0.05', '*<0.1'
-Outcome='Steatosis Grade';Out='Steatosis'; oute='Steatosis Grade';num=0;Group='All';
-boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
+Outcome='Steatosis Grade';Out='Steatosis'; oute='Steatosis Grade';num=0;Group='All'; boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
 
 Outcome='Fibrosis Stage';Out='Fibrosis'; oute='Fibrosis Stage';num=0;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other) 
 # https://www.elsevier.es/en-revista-annals-hepatology-16-articulo-assessment-hepatic-fibrosis-necroinflammation-among-S1665268119314590 #So it is in grade
 Outcome='Necroinflammation';Out='Necroinflammation'; oute='Necroinflammation Grade';num=0;Group='All';boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
 Outcome='HOMA-IR';Out='HOMA-IR'; oute='HOMA-IR';num=1.5 ;Group='All';
-boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
+boxplots(ie,Group,Outcome,Out,oute,other);Group='Female';
+boxplots(ie,Group,Outcome,Out,oute,other);Group='Male';boxplots(ie,Group,Outcome,Out,oute,other)
+
+
 
 ```
 
@@ -494,21 +509,25 @@ pre_errors_2=function(NAFLD,Outcome,Group,name,ordera,oute,first,e,xlim) { # Gro
   # for (i in stripr) {j <- which(grepl('rect', g$grobs[[i]]$grobs[[1]]$childrenOrder))
   #   g$grobs[[i]]$grobs[[1]]$children[[j]]$gp$fill <- fills[k]; k <- k+1}
   # grid::grid.draw(g)
-  # # https://stackoverflow.com/questions/24169675/multiple-colors-in-a-facet-strip-background-in-ggplot
-  # # http://www.sthda.com/english/wiki/ggplot2-axis-scales-and-transformations 
-  # # https://www.statology.org/geom_point-fill/
-  # # https://stackoverflow.com/questions/62093084/set-geom-vline-line-types-and-sizes-with-aes-mapping-in-ggplot2
-  # # https://en.wikipedia.org/wiki/Standard_error
-  # # This has been already done:
+  # https://stackoverflow.com/questions/24169675/multiple-colors-in-a-facet-strip-background-in-ggplot
+  # http://www.sthda.com/english/wiki/ggplot2-axis-scales-and-transformations
+  # https://www.statology.org/geom_point-fill/
+  # https://stackoverflow.com/questions/62093084/set-geom-vline-line-types-and-sizes-with-aes-mapping-in-ggplot2
+  # https://en.wikipedia.org/wiki/Standard_error
+  # This has been already done:
   # jpeg(paste(name ,"divi.jpg"), width = 7500, height = 11000, quality = 100,pointsize = 16, res=1000); print(grid::grid.draw(g));dev.off();
+  # daiR::image_to_pdf(paste(name ,"divi.jpg"), pdf_name=paste0(paste(name ,"divi.jpg"),'.pdf'))#https://rdrr.io/cran/daiR/man/image_to_pdf.html #this is good!
+  # sjPlot::save_plot(paste0(Group,Out,'boxi','.svg'), fig = paste(name ,"divi.jpg"), width=41, height=60,dpi = 1000);
+  # my_image <- image_read(paste(name ,"divi.jpg"));my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(name ,"divi.svg"))
 
-  # return(ordera) #If you do not want to have 'null' to the Rmarkdown/html take this away 
+  return(ordera) #If you do not want to have 'null' to the Rmarkdown/html take this away
   } 
 
 
 # This is with first(!!). Use it. 
 Outcome='Steatosis.Grade.0.To.3';Out='Steatosis'; oute='Steatosis';first=TRUE; e='P4';ordera=c();
-Group='All';name1=paste("Forest plot of",Group, "Steroid Ratios in",Out);hel=pre_errors_2(NAFLD,Outcome,Group,name1,ordera,oute,first,e,xlim)
+Group='All';name1=paste("Forest plot of",Group, "Steroid Ratios in",Out);
+hel=pre_errors_2(NAFLD,Outcome,Group,name1,ordera,oute,first,e,xlim)
 #Afterwards:
 first=FALSE;
 Group='Female';name2=paste("Forest plot of",Group, "Steroid Ratios in",Out); pre_errors_2(NAFLD,Outcome,Group,name2,ordera=hel,oute,first,e,xlim)
@@ -574,11 +593,11 @@ path="C:/Users/patati/Documents/GitHub/new/"; knitr::include_graphics(paste0(pat
 ```{r, warning=FALSE,message=FALSE,fig.width=9.0,fig.align="left"}
 # First the correlations for the chord diagrams (both male and female as well as total subjects):
 
+tv_c=tvauxe
 
 hupo=match(   colnames(tv_c)[colnames(tv_c) %in% groups2[,3]], groups2[,3] ) 
 # do ni; https://www.geeksforgeeks.org/how-to-find-index-of-element-in-vector-in-r/
 # tvauxe=tv_c
-# tv_c=tvauxe
 colnames(tv_c)[colnames(tv_c) %in% groups2[,3]]=groups2[hupo,2]
 ok=colnames(tv_c)
 
@@ -587,16 +606,16 @@ tv_c=tv_c[,!colnames(tv_c) %in% c('Total_TG','PFAS',"Perfluorodecyl.ethanoic.aci
 tvf=tv_c[tv_c[,'Gender']==min(tv_c[,'Gender']),1:dim(tv_c)[2]]
 tvm=tv_c[tv_c[,'Gender']==max(tv_c[,'Gender']),1:dim(tv_c)[2]]
 
-# tvtest=list(tv_c,tvf,tvm)
-# for (i in 1:3) {colnames(tvtest[[i]]) <- gsub("\\.", "-", colnames(tvtest[[i]]))
-# colnames(tvtest[[i]]) <- gsub("X11", "11", colnames(tvtest[[i]]))
-# colnames(tvtest[[i]]) <- gsub("X17", "17", colnames(tvtest[[i]]))
-# colnames(tvtest[[i]])[colnames(tvtest[[i]])=="T-Epi-T"]="T/Epi-T"
-# colnames(tvtest[[i]])[colnames(tvtest[[i]])=="Steatosis-Grade"]="Steatosis Grade"
-# colnames(tvtest[[i]])[colnames(tvtest[[i]])=="Fibrosis-Stage"]="Fibrosis Stage"
-# colnames(tvtest[[i]])[colnames(tvtest[[i]])=="17aOH-P4"]="17a-OHP4"
-# colnames(tvtest[[i]])[colnames(tvtest[[i]])=="HOMA IR"]="HOMA-IR"}
-# tv_c=tvtest[[1]]; tvf=tvtest[[2]]; tvm=tvtest[[3]];
+tvtest=list(tv_c,tvf,tvm)
+for (i in 1:3) {colnames(tvtest[[i]]) <- gsub("\\.", "-", colnames(tvtest[[i]]))
+colnames(tvtest[[i]]) <- gsub("X11", "11", colnames(tvtest[[i]]))
+colnames(tvtest[[i]]) <- gsub("X17", "17", colnames(tvtest[[i]]))
+colnames(tvtest[[i]])[colnames(tvtest[[i]])=="T-Epi-T"]="T/Epi-T"
+colnames(tvtest[[i]])[colnames(tvtest[[i]])=="Steatosis-Grade"]="Steatosis Grade"
+colnames(tvtest[[i]])[colnames(tvtest[[i]])=="Fibrosis-Stage"]="Fibrosis Stage"
+colnames(tvtest[[i]])[colnames(tvtest[[i]])=="17aOH-P4"]="17a-OHP4"
+colnames(tvtest[[i]])[colnames(tvtest[[i]])=="HOMA IR"]="HOMA-IR"}
+tv_c=tvtest[[1]]; tvf=tvtest[[2]]; tvm=tvtest[[3]];
 x4[x4=="X7.oxo.DCA_S"]="X7-oxo-DCA_S"
 
 dat = tv_c;dat= dat %>% select(-c('PatientNumber'))  #this is quite nice way to delete columns, please remember...
@@ -623,7 +642,7 @@ et=colnames(resulta)[(length(at)+length(bt)+length(ct)+length(dt)+1):(length(at)
 ft=colnames(resulta)[(length(at)+length(bt)+length(ct)+length(dt)+length(et)+1):(length(at)+length(bt)+length(ct)+length(dt)+length(et)+length(x6))] #
 atl=length(at);btl=length(bt);ctl=length(ct);dtl=length(dt);etl=length(et);ftl=length(ft)
 
-n_level=0.2; ## muuta tätä, # hist(as.numeric(Nrr)) #https://www.geeksforgeeks.org/elementwise-matrix-multiplication-in-r/
+n_level=0.01; ## muuta tätä, # hist(as.numeric(Nrr)) #https://www.geeksforgeeks.org/elementwise-matrix-multiplication-in-r/
 
 Nrr=qpNrr(resulta, verbose=FALSE);Nrr[is.na(Nrr)]=1; cond=data.frame(as.matrix(Nrr<n_level));RN=data.frame(resulta);tes_t=cond*RN;tes_t=as.matrix(tes_t);resulta=tes_t 
 Nrr=qpNrr(resultaf, verbose=FALSE);Nrr[is.na(Nrr)]=1;cond=data.frame(as.matrix(Nrr<n_level));RN=data.frame(resultaf);tes_t=cond*RN;tes_t=as.matrix(tes_t);resultaf=tes_t
@@ -713,10 +732,10 @@ group_chords=function(vars,n_level,fig_name, big,rem,modi,colt,gend,colors,a,b,c
   cola=unique(grid.col)#[c(1:6)[1:6 != modi]]
   
   if (gend=='All') {
-  ccu=df[,3] > 0.2 
+  ccu=df[,3] > 0.2
   ccu2=df[,3] < -0.2
   cx=ccu | ccu2} else {
-     ccu=df[,3] > 0.25 
+     ccu=df[,3] > 0.25
   ccu2=df[,3] < -0.25
   cx=ccu | ccu2}
 
@@ -724,7 +743,7 @@ group_chords=function(vars,n_level,fig_name, big,rem,modi,colt,gend,colors,a,b,c
   # 
   # lgd_points = Legend(at = namesh, type = "points", legend_gp = gpar(col = cola), title_position = "topleft", title = "Class")
   # lgd_lines = Legend(at = c("Positive", "Negative"), type = "points", legend_gp = gpar(col = c('orange','blue')), title_position = "topleft", title = "Correlation")
-  # lgd_edges= Legend(at = c(-1,1), col_fun = col_fun,  title_position = "topleft", title = "Edges") #lgd_edges= Legend(at = c(round(min(df$V3),1), round(max(df$V3),1)), col_fun = col_fun,  title_position = "topleft", title = "Edges") 
+  # lgd_edges= Legend(at = c(-1,1), col_fun = col_fun,  title_position = "topleft", title = "Edges") #lgd_edges= Legend(at = c(round(min(df$V3),1), round(max(df$V3),1)), col_fun = col_fun,  title_position = "topleft", title = "Edges")
   # lgd_list_vertical = packLegend(lgd_group,lgd_points,  lgd_lines,lgd_edges) #lgd_lines,
   # # circos.par(gap.after = grid.col)
   #   chordDiagram(df, annotationTrack = c("grid"),  grid.col=grid.col, directional = FALSE,symmetric = TRUE, scale=FALSE, #link.decreasing = FALSE,
@@ -739,14 +758,19 @@ group_chords=function(vars,n_level,fig_name, big,rem,modi,colt,gend,colors,a,b,c
   #     circos.axis(h = "top", labels.cex = 0.000001, major.tick.length = 0.2, sector.index = sector.name, track.index = 2)}, bg.border = NA) #https://stackoverflow.com/questions/31943102/rotate-labels-in-a-chorddiagram-r-circlize
   #   windowsFonts(A = windowsFont("Calibri (Body)"))
   #   draw(lgd_list_vertical, x = unit(5, "mm"), y = unit(5, "mm"), just = c("left", "bottom"))#}
-  #   # These ten above lines have been already done, and now just show separately
-  #   dev.copy(jpeg,paste0(gend,'hie_0.01.jpg'),width=9, height=12, units="in", res=1000);dev.off() # This is already done
+    # These ten above lines have been already done, and now just show separately
+    # dev.copy(jpeg,paste0(gend,n_level,'hie.jpg'),width=9, height=12, units="in", res=1000);dev.off() # This is already done
 
-knitr::include_graphics(paste0(gend,'hie_0.01.jpg'))
+knitr::include_graphics(paste0(gend,n_level,'hie.jpg'))
+# daiR::image_to_pdf(paste0(gend,n_level,'hie.jpg'), pdf_name=paste0(paste0(gend,n_level,'hie'),'.pdf')) #https://rdrr.io/cran/daiR/man/image_to_pdf.html #this is good!
+# sjPlot::save_plot(paste0(gend,n_level,'hie.jpg'), fig = p, width=9*2.54, height=12*2.54,dpi = 1000); #inch is 2.54cm
+# my_image <- image_read(paste0(gend,n_level,'hie.jpg'));my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(paste0(gend,n_level,'hie.jpg') ,".svg"))
+
+
 }
 
 # All variables
-n_level=0.2; circos.clear(); vars=list(resulta)
+n_level=0.01; circos.clear(); vars=list(resulta)
 big='Yes';title='All Variables' # 
 rem=x4; modi=5; colt='black'
 a=length(x1)-1;b=length(x2);c=length(x3);d=length(x4);e=length(x5);f=length(x6);#Check inside function
@@ -809,11 +833,16 @@ library(ragg)
 # Oh! https://www.tidyverse.org/blog/2020/08/taking-control-of-plot-scaling/
 # https://r4ds.had.co.nz/graphics-for-communication.html#figure-sizing
 path="C:/Users/patati/Documents/GitHub/new/" #oh, classical: https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
-pngfile <- fs::path(path,paste0(Group,'vex',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
+sips=paste0(Group,'vex',".png")
+pngfile <- fs::path(path,sips)#fs::path(knitr::fig_path(),  "theming2.png")
 agg_png(pngfile, width = 60, height = 36, units = "cm", res = 300,scaling = 2)
 plot(p)
 invisible(dev.off())
 knitr::include_graphics(pngfile)
+# daiR::image_to_pdf(sips, pdf_name=paste0(sips,'.pdf')) #https://rdrr.io/cran/daiR/man/image_to_pdf.html #this is good!
+# sjPlot::save_plot(paste0(sips,".svg"), fig = p, width=60, height=36,dpi = 300); #inch is 2.54cm
+# my_image <- image_read(sips);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(sips,".svg"))
+
 }
 
 # I'll be using the tv_all (logged and then scaled) values here, even though in the original function took 'lognormed' values, i.e.
@@ -890,9 +919,12 @@ brks_heatmap <- function(mat, color_palette){
 # grid.text("Steatosis, Fibrosis, Necroinflammation, HOMA-IR", y=-0.07, x=0.4,gp=gpar(fontsize=16))
 # grid.text("Steroids (Androgens, Estrogens, Gluc., Mineraloc., Progestogens)", x=-0.07, rot=90, gp=gpar(fontsize=16))
 # #For quality/pltowise reasons I need to do this:
-# dev.copy(jpeg,"cohensd_tikka_OK251024.jpg",width=9, height=12, units="in", res=1000);dev.off()
+# dev.copy(jpeg,"cohensd_tikka_OK181124.jpg",width=9, height=12, units="in", res=1000);dev.off()
 
-knitr::include_graphics("cohensd_tikka_OK251024.jpg")
+knitr::include_graphics("cohensd_tikka_OK181124.jpg")
+# daiR::image_to_pdf("cohensd_tikka_OK181124.jpg", pdf_name=paste0("cohensd_tikka_OK251024.jpg",'.pdf'))
+# sjPlot::save_plot("cohensd_tikka_OK181124.svg", fig = p, width=9*2.54, height=12*2.54,dpi = 1000); #inch is 2.54cm
+# my_image <- image_read('cohensd_tikka_OK181124.jpg');my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste('cohensd_tikka_OK181124.jpg',".svg"))
 
 ```
 
@@ -959,13 +991,20 @@ order="original" #alphabet, hclust, original #https://stackoverflow.com/question
 range='orig';corre='re_renormae'; method='color' #color square
 jpeg(paste("Correlations with Full Plot of All_vok_nes",n_level,order,range,corre,method,".jpg"), width = 8000, height = 8000, quality = 100,pointsize = 23, res=300);
 corrplot(resulta, type = "lower", order = order,method=method, tl.col = "black", tl.srt = 90, diag = FALSE,col = rev(COL2('RdBu')),is.corr = FALSE) #,is.corr = FALSE
-dev.off()
+dev.off(); eoh=paste("Correlations with Full Plot of All_vok_nes",n_level,order,range,corre,method,".jpg")
+daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
+# sjPlot::save_plot("cohensd_tikka_OK251024.jpg", fig = ggplot2::last_plot(), width=12*2.54, height=12*2.54,dpi = 300); #inch is 2.54cm
+my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
 jpeg(paste("Correlations with Full Plot of Female_voek",n_level,order,range,corre,method,".jpg"), width = 8000, height = 8000, quality = 100,pointsize = 23, res=300);
 corrplot(resultaf, type = "lower", order = order,method=method,tl.col = "black", tl.srt = 90, diag = FALSE,col = rev(COL2('RdBu')),is.corr = FALSE)
-dev.off()
+dev.off();eoh=paste("Correlations with Full Plot of Female_voek",n_level,order,range,corre,method,".jpg")
+daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
+my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
 jpeg(paste("Correlations with Full Plot of Male_voeka",n_level,order,range,corre,method,".jpg"), width = 8000, height = 8000, quality = 100,pointsize = 23, res=300); 
 corrplot(resultam, type = "lower", order = order, method=method,tl.col = "black", tl.srt = 90, diag = FALSE,col = rev(COL2('RdBu')),is.corr = FALSE) #order = "alphabet",  order = "hclust",
-dev.off()
+dev.off();eoh=paste("Correlations with Full Plot of Male_voeka",n_level,order,range,corre,method,".jpg")
+daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
+my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
 
 #The ok ones:
 x1=colnames(resulta)[c(1:6)]
@@ -1015,21 +1054,27 @@ corrplot(resulta1, type = type, order = order,method=method, p.mat=p.mat.a1, tl.
          cl.cex = cl.cex, pch.cex=pch.cex, pch.col='black',pch=pch,#pitikö vain pch lisätä pch väriin väriin... mystistä...'#FEE12B'
 sig.level = c(.001,.05, .2),cl.pos = cl.pos, insig = "label_sig", cl.offset=cl.offset,cl.length=cl.length,
 tl.srt = 90, diag = TRUE,col = col,is.corr = FALSE, col.lim=c(-0.4,0.4) ) #only in age...0.001,
-dev.off()
+dev.off();eoh=paste("Square Correlation Plot ofdd",ho,ga,hip1,"3.jpg")
+daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
+my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
 pch.cex=1.3;
 jpeg(paste("Square Correlation Plot ofd",ho,gf,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 30, res=300);  
 corrplot(resulta2, type = type, order = order,method=method, p.mat=p.mat.f1,tl.col = "black",
          cl.cex = cl.cex,  pch.cex=pch.cex,pch.col='black',pch=pch,
 sig.level = c(.001, .05, .2), cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length,
 tl.srt = 90, diag = TRUE,col = col,is.corr = TRUE) #
-dev.off()
+dev.off();eoh=paste("Square Correlation Plot ofd",ho,gf,hip1,"3.jpg")
+daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
+my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
 # pch.cex=2.9;
 jpeg(paste("Square Correlation Plot ofd",ho,gm,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 30, res=300); 
 corrplot(resulta3, type = type, order = order,method=method, p.mat=p.mat.m1, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,
          pch.col='black',pch=pch,
 sig.level = c(.001, .05, .2),cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length,
 tl.srt = 90, diag = TRUE,col = col,is.corr = TRUE) #,is.corr = FALSE
-dev.off()
+dev.off();eoh=paste("Square Correlation Plot ofd",ho,gm,hip1,"3.jpg")
+daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
+my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
 
 
 resulta1=resulta[c(x1,x3,x6),x2];  p.mat.a1=p.mat.aa[c(x1,x3,x6),x2]
@@ -1063,21 +1108,29 @@ corrplot(resulta1, type = type, order = order,method=method, p.mat=p.mat.a1, tl.
          cl.cex = cl.cex, pch.cex=pch.cex, pch.col='black',pch=pch,#pitikö vain pch lisätä pch väriin väriin... mystistä...'#FEE12B'
 sig.level = c(.001,.05, .2),cl.pos = cl.pos, insig = "label_sig", cl.offset=cl.offset,cl.length=cl.length,
 tl.srt = 90, diag = TRUE,col = col,is.corr = FALSE,col.lim=c(-0.4,0.4)) #only in age...0.001, is.corr = TRUE/FALSE rev(COL2('RdBu')[1:(length(COL2('RdBu'))-0)])
-dev.off()
+dev.off();eoh=paste("Square Correlation Plot ofrr",ho,ga,hip1,"3.jpg")
+daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
+my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
+
 pch.cex=1.3;
 jpeg(paste("Square Correlation Plot of",ho,gf,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 16, res=300);  
 corrplot(resulta2, type = type, order = order,method=method, p.mat=p.mat.f1,tl.col = "black",
          cl.cex = cl.cex,  pch.cex=pch.cex,pch.col='black',pch=pch,
 sig.level = c(.001, .05, .2), cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length,
 tl.srt = 90, diag = TRUE,col = col,is.corr = TRUE) #
-dev.off()
+dev.off();eoh=paste("Square Correlation Plot of",ho,gf,hip1,"3.jpg")
+daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
+my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
+
 # pch.cex=2.9;
 jpeg(paste("Square Correlation Plot of",ho,gm,hip1,"3.jpg"), width = width, height = height, quality = 100,pointsize = 16, res=300); 
 corrplot(resulta3, type = type, order = order,method=method, p.mat=p.mat.m1, tl.col = "black", cl.cex = cl.cex,pch.cex=pch.cex,
          pch.col='black',pch=pch,
 sig.level = c(.001, .05, .2),cl.pos = cl.pos, insig = "label_sig",cl.offset=cl.offset,cl.length=cl.length,
 tl.srt = 90, diag = TRUE,col = col,is.corr = TRUE) #,is.corr = FALSE
-dev.off()
+dev.off();eoh=paste("Square Correlation Plot of",ho,gm,hip1,"3.jpg")
+daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
+my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
 
 
 ```
@@ -1407,6 +1460,9 @@ the_funal=function(tv,Group,ok,fn,adj,sig.level,sick,sick_group,joo) { #  ok,aa,
              col = colorRampPalette(c('blue', 'white','orange'), alpha = TRUE)(100) ,is.corr = FALSE,col.lim=c(-0.5,0.5));   #https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html#change-color-spectra-color-legend-and-text-legend
     
     dev.off()  #,is.corr = FALSE
+    eoh=paste("Linear Model Estimate Plot ofees4",hip1,Group,".jpg")
+    daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
+    my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
 
     #
 
@@ -1491,7 +1547,12 @@ sig.level = c(.001, .01, .05),cl.pos =  cl.pos, insig = "label_sig",cl.offset=cl
 tl.srt = 90, diag = TRUE,col = colorRampPalette(c('blue','white', 'orange'), alpha = TRUE)(100),is.corr = FALSE,col.lim=c(-0.4,0.4)); 
 
 # https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html#change-color-spectra-color-legend-and-text-legend
-dev.off()
+dev.off();
+    eoh=paste("Linear Model Estimate Plot of_sa4",hip1,Group,".jpg")
+    daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
+    my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
+
+
   } 
   
 
@@ -1597,7 +1658,7 @@ dev.off()
 # tl.srt = 90, diag = TRUE,col =col ,is.corr = FALSE,col.lim=c(-0.3,0.3)); #colorRampPalette(c('blue','white', 'orange'), alpha = TRUE)(100) is.corr = TRUE or false
 # 
 # # https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html#change-color-spectra-color-legend-and-text-legend
-# dev.off()
+# dev.off();     eoh=paste("Linear Model Estimate Plot of_s",hip1,Group,".jpg"); daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'));my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
 # 
 #   hoi=hopiu
 #     rsa=c();rs1=c();rs2=c()
@@ -1702,7 +1763,7 @@ dev.off()
 # tl.srt = 90, diag = TRUE,col =col ,is.corr = FALSE,col.lim=c(-0.3,0.3) ); #colorRampPalette(c('blue','white', 'orange'), alpha = TRUE)(100) is.corr = TRUE or false
 # 
 # # https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html#change-color-spectra-color-legend-and-text-legend
-# dev.off()
+# dev.off();eoh=paste("Linear Model Estimate Plot of_sss",hip1,Group,".jpg"); daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'));my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
 
   
   # https://scales.arabpsychology.com/stats/how-to-remove-the-last-character-from-a-string-in-r-2-examples/
@@ -2263,10 +2324,10 @@ plot(network, mode = "circle",vertex.color=my_color, vertex.size = 10,
 legend("topright", legend=levels(as.factor(V(network)$carac))  ,
        col = coul , bty = "n", pch=20 , pt.cex = 1.3, cex = 1.3, text.col=coul ,
        horiz = FALSE, inset = c(-0.01, 0.80))
-dev.off()
+dev.off(); 
 
 # And now just showing the figure separately:
-knitr::include_graphics('network.jpg')
+knitr::include_graphics('network.jpg'); eoh='network.jpg'; daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'));my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
 ```
 
 
@@ -2637,7 +2698,8 @@ houdees=function(hoi, rt2, switch,mn,z,corr,date,neg) {
            tl.srt = 90, diag = TRUE,col=col,is.corr = corr,col.lim=c(-heps,heps)) #only in age...0.001,col.lim=c(-heps,heps) #rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]) col.lim=c(-1,1) col.lim=c(-heps,heps)
   #non were significant in neg... but after mody yes!
 
-  dev.off()
+  dev.off(); eoh=paste("Heatmap of high",date, mn,neg,".jpg"); daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
+  my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
   
   return(list(resulta1,p.mat.a1))
   }
@@ -2821,7 +2883,8 @@ corrplot(resulta1, type = type, order = order,method=method, p.mat=p.mat.a1, tl.
          sig.level = c(0.05),cl.pos = cl.pos, insig = "label_sig", cl.offset=cl.offset,cl.length=cl.length,
          tl.srt = 90, diag = TRUE,col=col,is.corr = FALSE,col.lim=c(-heps,heps)) #only in age...0.001, -2,2 #rev(COL2('RdBu')[25:(length(COL2('RdBu'))-25)]) col.lim=c(min(resulta1),max(resulta1)) col.lim=c(-heps,heps)
 # 
-dev.off() #
+dev.off(); eoh=paste("Heatmap of highed_the_real_ade_mat",z,date,".jpg"); daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
+my_image <- image_read(eoh);my_svg <- image_convert(my_image, format="svg"); image_write(my_svg, paste(eoh,".svg"))
 path="C:/Users/patati/Documents/GitHub/new/"; setwd(path)
   
   
@@ -2921,7 +2984,11 @@ pngfile <- fs::path(path,paste0(Group,'e',d,".png"))#fs::path(knitr::fig_path(),
 agg_png(pngfile, width = 60, height = 80, units = "cm", res = 600,scaling = 2)
 plot(p)
 invisible(dev.off())
-knitr::include_graphics(pngfile)}
+knitr::include_graphics(pngfile)
+eoh=paste0(Group,'e',d,".png"); daiR::image_to_pdf(eoh, pdf_name=paste0(eoh,'.pdf'))
+
+
+}
 
 library(readxl)
 # setwd("C:/Users/patati/Desktop/TurkuOW/RWork/tests6/tests_basic/") #check this if needed...

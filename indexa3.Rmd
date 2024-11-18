@@ -335,7 +335,7 @@ theme(text=element_text(size=10.5,family="Calibri"), #change font size of all te
 
 library(ragg)
 path="C:/Users/patati/Documents/GitHub/new/" #oh, classical: https://forum.posit.co/t/r-markdown-html-document-doesnt-show-image/41629/2
-pngfile <- fs::path(path,paste0(Group,Out,'box',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
+pngfile <- fs::path(path,paste0(Group,Out,'boxa',".png"))#fs::path(knitr::fig_path(),  "theming2.png")
 ragg::agg_png(pngfile, width = 60, height = 46, units = "cm", res = 300,scaling = 2)
 #https://stackoverflow.com/questions/66429500/how-to-make-raggagg-png-device-work-with-ggsave
 plot(p)
